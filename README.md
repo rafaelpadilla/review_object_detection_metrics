@@ -9,7 +9,7 @@ Repositório de trabalho para o journal paper [Electronics - Special Issue](http
 
 #### Wesley:  
 
-i) Implementaço da métrica proposta para detecção de objetos em vídeos (tubos)  
+i) Implementação da métrica proposta para detecção de objetos em vídeos (tubos)  
 
 #### Thadeu:  
 
