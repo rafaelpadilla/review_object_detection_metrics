@@ -1,7 +1,43 @@
 Review on Object Detection Metrics
 ==============================
 
-A short description of the project.
+Repositório de trabalho para o journal paper [Electronics - Special Issue](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection).  
+
+**Deadline da implementação: 18 de novembro**
+
+### Tarefas:
+
+#### Wesley:  
+
+i) Implementação da métrica proposta para detecção de objetos em vídeos (tubos)  
+
+#### Thadeu:  
+
+i) Implementação das métricas COCO  
+ii) Implementação da métrica Average Delay  
+
+Referências:  
+[Métricas COCO](https://cocodataset.org/#detection-eval)  
+[Métricas em geral](https://blog.zenggyu.com/en/post/2018-12-16/an-introduction-to-evaluation-metrics-for-object-detection/#fn3)  
+[Average Recall](https://manalelaidouni.github.io/manalelaidouni.github.io/Evaluating-Object-Detection-Models-Guide-to-Performance-Metrics.html#average-recall-ar) 
+[Paper Average Delay](https://arxiv.org/pdf/1908.06368.pdf)
+[Implementação Average Delay](https://github.com/RalphMao/VMetrics)
+
+Implementações:  
+[Oficial COCO (cocoeval.py)](https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py)  
+[Official Detectron (voc_eval.py)](https://github.com/facebookresearch/Detectron/blob/cbb0236dfdc17790658c146837215d2728e6fadd/detectron/datasets/voc_eval.py)  
+[Implementação do paper de Niteroi](https://github.com/rafaelpadilla/Object-Detection-Metrics)  
+
+#### Padilla:  
+
+i) Escrever o paper  
+ii) Codar módulo para reconhecer diferentes tipos de anotações  
+iii) Desenvolver UI para facilitar o uso da API  
+
+Referências:  
+[Métricas para detecço de silhueta (mAP e mIOU)](https://www.youtube.com/watch?v=pDhCbYc0NBQ)  
+[MOTP and MOTA](https://arxiv.org/pdf/2007.14863.pdf)
+
 
 Project Organization
 ------------
@@ -23,7 +59,7 @@ Project Organization
     │                         the creator's initials, and a short `-` delimited description, e.g.
     │                         `1.0-jqp-initial-data-exploration`.
     │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+    ├── references         <- Data dictionaries, manuals, and all other explanatory materials. 
     │
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
     │   └── figures        <- Generated graphics and figures to be used in reporting
@@ -52,6 +88,4 @@ Project Organization
     └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
 
 
---------
 
-<p><small>Project based on the <a target="_blank" href="https://drivendata.github.io/cookiecutter-data-science/">cookiecutter data science project template</a>. #cookiecutterdatascience</small></p>
