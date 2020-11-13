@@ -10,6 +10,7 @@ Repositório de trabalho para o journal paper [Electronics - Special Issue](http
 #### Wesley:  
 
 i) Implementação da métrica proposta para detecção de objetos em vídeos (tubos)  
+ii) Implementaço da métrica min-min-max usada no ImageNet challenge (detalhes [aqui](https://www.kaggle.com/c/imagenet-object-localization-challenge/overview/evaluation))  
 
 #### Thadeu:  
 
