@@ -36,7 +36,19 @@ iii) Desenvolver UI para facilitar o uso da API
 
 Referências:  
 [Métricas para detecço de silhueta (mAP e mIOU)](https://www.youtube.com/watch?v=pDhCbYc0NBQ)  
-[MOTP and MOTA](https://arxiv.org/pdf/2007.14863.pdf)
+[MOTP and MOTA](https://arxiv.org/pdf/2007.14863.pdf)  
+[Evaluating image segmentation](https://www.jeremyjordan.me/evaluating-image-segmentation-models/) 
+[Forum 1](https://stats.stackexchange.com/questions/462279/why-is-map-mean-average-precision-used-for-instance-segmentation-tasks)  
+[Panoptic Segmentation Metric](https://openaccess.thecvf.com/content_CVPR_2019/papers/Kirillov_Panoptic_Segmentation_CVPR_2019_paper.pdf)  
+[Pixelwise Instance Segmentation with a Dynamically Instantiated Network]()  
+[Metrics for tracking](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4479472&casa_token=qVqK8NIQsNYAAAAA:F0uihc_37NUlyDWny3Yvwowb7k5xSM9ZZa7g8W5kAHVs0fXovPxNfQxpWNgPWBezt0MueFqzGA&tag=1)  
+[Performance Evaluation of Object Detection Algorithms](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1048198&casa_token=7g5QwzVvBycAAAAA:3jQBF9mrWJ9OIYHO9O5gbvJme9q7nSNyRO7IJNJywuZCiliGOSkIiXpqrp6JiSpaHPv-fYnY3Q)  
+[A Review of Detection and Tracking of Object from Image and Video Sequences](http://www.ripublication.com/ijcir17/ijcirv13n5_07.pdf)  
+[A Review on Moving Object Detection and Tracking Methods in Video](https://acadpubl.eu/jsi/2018-118-16-17/articles/16/33.pdf)  
+[Framework for Performance Evaluation of Face, Text, and Vehicle Detection and Tracking in Video: Data, Metrics, and Protocol](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4479472&casa_token=qVqK8NIQsNYAAAAA:F0uihc_37NUlyDWny3Yvwowb7k5xSM9ZZa7g8W5kAHVs0fXovPxNfQxpWNgPWBezt0MueFqzGA&tag=1)  
+[Object Detection With Deep Learning: A Review](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8627998&casa_token=AQl_UN40niwAAAAA:yxPx_j_ul-lgCnon8F5FmHhRIkZJMNugSximoi6SHmLrG_W8l-UOb5YxvoTQ69HCdluwVJhrHQ)  
+[New trends on moving object detection in video images captured by a moving camera: A survey]()  
+
 
 
 Project Organization
