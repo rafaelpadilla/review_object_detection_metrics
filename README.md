@@ -28,7 +28,7 @@ Implementações:
 [Oficial COCO (cocoeval.py)](https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py)  
 [Official Detectron (voc_eval.py)](https://github.com/facebookresearch/Detectron/blob/cbb0236dfdc17790658c146837215d2728e6fadd/detectron/datasets/voc_eval.py)  
 [Implementação do paper de Niteroi](https://github.com/rafaelpadilla/Object-Detection-Metrics)  
-
+[Localization Recall Precision (LRP): A New Performance Metric for Object Detection](https://arxiv.org/pdf/1807.01696.pdf)   
 #### Padilla:  
 
 i) Escrever o paper  
