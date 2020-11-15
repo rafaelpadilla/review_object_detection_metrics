@@ -29,6 +29,7 @@ Implementações:
 [Official Detectron (voc_eval.py)](https://github.com/facebookresearch/Detectron/blob/cbb0236dfdc17790658c146837215d2728e6fadd/detectron/datasets/voc_eval.py)  
 [Implementação do paper de Niteroi](https://github.com/rafaelpadilla/Object-Detection-Metrics)  
 [Localization Recall Precision (LRP): A New Performance Metric for Object Detection](https://arxiv.org/pdf/1807.01696.pdf)   
+
 #### Padilla:  
 
 i) Escrever o paper  
@@ -50,6 +51,7 @@ Referências:
 [Object Detection With Deep Learning: A Review](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8627998&casa_token=AQl_UN40niwAAAAA:yxPx_j_ul-lgCnon8F5FmHhRIkZJMNugSximoi6SHmLrG_W8l-UOb5YxvoTQ69HCdluwVJhrHQ)  
 [New trends on moving object detection in video images captured by a moving camera: A survey]()  
 [COCO format](https://www.immersivelimit.com/tutorials/create-coco-annotations-from-scratch#:~:text=According%20to%20cocodataset.org%2F%23format%2Ddata%3A,annotations%20are%20stored%20using%20JSON.)  
+[Conversores de formatos](https://roboflow.com/formats)  
 
 
 
