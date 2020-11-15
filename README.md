@@ -49,6 +49,7 @@ Referências:
 [Framework for Performance Evaluation of Face, Text, and Vehicle Detection and Tracking in Video: Data, Metrics, and Protocol](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4479472&casa_token=qVqK8NIQsNYAAAAA:F0uihc_37NUlyDWny3Yvwowb7k5xSM9ZZa7g8W5kAHVs0fXovPxNfQxpWNgPWBezt0MueFqzGA&tag=1)  
 [Object Detection With Deep Learning: A Review](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8627998&casa_token=AQl_UN40niwAAAAA:yxPx_j_ul-lgCnon8F5FmHhRIkZJMNugSximoi6SHmLrG_W8l-UOb5YxvoTQ69HCdluwVJhrHQ)  
 [New trends on moving object detection in video images captured by a moving camera: A survey]()  
+[COCO format](https://www.immersivelimit.com/tutorials/create-coco-annotations-from-scratch#:~:text=According%20to%20cocodataset.org%2F%23format%2Ddata%3A,annotations%20are%20stored%20using%20JSON.)  
 
 
 
