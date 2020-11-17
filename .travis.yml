@@ -17,7 +17,7 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment --file environment.yml
+  - conda env create -q -n test-environment --file environment.yml
   - conda activate test-environ
   # - pip install -r requirements.txt
 # command to run tests
