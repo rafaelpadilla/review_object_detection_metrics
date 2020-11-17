@@ -1,0 +1,21 @@
+# conda env create -n <env_name> --file <this_file>.yml
+channels:
+  - defaults
+dependencies:
+  - ipython=7.19
+  - jupyter=1.0
+  - notebook=6.1
+  - numpy=1.19
+  - pandas=1.1
+  - pip=20.2
+  - pyqt=5.9
+  - pytest=6.1
+  - python=3.8
+  - pip:
+    - awscli==1.18.179
+    - chardet==3.0.4
+    - click==7.1.2
+    - flake8==3.8.4
+    - python-dotenv==0.15.0
+    - pyyaml==5.3.1
+    - sphinx==3.3.1
