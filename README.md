@@ -3,7 +3,8 @@ Review on Object Detection Metrics
 
 Repositório de trabalho para o journal paper [Electronics - Special Issue](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection).  
 
-**Deadline da implementação: 18 de novembro**
+**Deadline da implementação dos tipos de bounding boxes: 18 de novembro**
+**Deadline da implementação COMPLETA: 24 de novembro**
 
 ### Tarefas:
 
