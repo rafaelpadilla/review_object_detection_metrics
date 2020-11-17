@@ -1,0 +1,68 @@
+dist: xenial # required for Python >= 3.7
+language: python
+python:
+  - "3.8"
+
+install:
+  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
+    wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - source "$HOME/miniconda/etc/profile.d/conda.sh"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  # Useful for debugging any issues with conda
+  - conda info -a
+  # Replace dep1 dep2 ... with your dependencies
+  - conda create -q -n test-environment --file environment.yml
+  - conda activate test-environ
+  # - pip install -r requirements.txt
+# command to run tests
+script:
+  - which python
+
+  # uncoment the block below to automaticly verify code style
+  # ########## verifying code style ##########
+
+  # # Run yapf on all .py files in all subfolders
+  # # We must ignore E402 module level import not at top of file
+  # # because of use case sys.path.append('..'); import <module>
+  # - num_errors_before=`find . -name \*.py -exec yapf --diff --recursive {} + | wc -l`
+  # - echo $num_errors_before
+
+  # - cd "$TRAVIS_BUILD_DIR"
+  # - git --version
+  # - git config --global user.email "fulano.detal@smt.ufrj.br"
+  # # From https://help.github.com/articles/setting-your-username-in-git/:
+  # # "Tip: You don't have to use your real name--any name works. Git
+  # # actually associates commits by email address; the username is only
+  # # used for identification. If you use your email address associated
+  # # with a GitHub account, we'll use your GitHub username, instead of
+  # # this name.
+  # - git config --global user.name "Travis"
+  # - git checkout $TRAVIS_BRANCH
+  # - git branch -a
+
+  # - find . -name \*.py -exec yapf --in-place --recursive {} +
+  # - num_errors_after=`find . -name \*.py -exec yapf --diff --recursive {} + | wc -l`
+  # - echo $num_errors_after
+
+  # - |
+  #   if (( $num_errors_after < $num_errors_before )); then
+  #       git commit -a -m "Travis-CI automatically fixing code style"
+  #       git config --global push.default simple # Push only to the current branch.
+  #       # Make sure to make the output quiet, or else the API token will
+  #       # leak!  This works because the API key can replace your password.
+  #       git push --quiet
+  #   fi
+  # - cd "$TRAVIS_BUILD_DIR"
+
+  # # List the remaining errors - these will have to be fixed manually
+  # - find . -name \*.py -exec yapf --diff --recursive {} +
+
+  # ############################################
+
+  - pytest
