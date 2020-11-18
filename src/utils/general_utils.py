@@ -5,6 +5,16 @@ import cv2
 import numpy as np
 
 
+def get_files_recursively(directory, extension="*"):
+    if '.' not in extension:
+        extension = '*.' + extension
+    files = [
+        os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(directory)
+        for f in fnmatch.filter(files, extension)
+    ]
+    return files
+
+
 # size => (width, height) of the image
 # box => (X1, X2, Y1, Y2) of the bounding box
 def convert_to_relative_values(size, box):
