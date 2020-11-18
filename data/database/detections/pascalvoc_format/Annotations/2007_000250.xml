@@ -1,0 +1,35 @@
+<annotation>
+  <folder>2007</folder>
+  <filename>2007_000250.jpg</filename>
+  <source>
+    <database>Unknown</database>
+    <annotation>Unknown</annotation>
+    <image>Unknown</image>
+  </source>
+  <size>
+    <width>500</width>
+    <height>375</height>
+    <depth></depth>
+  </size>
+  <segmented>0</segmented>
+  <object>
+    <name>bottle</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>93.0</xmin>
+      <ymin>118.0</ymin>
+      <xmax>148.0</xmax>
+      <ymax>303.0</ymax>
+    </bndbox>
+  </object>
+  <object>
+    <name>diningtable</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>9.0</xmin>
+      <ymin>166.0</ymin>
+      <xmax>485.0</xmax>
+      <ymax>375.0</ymax>
+    </bndbox>
+  </object>
+</annotation>

@@ -1,0 +1,1 @@
+{"imagePath": "2007_000042.jpg", "imageWidth": 500, "imageHeight": 335, "imageData": "", "shapes": [{"class": "train", "points": [[1, 43], [214, 294]], "shape_type": "rectangle", "group_id": null}, {"class": "train", "points": [[274, 31], [500, 295]], "shape_type": "rectangle", "group_id": null}]}

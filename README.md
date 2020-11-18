@@ -3,7 +3,8 @@ Review on Object Detection Metrics
 
 Repositório de trabalho para o journal paper [Electronics - Special Issue](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection).  
 
-**Deadline da implementação: 18 de novembro**
+**Deadline da implementação dos tipos de bounding boxes: 18 de novembro**  
+**Deadline da implementação COMPLETA: 24 de novembro**
 
 ### Tarefas:
 
@@ -28,6 +29,7 @@ Implementações:
 [Oficial COCO (cocoeval.py)](https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py)  
 [Official Detectron (voc_eval.py)](https://github.com/facebookresearch/Detectron/blob/cbb0236dfdc17790658c146837215d2728e6fadd/detectron/datasets/voc_eval.py)  
 [Implementação do paper de Niteroi](https://github.com/rafaelpadilla/Object-Detection-Metrics)  
+[Localization Recall Precision (LRP): A New Performance Metric for Object Detection](https://arxiv.org/pdf/1807.01696.pdf)   
 
 #### Padilla:  
 
@@ -49,6 +51,9 @@ Referências:
 [Framework for Performance Evaluation of Face, Text, and Vehicle Detection and Tracking in Video: Data, Metrics, and Protocol](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4479472&casa_token=qVqK8NIQsNYAAAAA:F0uihc_37NUlyDWny3Yvwowb7k5xSM9ZZa7g8W5kAHVs0fXovPxNfQxpWNgPWBezt0MueFqzGA&tag=1)  
 [Object Detection With Deep Learning: A Review](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8627998&casa_token=AQl_UN40niwAAAAA:yxPx_j_ul-lgCnon8F5FmHhRIkZJMNugSximoi6SHmLrG_W8l-UOb5YxvoTQ69HCdluwVJhrHQ)  
 [New trends on moving object detection in video images captured by a moving camera: A survey]()  
+[COCO format](https://www.immersivelimit.com/tutorials/create-coco-annotations-from-scratch#:~:text=According%20to%20cocodataset.org%2F%23format%2Ddata%3A,annotations%20are%20stored%20using%20JSON.)  
+[Conversores de formatos](https://roboflow.com/formats)  
+[Formato anotações OpenImage Dataset](https://storage.googleapis.com/openimages/web/download.html)  
 
 
 

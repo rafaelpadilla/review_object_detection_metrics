@@ -1,5 +1,6 @@
-from enumerators import BBFormat, BBType, CoordinatesType
-from utils import convert_to_absolute_values, convert_to_relative_values
+from src.utils.enumerators import BBFormat, BBType, CoordinatesType
+from src.utils.general_utils import (convert_to_absolute_values,
+                                     convert_to_relative_values)
 
 
 class BoundingBox:
