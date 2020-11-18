@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class MethodAveragePrecision(Enum):
     """
     Class representing if the coordinates are relative to the
@@ -27,9 +28,6 @@ class CoordinatesType(Enum):
 class BBType(Enum):
     """
     Class representing if the bounding box is groundtruth or not.
-
-        Developed by: Rafael Padilla
-        Last modification: May 24 2018
     """
     GROUND_TRUTH = 1
     DETECTED = 2
@@ -38,13 +36,20 @@ class BBType(Enum):
 class BBFormat(Enum):
     """
     Class representing the format of a bounding box.
-    It can be (X,Y,width,height) => XYWH
-    or (X1,Y1,X2,Y2) => XYX2Y2
-
-        Developed by: Rafael Padilla
-        Last modification: Jun 22 2020
     """
     XYWH = 1
     XYX2Y2 = 2
     PASCAL_XML = 3
     YOLO = 4
+
+
+class FileFormat(Enum):
+    ABSOLUTE_TEXT = 1
+    PASCAL = 2
+    LABEL_ME = 3
+    COCO = 4
+    CVAT = 5
+    YOLO = 6
+    OPENIMAGE = 7
+    IMAGENET = 8
+    UNKNOWN = 9
