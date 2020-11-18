@@ -3,7 +3,7 @@ Review on Object Detection Metrics
 
 Repositório de trabalho para o journal paper [Electronics - Special Issue](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection).  
 
-**Deadline da implementação dos tipos de bounding boxes: 18 de novembro**
+**Deadline da implementação dos tipos de bounding boxes: 18 de novembro**  
 **Deadline da implementação COMPLETA: 24 de novembro**
 
 ### Tarefas:
@@ -53,6 +53,7 @@ Referências:
 [New trends on moving object detection in video images captured by a moving camera: A survey]()  
 [COCO format](https://www.immersivelimit.com/tutorials/create-coco-annotations-from-scratch#:~:text=According%20to%20cocodataset.org%2F%23format%2Ddata%3A,annotations%20are%20stored%20using%20JSON.)  
 [Conversores de formatos](https://roboflow.com/formats)  
+[Formato anotações OpenImage Dataset](https://storage.googleapis.com/openimages/web/download.html)  
 
 
 
