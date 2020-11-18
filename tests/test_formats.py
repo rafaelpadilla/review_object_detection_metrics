@@ -2,6 +2,7 @@ import fnmatch
 import json
 import os
 
+import pytest
 import src.utils.general_utils as utils
 import src.utils.validations as validations
 from src.bounding_box import BoundingBox
@@ -11,49 +12,56 @@ from src.utils.enumerators import FileFormat
 def test_validation_formats():
     # Validate COCO format
     folder_annotations = 'data/database/detections/coco_format'
-    text_files = utils.get_files_recursively(folder_annotations)
-    for text_file in text_files:
-        assert validations.verify_format(text_file, FileFormat.COCO)
+    bb_files = utils.get_files_recursively(folder_annotations)
+    assert len(bb_files) > 0
+    for file_path in bb_files:
+        assert validations.verify_format(file_path, FileFormat.COCO)
 
     # Validate CVAT format
     folder_annotations = 'data/database/detections/cvat_format'
-    text_files = utils.get_files_recursively(folder_annotations)
-    for text_file in text_files:
-        assert validations.verify_format(text_file, FileFormat.CVAT)
+    bb_files = utils.get_files_recursively(folder_annotations)
+    assert len(bb_files) > 0
+    for file_path in bb_files:
+        assert validations.verify_format(file_path, FileFormat.CVAT)
 
     # Validate OpenImageDataset (CSV)
     folder_annotations = 'data/database/detections/openimage_format'
-    text_files = utils.get_files_recursively(folder_annotations)
-    for text_file in text_files:
-        assert validations.verify_format(text_file, FileFormat.OPENIMAGE)
+    bb_files = utils.get_files_recursively(folder_annotations)
+    assert len(bb_files) > 0
+    for file_path in bb_files:
+        assert validations.verify_format(file_path, FileFormat.OPENIMAGE)
 
     # Validate ImageNet (XML)
     folder_annotations = 'data/database/detections/imagenet_format'
-    text_files = utils.get_files_recursively(folder_annotations)
-    for text_file in text_files:
-        assert validations.verify_format(text_file, FileFormat.IMAGENET)
+    bb_files = utils.get_files_recursively(folder_annotations)
+    assert len(bb_files) > 0
+    for file_path in bb_files:
+        assert validations.verify_format(file_path, FileFormat.IMAGENET)
 
     # Validate LABEL ME format
     folder_annotations = 'data/database/detections/labelme_format'
-    text_files = utils.get_files_recursively(folder_annotations)
-    for text_file in text_files:
-        assert validations.verify_format(text_file, FileFormat.LABEL_ME)
+    bb_files = utils.get_files_recursively(folder_annotations)
+    assert len(bb_files) > 0
+    for file_path in bb_files:
+        assert validations.verify_format(file_path, FileFormat.LABEL_ME)
 
     # Validate voc pascal files
     folder_annotations = 'data/database/detections/pascalvoc_format/Annotations'
     pascal_files = utils.get_files_recursively(folder_annotations)
+    assert len(bb_files) > 0
     for pascal_file in pascal_files:
         assert validations.verify_format(pascal_file, FileFormat.PASCAL)
 
-    # Faltando detecções no formato xywh
+    # TODO: Faltando detecções no formato xywh
     # # Validate regular text files
     # folder_annotations = 'data/database/detections/xywh_format'
-    # text_files = get_files_recursively(folder_annotations)
-    # for text_file in text_files:
-    #     assert validations.get_format(text_file) == FileFormat.TEXT
+    # bb_files = get_files_recursively(folder_annotations)
+    # for file_path in bb_files:
+    #     assert validations.get_format(file_path) == FileFormat.TEXT
 
     # Validate yolo files
     folder_annotations = 'data/database/detections/yolo_format/obj_train_data'
-    text_files = utils.get_files_recursively(folder_annotations)
-    for text_file in text_files:
-        assert validations.verify_format(text_file, FileFormat.YOLO)
+    bb_files = utils.get_files_recursively(folder_annotations)
+    assert len(bb_files) > 0
+    for file_path in bb_files:
+        assert validations.verify_format(file_path, FileFormat.YOLO)

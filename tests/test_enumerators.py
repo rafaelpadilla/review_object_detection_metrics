@@ -1,4 +1,4 @@
-from src.enumerators import BBFormat
+from src.utils.enumerators import BBFormat
 
 
 def test_BBFormat():

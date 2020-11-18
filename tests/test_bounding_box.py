@@ -1,6 +1,6 @@
 import pytest
 from src.bounding_box import BoundingBox
-from src.enumerators import BBType
+from src.utils.enumerators import BBType
 
 
 def test_input():
