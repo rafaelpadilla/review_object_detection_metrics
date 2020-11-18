@@ -1,4 +1,5 @@
 from collections import defaultdict
+import numpy as np
 
 from .bounding_box import BBFormat
 
@@ -34,28 +35,28 @@ def calculate_AP_IOU(detected_bbs, groundtruth_bbs, iou_threshold=0.5):
     # 'coelho' tem um AP(50) de 0.70
 
     # group bbs by image and class
-    bbs = defaultdict(lambda: {"dt": [], "gt": []})
+    bb_info = defaultdict(lambda: {"dt": [], "gt": []})
 
-    for det in detected_bbs:
-        i_id = det.get_image_name()
-        c_id = det.get_class_id()
-        _bbs[i_id, c_id]["dt"].append(det)
+    for dt in detected_bbs:
+        i_id = dt.get_image_name()
+        c_id = dt.get_class_id()
+        bb_info[i_id, c_id]["dt"].append(dt)
     for gt in groundtruth_bbs:
-        i_id = det.get_image_name()
-        c_id = det.get_class_id()
-        _bbs[i_id, c_id]["dt"].append(det)
+        i_id = gt.get_image_name()
+        c_id = gt.get_class_id()
+        bb_info[i_id, c_id]["gt"].append(gt)
 
-    ious = {k: _get_ious(**_bbs[k]) for k in _bbs.keys()}
+    # pairwise iou for each imagexclass
+    bb_info = {k: _make_iou(**bb_info[k]) for k in bb_info.keys()}
 
-    # now we need to associate gts and dts
-    matches = defaultdict(list)
-    for i_id, c_id in ious.keys():
-        d = ious[i_id, c_id]["dt"]
-        g = ious[i_id, c_id]["gt"]
-        iou = ious[i_id, c_id]["iou"]
+    # accumulate the scores on a per-class / iou threshold / size basis
+    iou_scores = defaultdict(lambda: {"scores": [], "FP": 0, "FN": 0})
 
-        while len(d) > 0:
-            pass
+    for i_id, c_id in bb_info:
+        for iou_threshold in np.linspace(0.5, 0.95, 10):
+            for area_range in [None, (0, 32**2), (32**2, 96**2), (96**2, 2**31)]:
+                pass
+
 
     # Get classes to be evaluated
     classes = groundtruth_bbs.get_class_id()
@@ -249,11 +250,11 @@ def calculate_AR_scales(detected_bbs, groundtruth_bbs, min_area, max_area):
         ret.append(values)
 
 
-def _get_ious(dt, gt):
+def _make_iou(dt, gt):
     """ Calculate iou for every gt/detection pair """
 
     # sort dts by confidence level
-    dt = sorted(dt, key=lambda d: s.get_confidence())
+    dt = sorted(dt, key=lambda d: -d.get_confidence())
 
     def _jaccard(a, b):
         xa, ya, x2a, y2a = a.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
@@ -280,3 +281,65 @@ def _get_ious(dt, gt):
             ious[di, gi] = _jaccard(d, g)
 
     return {"dt": dt, "gt": gt, "iou": ious}
+
+
+def _match_detections(dt, gt, iou, iou_threshold, max_dets=None, area_range=None):
+    """ separate matched into detections that will depend on the iou threshold, fixed FPs and Fixed FN """
+
+    # filter detections after max_dets
+    if max_dets is not None:
+        n_dets = min(max_dets, len(dt))
+        dt = dt[:n_dets]
+
+    reg_g_idx = set()
+    ign_g_idx = set()
+
+    if area_range is not None:
+        # split into ignored or not ground truths
+        for g_idx in range(len(gt)):
+            if area_range[0] < gt[g_idx].get_area() <= area_range[1]:
+                reg_g_idx.add(g_idx)
+            else:
+                ign_g_idx.add(g_idx)
+    else:
+        reg_g_idx = set(range(len(gt)))
+
+
+    # hold matching dts
+    matches = {}
+    n_unmatched_gts = 0
+    n_unmatched_dts = 0
+
+    for d_idx, d in enumerate(dt):
+
+        # try matching regular gt
+        ggood = [g for g in reg_g_idx if g not in matches]
+
+        if len(ggood) > 0:
+            # get gt of best iou
+            gbest = max(ggood, key=lambda g_idx: iou[d_idx, g_idx])
+            if iou[d_idx, gbest] >= iou_threshold:
+                matches[gbest] = d_idx
+                continue # move on to next match
+
+        # now try matching against ignored gts
+        gbad = [g for g in ign_g_idx if g not in matches]
+        if len(gbad) > 0:
+            gbest = max(gbad, key=lambda g_idx: iou[d_idx, g_idx])
+            if iou[d_idx, gbest] >= iou_threshold:
+                matches[gbest] = d_idx
+                continue # move on to next match
+
+        # no match was possible
+        # mark as unmatched if inside range
+        if area_range is None or area_range[0] < d.get_area() <= area_range[1]:
+            n_unmatched_dts += 1
+
+    # count unmatched non-ignored gts
+    n_unmatched_gts += len([g for g in reg_g_idx if g not in matches])
+    scores = [dt[matches[g_idx]].get_confidence() for g_idx in matches if g_idx in reg_g_idx]
+
+    return {"scores": scores, "FP": n_unmatched_dts, "FN": n_unmatched_gts}
+
+def _ap_sweep(bb_info):
+    # 
