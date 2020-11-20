@@ -1,0 +1,27 @@
+<annotation>
+	<folder>VOC2012</folder>
+	<filename>2007_001568.jpg</filename>
+	<source>
+		<database>The VOC2007 Database</database>
+		<annotation>PASCAL VOC2007</annotation>
+		<image>flickr</image>
+	</source>
+	<size>
+		<width>400</width>
+		<height>400</height>
+		<depth>3</depth>
+	</size>
+	<segmented>1</segmented>
+	<object>
+		<name>aeroplane</name>
+		<pose>Right</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>3</xmin>
+			<ymin>42</ymin>
+			<xmax>400</xmax>
+			<ymax>372</ymax>
+		</bndbox>
+	</object>
+</annotation>

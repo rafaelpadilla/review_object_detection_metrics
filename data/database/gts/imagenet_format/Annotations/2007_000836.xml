@@ -1,0 +1,35 @@
+<annotation>
+  <folder>2007</folder>
+  <filename>2007_000836.jpg</filename>
+  <source>
+    <database>Unknown</database>
+    <annotation>Unknown</annotation>
+    <image>Unknown</image>
+  </source>
+  <size>
+    <width>318</width>
+    <height>480</height>
+    <depth></depth>
+  </size>
+  <segmented>0</segmented>
+  <object>
+    <name>person</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>69.0</xmin>
+      <ymin>99.0</ymin>
+      <xmax>224.0</xmax>
+      <ymax>297.0</ymax>
+    </bndbox>
+  </object>
+  <object>
+    <name>horse</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>93.0</xmin>
+      <ymin>162.0</ymin>
+      <xmax>226.0</xmax>
+      <ymax>442.0</ymax>
+    </bndbox>
+  </object>
+</annotation>

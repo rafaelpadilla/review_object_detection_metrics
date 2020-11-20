@@ -1,0 +1,51 @@
+<annotation>
+	<folder>VOC2012</folder>
+	<filename>2007_000364.jpg</filename>
+	<source>
+		<database>The VOC2007 Database</database>
+		<annotation>PASCAL VOC2007</annotation>
+		<image>flickr</image>
+	</source>
+	<size>
+		<width>500</width>
+		<height>375</height>
+		<depth>3</depth>
+	</size>
+	<segmented>1</segmented>
+	<object>
+		<name>motorbike</name>
+		<pose>Left</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>54</xmin>
+			<ymin>25</ymin>
+			<xmax>454</xmax>
+			<ymax>315</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>motorbike</name>
+		<pose>Left</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>318</xmin>
+			<ymin>37</ymin>
+			<xmax>489</xmax>
+			<ymax>161</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>person</name>
+		<pose>Left</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>369</xmin>
+			<ymin>1</ymin>
+			<xmax>458</xmax>
+			<ymax>130</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -1,0 +1,51 @@
+<annotation>
+	<folder>VOC2012</folder>
+	<filename>2007_000804.jpg</filename>
+	<source>
+		<database>The VOC2007 Database</database>
+		<annotation>PASCAL VOC2007</annotation>
+		<image>flickr</image>
+	</source>
+	<size>
+		<width>333</width>
+		<height>500</height>
+		<depth>3</depth>
+	</size>
+	<segmented>1</segmented>
+	<object>
+		<name>chair</name>
+		<pose>Frontal</pose>
+		<truncated>1</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>94</xmin>
+			<ymin>243</ymin>
+			<xmax>153</xmax>
+			<ymax>304</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>chair</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>1</difficult>
+		<bndbox>
+			<xmin>32</xmin>
+			<ymin>352</ymin>
+			<xmax>126</xmax>
+			<ymax>491</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>sofa</name>
+		<pose>Left</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>191</xmin>
+			<ymin>265</ymin>
+			<xmax>332</xmax>
+			<ymax>470</ymax>
+		</bndbox>
+	</object>
+</annotation>

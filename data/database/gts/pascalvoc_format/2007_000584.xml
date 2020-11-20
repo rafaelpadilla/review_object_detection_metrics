@@ -1,0 +1,39 @@
+<annotation>
+	<folder>VOC2012</folder>
+	<filename>2007_000584.jpg</filename>
+	<source>
+		<database>The VOC2007 Database</database>
+		<annotation>PASCAL VOC2007</annotation>
+		<image>flickr</image>
+	</source>
+	<size>
+		<width>500</width>
+		<height>375</height>
+		<depth>3</depth>
+	</size>
+	<segmented>1</segmented>
+	<object>
+		<name>bicycle</name>
+		<pose>Right</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>31</xmin>
+			<ymin>74</ymin>
+			<xmax>369</xmax>
+			<ymax>346</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>sofa</name>
+		<pose>Unspecified</pose>
+		<truncated>1</truncated>
+		<difficult>1</difficult>
+		<bndbox>
+			<xmin>344</xmin>
+			<ymin>207</ymin>
+			<xmax>500</xmax>
+			<ymax>374</ymax>
+		</bndbox>
+	</object>
+</annotation>
