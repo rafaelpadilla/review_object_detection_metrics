@@ -3,7 +3,6 @@ import os
 import xml.etree.ElementTree as ET
 
 import pandas as pd
-import src.utils.parsers as parsers
 from src.utils.enumerators import BBFormat, BBType, FileFormat
 
 
