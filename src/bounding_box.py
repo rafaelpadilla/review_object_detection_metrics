@@ -1,6 +1,5 @@
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
-from src.utils.general_utils import (convert_to_absolute_values,
-                                     convert_to_relative_values)
+from src.utils.general_utils import (convert_to_absolute_values, convert_to_relative_values)
 
 
 class BoundingBox:
@@ -12,7 +11,7 @@ class BoundingBox:
                  type_coordinates=CoordinatesType.ABSOLUTE,
                  img_size=None,
                  bb_type=BBType.GROUND_TRUTH,
-                 class_confidence=None,
+                 confidence=None,
                  format=BBFormat.XYWH):
         """ Constructor.
 
@@ -36,10 +35,10 @@ class BoundingBox:
                 image of the bounding box. If type_coordinates is 'Relative', img_size is required.
             bb_type : Enum (optional)
                 Enum identifying if the bounding box is a ground truth or a detection. If it is a
-                detection, the class_confidence must be informed.
-            class_confidence : float (optional)
+                detection, the confidence must be informed.
+            confidence : float (optional)
                 Value representing the confidence of the detected object. If detectionType is
-                Detection, class_confidence needs to be informed.
+                Detection, confidence needs to be informed.
             format : Enum
                 Enum (BBFormat.XYWH or BBFormat.XYX2Y2) indicating the format of the coordinates of
                 the bounding boxes.
@@ -50,12 +49,12 @@ class BoundingBox:
 
         self._image_name = image_name
         self._type_coordinates = type_coordinates
-        self._class_confidence = class_confidence
+        self._confidence = confidence
         self._class_id = class_id
         self._format = format
-        if bb_type == BBType.DETECTED and class_confidence is None:
+        if bb_type == BBType.DETECTED and confidence is None:
             raise IOError(
-                'For bb_type=\'Detected\', it is necessary to inform the class_confidence value.')
+                'For bb_type=\'Detected\', it is necessary to inform the confidence value.')
         self._bb_type = bb_type
 
         if img_size is None:
@@ -78,12 +77,22 @@ class BoundingBox:
         # If relative coordinates, convert to absolute values
         # For relative coords: (x,y,w,h)=(X_center/img_width , Y_center/img_height)
         if (type_coordinates == CoordinatesType.RELATIVE):
-            (self._x, self._y, self._w, self._h) = convert_to_absolute_values(img_size, coordinates)
             self._width_img = img_size[0]
             self._height_img = img_size[1]
             if self._format == BBFormat.XYWH:
+                (self._x, self._y, self._w,
+                 self._h) = convert_to_absolute_values(img_size, coordinates)
                 self._x2 = self._w
                 self._y2 = self._h
+                self._w = self._x2 - self._x
+                self._h = self._y2 - self._y
+            elif self._format == BBFormat.XYX2Y2:
+                x1, y1, x2, y2 = coordinates
+                # Converting to absolute values
+                self._x = round(x1 * self._width_img)
+                self._x2 = round(x2 * self._width_img)
+                self._y = round(y1 * self._height_img)
+                self._y2 = round(y2 * self._height_img)
                 self._w = self._x2 - self._x
                 self._h = self._y2 - self._y
             else:
@@ -171,7 +180,7 @@ class BoundingBox:
         float
             Value between 0 and 1 representing the confidence of the detection.
         """
-        return self._class_confidence
+        return self._confidence
 
     def get_format(self):
         """ Get the format of the bounding box (BBFormat.XYWH or BBFormat.XYX2Y2).
@@ -235,6 +244,18 @@ class BoundingBox:
         """
         return self._bb_type
 
+    def __str__(self):
+        abs_bb_xywh = self.get_absolute_bounding_box(format=BBFormat.XYWH)
+        abs_bb_xyx2y2 = self.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
+        area = self.get_area()
+        return f'image name: {self._image_name}\nimage size: {self.get_image_size()}\nclass: {self._class_id}\nbb (XYWH): {abs_bb_xywh}\nbb (X1Y1X2Y2): {abs_bb_xyx2y2}\narea: {area}\nbb_type: {self._bb_type}'
+
+    def __eq__(self, other):
+        if not isinstance(other, BoundingBox):
+            # unrelated types
+            return False
+        return str(self) == str(other)
+
     @staticmethod
     def compare(det1, det2):
         """ Static function to compare if two bounding boxes represent the same area in the image,
@@ -293,6 +314,6 @@ class BoundingBox:
                                        type_coordinates=bounding_box.getCoordinatesType(),
                                        img_size=bounding_box.getImageSize(),
                                        bb_type=bounding_box.getbb_type(),
-                                       class_confidence=bounding_box.getConfidence(),
+                                       confidence=bounding_box.getConfidence(),
                                        format=BBFormat.XYWH)
         return new_bounding_box
