@@ -1,1 +1,0 @@
-{"imagePath": "2007_000733.jpg", "imageWidth": 450, "imageHeight": 435, "imageData": "", "shapes": [{"class": "person", "points": [[40, 28], [290, 396]], "shape_type": "rectangle", "group_id": null}, {"class": "bicycle", "points": [[8, 200], [393, 435]], "shape_type": "rectangle", "group_id": null}]}
