@@ -28,6 +28,7 @@ def convert_to_relative_values(size, box):
     y = cy * dh
     w = w * dw
     h = h * dh
+    # YOLO's format
     # x,y => (bounding_box_center)/width_of_the_image
     # w => bounding_box_width / width_of_the_image
     # h => bounding_box_height / height_of_the_image
@@ -37,21 +38,14 @@ def convert_to_relative_values(size, box):
 # size => (width, height) of the image
 # box => (centerX, centerY, w, h) of the bounding box relative to the image
 def convert_to_absolute_values(size, box):
-    # w_box = round(size[0] * box[2])
-    # h_box = round(size[1] * box[3])
-    xIn = round(((2 * float(box[0]) - float(box[2])) * size[0] / 2))
-    yIn = round(((2 * float(box[1]) - float(box[3])) * size[1] / 2))
-    xEnd = xIn + round(float(box[2]) * size[0])
-    yEnd = yIn + round(float(box[3]) * size[1])
-    if xIn < 0:
-        xIn = 0
-    if yIn < 0:
-        yIn = 0
-    if xEnd >= size[0]:
-        xEnd = size[0] - 1
-    if yEnd >= size[1]:
-        yEnd = size[1] - 1
-    return (xIn, yIn, xEnd, yEnd)
+    w_box = size[0] * box[2]
+    h_box = size[1] * box[3]
+
+    x1 = (float(box[0]) * float(size[0])) - (w_box / 2)
+    y1 = (float(box[1]) * float(size[1])) - (h_box / 2)
+    x2 = x1 + w_box
+    y2 = y1 + h_box
+    return (round(x1), round(y1), round(x2), round(y2))
 
 
 def add_bb_into_image(image, bb, color=(255, 0, 0), thickness=2, label=None):
@@ -116,3 +110,28 @@ def get_files_recursively(directory, extension="*"):
         for f in fnmatch.filter(files, extension)
     ]
     return files
+
+
+def find_file(directory, file_name, match_extension=True):
+    for dirpath, dirnames, files in os.walk(directory):
+        for f in files:
+            f1 = os.path.basename(f)
+            f2 = file_name
+            if not match_extension:
+                f1 = os.path.splitext(f1)[0]
+                f2 = os.path.splitext(f2)[0]
+            if f1 == f2:
+                return os.path.join(dirpath, os.path.basename(f))
+    return None
+
+
+def get_image_resolution(image_file):
+    if image_file is None or not os.path.isfile(image_file):
+        print(f'Warning: Path {image_file} not found.')
+        return None
+    img = cv2.imread(image_file)
+    if img is None:
+        print(f'Warning: Error loading the image {image_file}.')
+        return None
+    h, w, _ = img.shape
+    return {'height': h, 'width': w}
