@@ -8,7 +8,6 @@ from shutil import copyfile
 import cv2
 import pandas as pd
 import src.utils.general_utils as general_utils
-import src.utils.parsers as parsers
 import src.utils.validations as validations
 from src.bounding_box import BoundingBox
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
