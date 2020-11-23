@@ -1,5 +1,6 @@
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
-from src.utils.general_utils import (convert_to_absolute_values, convert_to_relative_values)
+from src.utils.general_utils import (convert_to_absolute_values,
+                                     convert_to_relative_values)
 
 
 class BoundingBox:
@@ -221,7 +222,7 @@ class BoundingBox:
         assert (self._w * self._h) == (self._x2 - self._x) * (self._y2 - self._y)
         assert (self._x2 > self._x)
         assert (self._y2 > self._y)
-        return (self._x2 - self._x) * (self._y2 - self._y)
+        return (self._x2 - self._x + 1) * (self._y2 - self._y + 1)
 
     def get_coordinates_type(self):
         """ Get type of the coordinates (CoordinatesType.RELATIVE or CoordinatesType.ABSOLUTE).
@@ -317,3 +318,48 @@ class BoundingBox:
                                        confidence=bounding_box.getConfidence(),
                                        format=BBFormat.XYWH)
         return new_bounding_box
+
+    @staticmethod
+    def iou(boxA, boxB):
+        coords_A = boxA.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
+        coords_B = boxB.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
+        # if boxes do not intersect
+        if BoundingBox.have_intersection(coords_A, coords_B) is False:
+            return 0
+        interArea = BoundingBox.get_intersection_area(coords_A, coords_B)
+        union = BoundingBox.get_union_areas(boxA, boxB, interArea=interArea)
+        # intersection over union
+        iou = interArea / union
+        assert iou >= 0
+        return iou
+
+    # boxA = (Ax1,Ay1,Ax2,Ay2)
+    # boxB = (Bx1,By1,Bx2,By2)
+    @staticmethod
+    def have_intersection(boxA, boxB):
+        if boxA[0] > boxB[2]:
+            return False  # boxA is right of boxB
+        if boxB[0] > boxA[2]:
+            return False  # boxA is left of boxB
+        if boxA[3] < boxB[1]:
+            return False  # boxA is above boxB
+        if boxA[1] > boxB[3]:
+            return False  # boxA is below boxB
+        return True
+
+    @staticmethod
+    def get_intersection_area(boxA, boxB):
+        xA = max(boxA[0], boxB[0])
+        yA = max(boxA[1], boxB[1])
+        xB = min(boxA[2], boxB[2])
+        yB = min(boxA[3], boxB[3])
+        # intersection area
+        return (xB - xA + 1) * (yB - yA + 1)
+
+    @staticmethod
+    def get_union_areas(boxA, boxB, interArea=None):
+        area_A = boxA.get_area()
+        area_B = boxB.get_area()
+        if interArea is None:
+            interArea = BoundingBox.get_intersection_area(boxA, boxB)
+        return float(area_A + area_B - interArea)
