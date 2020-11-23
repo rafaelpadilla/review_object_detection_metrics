@@ -106,7 +106,7 @@ def test_converters_dets():
 
 
 def test_toy_example_dets():
-    dir_annots_dets = 'toyexample/dets/yolo_format'
+    dir_annots_dets = 'toyexample/dets_vocpascal_format'
 
     pascal_files = general_utils.get_files_recursively(dir_annots_dets)
     assert len(pascal_files) > 0
@@ -115,7 +115,7 @@ def test_toy_example_dets():
 
 
 def test_toy_example_gts():
-    dir_annots_dets = 'toyexample/gts'
+    dir_annots_dets = 'toyexample/gts_vocpascal_format'
 
     yolo_files = general_utils.get_files_recursively(dir_annots_dets)
     assert len(yolo_files) > 0
