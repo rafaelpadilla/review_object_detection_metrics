@@ -220,6 +220,42 @@ def labelme2bb(annotations_path):
     return ret
 
 
+def text2bb(annotations_path, bb_type=BBType.GROUND_TRUTH):
+    ret = []
+    # Get annotation files in the path
+    annotation_files = _get_annotation_files(annotations_path)
+    for file_path in annotation_files:
+        # Loop through lines
+        with open(file_path, "r") as f:
+            img_filename = os.path.basename(file_path)
+            img_filename = os.path.splitext(img_filename)[0]
+            for line in f:
+                splitted_line = line.split(' ')
+                class_id = splitted_line[0]
+                if bb_type == BBType.GROUND_TRUTH:
+                    confidence = None
+                    x1 = float(splitted_line[1])
+                    y1 = float(splitted_line[2])
+                    w = float(splitted_line[3])
+                    h = float(splitted_line[4])
+                elif bb_type == BBType.DETECTED:
+                    confidence = float(splitted_line[1])
+                    x1 = float(splitted_line[2])
+                    y1 = float(splitted_line[3])
+                    w = float(splitted_line[4])
+                    h = float(splitted_line[5])
+                bb = BoundingBox(image_name=img_filename,
+                                 class_id=class_id,
+                                 coordinates=(x1, y1, w, h),
+                                 img_size=None,
+                                 confidence=confidence,
+                                 type_coordinates=CoordinatesType.ABSOLUTE,
+                                 bb_type=bb_type,
+                                 format=BBFormat.XYWH)
+                ret.append(bb)
+    return ret
+
+
 def yolo2bb(annotations_path, images_dir, yolo_obj_names, bb_type=BBType.GROUND_TRUTH):
     ret = []
     assert os.path.isfile(yolo_obj_names)
