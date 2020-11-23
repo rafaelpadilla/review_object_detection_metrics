@@ -135,3 +135,39 @@ def get_image_resolution(image_file):
         return None
     h, w, _ = img.shape
     return {'height': h, 'width': w}
+
+
+def draw_bb_into_image(image, boundingBox, color, thickness, label=None):
+    if isinstance(image, str):
+        image = cv2.imread(image)
+
+    r = int(color[0])
+    g = int(color[1])
+    b = int(color[2])
+
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    fontScale = 0.5
+    fontThickness = 1
+
+    xIn = boundingBox[0]
+    yIn = boundingBox[1]
+    cv2.rectangle(image, (boundingBox[0], boundingBox[1]), (boundingBox[2], boundingBox[3]),
+                  (b, g, r), thickness)
+    # Add label
+    if label is not None:
+        # Get size of the text box
+        (tw, th) = cv2.getTextSize(label, font, fontScale, fontThickness)[0]
+        # Top-left coord of the textbox
+        (xin_bb, yin_bb) = (xIn + thickness, yIn - th + int(12.5 * fontScale))
+        # Checking position of the text top-left (outside or inside the bb)
+        if yin_bb - th <= 0:  # if outside the image
+            yin_bb = yIn + th  # put it inside the bb
+        r_Xin = xIn - int(thickness / 2)
+        r_Yin = yin_bb - th - int(thickness / 2)
+        # Draw filled rectangle to put the text in it
+        cv2.rectangle(image, (r_Xin, r_Yin - thickness),
+                      (r_Xin + tw + thickness * 3, r_Yin + th + int(12.5 * fontScale)), (b, g, r),
+                      -1)
+        cv2.putText(image, label, (xin_bb, yin_bb), font, fontScale, (0, 0, 0), fontThickness,
+                    cv2.LINE_AA)
+    return image
