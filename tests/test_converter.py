@@ -106,11 +106,11 @@ def test_converters_dets():
 
 
 def test_toy_example_dets():
-    dir_annots_dets = 'toyexample/dets_vocpascal_format'
+    dir_annots_dets = 'toyexample/dets_yolo_format'
 
-    pascal_files = general_utils.get_files_recursively(dir_annots_dets)
-    assert len(pascal_files) > 0
-    for pascal_file in pascal_files:
+    yolo_files = general_utils.get_files_recursively(dir_annots_dets)
+    assert len(yolo_files) > 0
+    for pascal_file in yolo_files:
         assert validations.is_yolo_format(pascal_file, bb_types=[BBType.DETECTED])
 
 
@@ -121,6 +121,3 @@ def test_toy_example_gts():
     assert len(yolo_files) > 0
     for yolo_file in yolo_files:
         assert validations.is_pascal_format(yolo_file)
-
-
-test_converters_dets()
