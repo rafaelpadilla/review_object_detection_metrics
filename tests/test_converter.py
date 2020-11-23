@@ -121,3 +121,6 @@ def test_toy_example_gts():
     assert len(yolo_files) > 0
     for yolo_file in yolo_files:
         assert validations.is_pascal_format(yolo_file)
+
+
+test_converters_dets()
