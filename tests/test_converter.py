@@ -4,7 +4,9 @@ import os
 
 import pytest
 import src.utils.converter as converter
-from src.utils.enumerators import BBType
+import src.utils.general_utils as general_utils
+import src.utils.validations as validations
+from src.utils.enumerators import BBType, FileFormat
 
 
 def test_converters_gts():
@@ -101,3 +103,21 @@ def test_converters_dets():
     for coco_bb, cvat_bb, imagenet_bb, labelme_bb, openimage_bb, vocpascal_bb, yolo_bb in zip(
             coco_bbs, cvat_bbs, imagenet_bbs, labelme_bbs, openimage_bbs, vocpascal_bbs, yolo_bbs):
         assert coco_bb == cvat_bb == imagenet_bb == labelme_bb == openimage_bb == vocpascal_bb == yolo_bb
+
+
+def test_toy_example_dets():
+    dir_annots_dets = 'toyexample/dets/yolo_format'
+
+    pascal_files = general_utils.get_files_recursively(dir_annots_dets)
+    assert len(pascal_files) > 0
+    for pascal_file in pascal_files:
+        assert validations.is_yolo_format(pascal_file, bb_types=[BBType.DETECTED])
+
+
+def test_toy_example_gts():
+    dir_annots_dets = 'toyexample/gts'
+
+    yolo_files = general_utils.get_files_recursively(dir_annots_dets)
+    assert len(yolo_files) > 0
+    for yolo_file in yolo_files:
+        assert validations.is_pascal_format(yolo_file)
