@@ -1,12 +1,9 @@
-import fnmatch
-import json
 import os
 
-import pytest
 import src.utils.converter as converter
 import src.utils.general_utils as general_utils
 import src.utils.validations as validations
-from src.utils.enumerators import BBType, FileFormat
+from src.utils.enumerators import BBType
 
 
 def test_converters_gts():

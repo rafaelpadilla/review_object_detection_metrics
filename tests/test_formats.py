@@ -1,11 +1,5 @@
-import fnmatch
-import json
-import os
-
-import pytest
 import src.utils.general_utils as utils
 import src.utils.validations as validations
-from src.bounding_box import BoundingBox
 from src.utils.enumerators import FileFormat
 
 
