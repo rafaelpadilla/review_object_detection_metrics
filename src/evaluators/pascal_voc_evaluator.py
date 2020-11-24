@@ -4,9 +4,8 @@ from collections import Counter
 
 import matplotlib.pyplot as plt
 import numpy as np
-import src.utils.converter as converter
 from src.bounding_box import BoundingBox
-from src.utils.enumerators import (BBFormat, BBType, CoordinatesType, MethodAveragePrecision)
+from src.utils.enumerators import (BBFormat, CoordinatesType, MethodAveragePrecision)
 
 
 def calculate_ap_every_point(rec, prec):
