@@ -3,9 +3,7 @@ import base64
 import json
 import os
 import xml.etree.ElementTree as ET
-from shutil import copyfile
 
-import cv2
 import pandas as pd
 import src.utils.general_utils as general_utils
 import src.utils.validations as validations
@@ -20,7 +18,7 @@ def _get_annotation_files(file_path):
         annotation_files = [file_path]
     elif os.path.isdir(file_path):
         annotation_files = general_utils.get_files_recursively(file_path)
-    return annotation_files
+    return sorted(annotation_files)
 
 
 def coco2bb(path, bb_type=BBType.GROUND_TRUTH):
