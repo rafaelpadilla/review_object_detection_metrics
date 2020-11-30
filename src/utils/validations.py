@@ -3,7 +3,6 @@ import os
 import xml.etree.ElementTree as ET
 
 import pandas as pd
-import src.utils.parsers as parsers
 from src.utils.enumerators import BBFormat, BBType, FileFormat
 
 
@@ -323,7 +322,7 @@ def is_absolute_text_format(file_path):
     return True
 
 
-def is_yolo_format(file_path):
+def is_yolo_format(file_path, bb_types=[BBType.GROUND_TRUTH, BBType.DETECTED]):
     """ Verify if a given file path represents a file with annotations in yolo format.
 
     Parameters
@@ -336,9 +335,19 @@ def is_yolo_format(file_path):
     bool
         True if the file contains annotations in yolo format, False otherwise.
     """
+    assert len(bb_types) > 0
+    for bb_type in bb_types:
+        assert bb_type in [BBType.GROUND_TRUTH, BBType.DETECTED]
+
+    num_blocks = []
+    for bb_type in bb_types:
+        if bb_type == BBType.GROUND_TRUTH:
+            num_blocks.append(5)
+        elif bb_type == BBType.DETECTED:
+            num_blocks.append(6)
     return is_text(file_path) and all_lines_have_blocks(
-        file_path, num_blocks=[6, 5]) and all_blocks_have_relative_values(file_path,
-                                                                          blocks_rel_values=[4])
+        file_path, num_blocks=num_blocks) and all_blocks_have_relative_values(file_path,
+                                                                              blocks_rel_values=[4])
 
 
 def is_openimage_format(file_path):

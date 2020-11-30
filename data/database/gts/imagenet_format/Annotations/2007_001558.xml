@@ -1,0 +1,35 @@
+<annotation>
+  <folder>2007</folder>
+  <filename>2007_001558.jpg</filename>
+  <source>
+    <database>Unknown</database>
+    <annotation>Unknown</annotation>
+    <image>Unknown</image>
+  </source>
+  <size>
+    <width>500</width>
+    <height>375</height>
+    <depth></depth>
+  </size>
+  <segmented>0</segmented>
+  <object>
+    <name>person</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>283.0</xmin>
+      <ymin>15.0</ymin>
+      <xmax>500.0</xmax>
+      <ymax>328.0</ymax>
+    </bndbox>
+  </object>
+  <object>
+    <name>person</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>1.0</xmin>
+      <ymin>56.0</ymin>
+      <xmax>286.0</xmax>
+      <ymax>329.0</ymax>
+    </bndbox>
+  </object>
+</annotation>

@@ -1,0 +1,22 @@
+# label:color_rgb:parts:actions
+background:0,0,0::
+person:128,0,0::
+cat:0,128,0::
+boat:128,128,0::
+car:0,0,128::
+pottedplant:128,0,128::
+bicycle:0,128,128::
+dog:128,128,128::
+bus:64,0,0::
+motorbike:192,0,0::
+tvmonitor:64,128,0::
+train:192,128,0::
+horse:64,0,128::
+aeroplane:192,0,128::
+sofa:64,128,128::
+chair:192,128,128::
+bird:0,64,0::
+bottle:128,64,0::
+sheep:0,192,0::
+diningtable:128,192,0::
+cow:0,64,128::

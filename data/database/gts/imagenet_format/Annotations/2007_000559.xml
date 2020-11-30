@@ -1,0 +1,35 @@
+<annotation>
+  <folder>2007</folder>
+  <filename>2007_000559.jpg</filename>
+  <source>
+    <database>Unknown</database>
+    <annotation>Unknown</annotation>
+    <image>Unknown</image>
+  </source>
+  <size>
+    <width>500</width>
+    <height>370</height>
+    <depth></depth>
+  </size>
+  <segmented>0</segmented>
+  <object>
+    <name>tvmonitor</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>160.0</xmin>
+      <ymin>26.0</ymin>
+      <xmax>371.0</xmax>
+      <ymax>241.0</ymax>
+    </bndbox>
+  </object>
+  <object>
+    <name>bottle</name>
+    <occluded>0</occluded>
+    <bndbox>
+      <xmin>36.0</xmin>
+      <ymin>250.0</ymin>
+      <xmax>79.0</xmax>
+      <ymax>354.0</ymax>
+    </bndbox>
+  </object>
+</annotation>

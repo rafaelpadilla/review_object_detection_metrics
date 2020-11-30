@@ -1,0 +1,901 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations>
+  <version>1.1</version>
+  <meta>
+    <task>
+      <id>25829</id>
+      <name>VOC2012_100_samples_gt</name>
+      <size>100</size>
+      <mode>annotation</mode>
+      <overlap>0</overlap>
+      <bugtracker></bugtracker>
+      <created>2020-11-20 15:24:42.345185+00:00</created>
+      <updated>2020-11-20 15:27:29.210960+00:00</updated>
+      <start_frame>0</start_frame>
+      <stop_frame>99</stop_frame>
+      <frame_filter></frame_filter>
+      <labels>
+        <label>
+          <name>person</name>
+          <color>#c06060</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>cat</name>
+          <color>#6080c0</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>boat</name>
+          <color>#4040c0</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>car</name>
+          <color>#2080c0</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>pottedplant</name>
+          <color>#a0e0a0</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>bicycle</name>
+          <color>#004040</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>dog</name>
+          <color>#406040</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>bus</name>
+          <color>#204080</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>motorbike</name>
+          <color>#00a0a0</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>tvmonitor</name>
+          <color>#506080</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>train</name>
+          <color>#50a080</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>horse</name>
+          <color>#408060</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>aeroplane</name>
+          <color>#808000</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>sofa</name>
+          <color>#504040</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>chair</name>
+          <color>#604040</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>bird</name>
+          <color>#404040</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>bottle</name>
+          <color>#a00000</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>sheep</name>
+          <color>#d04000</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>diningtable</name>
+          <color>#80e040</color>
+          <attributes>
+          </attributes>
+        </label>
+        <label>
+          <name>cow</name>
+          <color>#c06000</color>
+          <attributes>
+          </attributes>
+        </label>
+      </labels>
+      <segments>
+        <segment>
+          <id>45231</id>
+          <start>0</start>
+          <stop>99</stop>
+          <url>http://cvat.org/?id=45231</url>
+        </segment>
+      </segments>
+      <owner>
+        <username>rafaelpadilla</username>
+        <email>eng.rafaelpadilla@gmail.com</email>
+      </owner>
+      <assignee></assignee>
+    </task>
+    <dumped>2020-11-20 15:28:32.330493+00:00</dumped>
+  </meta>
+  <image id="99" name="2007_001585.jpg" width="500" height="434">
+    <box label="bottle" occluded="0" source="manual" xtl="58.00" ytl="158.00" xbr="72.00" ybr="191.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="197.00" ytl="115.00" xbr="328.00" ybr="358.00" z_order="0">
+    </box>
+    <box label="sofa" occluded="0" source="manual" xtl="6.00" ytl="180.00" xbr="425.00" ybr="341.00" z_order="0">
+    </box>
+  </image>
+  <image id="98" name="2007_001583.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="70.00" ytl="16.00" xbr="232.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="312.00" ytl="45.00" xbr="412.00" ybr="282.00" z_order="0">
+    </box>
+  </image>
+  <image id="97" name="2007_001568.jpg" width="400" height="400">
+    <box label="aeroplane" occluded="0" source="manual" xtl="3.00" ytl="42.00" xbr="400.00" ybr="372.00" z_order="0">
+    </box>
+  </image>
+  <image id="96" name="2007_001558.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="283.00" ytl="15.00" xbr="500.00" ybr="328.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="1.00" ytl="56.00" xbr="286.00" ybr="329.00" z_order="0">
+    </box>
+  </image>
+  <image id="95" name="2007_001526.jpg" width="500" height="298">
+    <box label="person" occluded="0" source="manual" xtl="381.00" ytl="15.00" xbr="500.00" ybr="297.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="289.00" ytl="33.00" xbr="387.00" ybr="297.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="212.00" ytl="35.00" xbr="316.00" ybr="297.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="109.00" ytl="51.00" xbr="214.00" ybr="297.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="3.00" ytl="18.00" xbr="114.00" ybr="298.00" z_order="0">
+    </box>
+  </image>
+  <image id="94" name="2007_001487.jpg" width="500" height="375">
+    <box label="boat" occluded="0" source="manual" xtl="242.00" ytl="117.00" xbr="277.00" ybr="151.00" z_order="0">
+    </box>
+  </image>
+  <image id="93" name="2007_001458.jpg" width="500" height="333">
+    <box label="sofa" occluded="0" source="manual" xtl="106.00" ytl="121.00" xbr="392.00" ybr="299.00" z_order="0">
+    </box>
+  </image>
+  <image id="92" name="2007_001457.jpg" width="500" height="375">
+    <box label="chair" occluded="0" source="manual" xtl="432.00" ytl="212.00" xbr="500.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="sofa" occluded="0" source="manual" xtl="136.00" ytl="121.00" xbr="350.00" ybr="264.00" z_order="0">
+    </box>
+  </image>
+  <image id="91" name="2007_001439.jpg" width="375" height="500">
+    <box label="diningtable" occluded="0" source="manual" xtl="4.00" ytl="324.00" xbr="375.00" ybr="500.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="195.00" ytl="282.00" xbr="273.00" ybr="336.00" z_order="0">
+    </box>
+  </image>
+  <image id="90" name="2007_001430.jpg" width="500" height="375">
+    <box label="diningtable" occluded="0" source="manual" xtl="1.00" ytl="269.00" xbr="250.00" ybr="374.00" z_order="0">
+    </box>
+    <box label="tvmonitor" occluded="0" source="manual" xtl="316.00" ytl="1.00" xbr="418.00" ybr="66.00" z_order="0">
+    </box>
+    <box label="pottedplant" occluded="0" source="manual" xtl="56.00" ytl="174.00" xbr="100.00" ybr="220.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="245.00" ytl="154.00" xbr="398.00" ybr="374.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="211.00" ytl="146.00" xbr="303.00" ybr="352.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="100.00" ytl="154.00" xbr="235.00" ybr="286.00" z_order="0">
+    </box>
+    <box label="pottedplant" occluded="0" source="manual" xtl="344.00" ytl="83.00" xbr="428.00" ybr="214.00" z_order="0">
+    </box>
+  </image>
+  <image id="89" name="2007_001423.jpg" width="500" height="333">
+    <box label="person" occluded="0" source="manual" xtl="124.00" ytl="56.00" xbr="382.00" ybr="333.00" z_order="0">
+    </box>
+  </image>
+  <image id="88" name="2007_001420.jpg" width="500" height="332">
+    <box label="person" occluded="0" source="manual" xtl="281.00" ytl="80.00" xbr="364.00" ybr="268.00" z_order="0">
+    </box>
+    <box label="horse" occluded="0" source="manual" xtl="192.00" ytl="109.00" xbr="340.00" ybr="270.00" z_order="0">
+    </box>
+    <box label="pottedplant" occluded="0" source="manual" xtl="436.00" ytl="148.00" xbr="500.00" ybr="306.00" z_order="0">
+    </box>
+  </image>
+  <image id="87" name="2007_001416.jpg" width="500" height="328">
+    <box label="sheep" occluded="0" source="manual" xtl="27.00" ytl="13.00" xbr="252.00" ybr="134.00" z_order="0">
+    </box>
+    <box label="sheep" occluded="0" source="manual" xtl="330.00" ytl="26.00" xbr="472.00" ybr="106.00" z_order="0">
+    </box>
+    <box label="sheep" occluded="0" source="manual" xtl="1.00" ytl="185.00" xbr="324.00" ybr="328.00" z_order="0">
+    </box>
+    <box label="sheep" occluded="0" source="manual" xtl="1.00" ytl="106.00" xbr="121.00" ybr="249.00" z_order="0">
+    </box>
+    <box label="sheep" occluded="0" source="manual" xtl="19.00" ytl="71.00" xbr="183.00" ybr="195.00" z_order="0">
+    </box>
+    <box label="sheep" occluded="0" source="manual" xtl="208.00" ytl="78.00" xbr="401.00" ybr="192.00" z_order="0">
+    </box>
+  </image>
+  <image id="86" name="2007_001408.jpg" width="333" height="500">
+    <box label="person" occluded="0" source="manual" xtl="210.00" ytl="1.00" xbr="333.00" ybr="108.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="56.00" ytl="107.00" xbr="230.00" ybr="387.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="114.00" ytl="245.00" xbr="178.00" ybr="448.00" z_order="0">
+    </box>
+    <box label="pottedplant" occluded="0" source="manual" xtl="119.00" ytl="1.00" xbr="184.00" ybr="130.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="84.00" ytl="87.00" xbr="333.00" ybr="366.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="20.00" ytl="68.00" xbr="50.00" ybr="167.00" z_order="0">
+    </box>
+  </image>
+  <image id="85" name="2007_001397.jpg" width="333" height="500">
+    <box label="dog" occluded="0" source="manual" xtl="128.00" ytl="121.00" xbr="214.00" ybr="263.00" z_order="0">
+    </box>
+  </image>
+  <image id="84" name="2007_001377.jpg" width="500" height="366">
+    <box label="aeroplane" occluded="0" source="manual" xtl="273.00" ytl="163.00" xbr="318.00" ybr="250.00" z_order="0">
+    </box>
+  </image>
+  <image id="83" name="2007_001340.jpg" width="500" height="375">
+    <box label="chair" occluded="0" source="manual" xtl="213.00" ytl="48.00" xbr="406.00" ybr="266.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="92.00" ytl="111.00" xbr="331.00" ybr="374.00" z_order="0">
+    </box>
+    <box label="dog" occluded="0" source="manual" xtl="326.00" ytl="284.00" xbr="500.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="150.00" ytl="140.00" xbr="252.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="82" name="2007_001321.jpg" width="500" height="333">
+    <box label="car" occluded="0" source="manual" xtl="1.00" ytl="98.00" xbr="456.00" ybr="333.00" z_order="0">
+    </box>
+  </image>
+  <image id="81" name="2007_001311.jpg" width="500" height="319">
+    <box label="bicycle" occluded="0" source="manual" xtl="334.00" ytl="128.00" xbr="380.00" ybr="220.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="432.00" ytl="118.00" xbr="465.00" ybr="186.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="333.00" ytl="79.00" xbr="387.00" ybr="201.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="465.00" ytl="104.00" xbr="490.00" ybr="166.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="187.00" ytl="106.00" xbr="291.00" ybr="293.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="27.00" ytl="61.00" xbr="163.00" ybr="280.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="431.00" ytl="75.00" xbr="468.00" ybr="171.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="463.00" ytl="67.00" xbr="495.00" ybr="154.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="12.00" ytl="161.00" xbr="181.00" ybr="319.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="177.00" ytl="188.00" xbr="304.00" ybr="319.00" z_order="0">
+    </box>
+  </image>
+  <image id="80" name="2007_001299.jpg" width="429" height="500">
+    <box label="cow" occluded="0" source="manual" xtl="211.00" ytl="240.00" xbr="319.00" ybr="408.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="39.00" ytl="26.00" xbr="229.00" ybr="412.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="318.00" ytl="221.00" xbr="408.00" ybr="435.00" z_order="0">
+    </box>
+  </image>
+  <image id="79" name="2007_001289.jpg" width="500" height="309">
+    <box label="bird" occluded="0" source="manual" xtl="157.00" ytl="98.00" xbr="355.00" ybr="188.00" z_order="0">
+    </box>
+  </image>
+  <image id="78" name="2007_001288.jpg" width="500" height="342">
+    <box label="aeroplane" occluded="0" source="manual" xtl="68.00" ytl="76.00" xbr="426.00" ybr="209.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="196.00" ytl="272.00" xbr="316.00" ybr="314.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="357.00" ytl="272.00" xbr="497.00" ybr="317.00" z_order="0">
+    </box>
+  </image>
+  <image id="77" name="2007_001284.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="135.00" ytl="123.00" xbr="235.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="419.00" ytl="90.00" xbr="448.00" ybr="139.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="1.00" ytl="114.00" xbr="126.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="301.00" ytl="114.00" xbr="500.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="276.00" ytl="117.00" xbr="426.00" ybr="360.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="238.00" ytl="115.00" xbr="376.00" ybr="304.00" z_order="0">
+    </box>
+  </image>
+  <image id="76" name="2007_001239.jpg" width="500" height="375">
+    <box label="dog" occluded="0" source="manual" xtl="108.00" ytl="60.00" xbr="320.00" ybr="160.00" z_order="0">
+    </box>
+    <box label="dog" occluded="0" source="manual" xtl="228.00" ytl="138.00" xbr="381.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="dog" occluded="0" source="manual" xtl="118.00" ytl="94.00" xbr="286.00" ybr="307.00" z_order="0">
+    </box>
+  </image>
+  <image id="75" name="2007_001225.jpg" width="387" height="500">
+    <box label="dog" occluded="0" source="manual" xtl="100.00" ytl="212.00" xbr="303.00" ybr="414.00" z_order="0">
+    </box>
+  </image>
+  <image id="74" name="2007_001185.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="78.00" ytl="78.00" xbr="289.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="452.00" ytl="131.00" xbr="500.00" ybr="253.00" z_order="0">
+    </box>
+    <box label="diningtable" occluded="0" source="manual" xtl="204.00" ytl="223.00" xbr="500.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="cat" occluded="0" source="manual" xtl="197.00" ytl="199.00" xbr="289.00" ybr="323.00" z_order="0">
+    </box>
+  </image>
+  <image id="73" name="2007_001175.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="119.00" ytl="153.00" xbr="367.00" ybr="329.00" z_order="0">
+    </box>
+    <box label="tvmonitor" occluded="0" source="manual" xtl="360.00" ytl="114.00" xbr="449.00" ybr="187.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="157.00" ytl="169.00" xbr="256.00" ybr="230.00" z_order="0">
+    </box>
+  </image>
+  <image id="72" name="2007_001154.jpg" width="500" height="375">
+    <box label="sofa" occluded="0" source="manual" xtl="1.00" ytl="233.00" xbr="174.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="pottedplant" occluded="0" source="manual" xtl="134.00" ytl="230.00" xbr="171.00" ybr="274.00" z_order="0">
+    </box>
+  </image>
+  <image id="71" name="2007_001149.jpg" width="500" height="375">
+    <box label="sofa" occluded="0" source="manual" xtl="148.00" ytl="138.00" xbr="403.00" ybr="302.00" z_order="0">
+    </box>
+    <box label="tvmonitor" occluded="0" source="manual" xtl="75.00" ytl="85.00" xbr="146.00" ybr="153.00" z_order="0">
+    </box>
+    <box label="pottedplant" occluded="0" source="manual" xtl="1.00" ytl="7.00" xbr="142.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="70" name="2007_001073.jpg" width="500" height="375">
+    <box label="cow" occluded="0" source="manual" xtl="276.00" ytl="159.00" xbr="350.00" ybr="255.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="55.00" ytl="178.00" xbr="149.00" ybr="248.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="135.00" ytl="176.00" xbr="174.00" ybr="241.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="227.00" ytl="153.00" xbr="282.00" ybr="236.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="327.00" ytl="152.00" xbr="425.00" ybr="240.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="421.00" ytl="161.00" xbr="500.00" ybr="227.00" z_order="0">
+    </box>
+  </image>
+  <image id="69" name="2007_001027.jpg" width="500" height="375">
+    <box label="tvmonitor" occluded="0" source="manual" xtl="1.00" ytl="244.00" xbr="43.00" ybr="340.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="58.00" ytl="156.00" xbr="94.00" ybr="218.00" z_order="0">
+    </box>
+    <box label="sofa" occluded="0" source="manual" xtl="401.00" ytl="270.00" xbr="500.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="329.00" ytl="174.00" xbr="348.00" ybr="223.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="263.00" ytl="218.00" xbr="351.00" ybr="329.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="256.00" ytl="189.00" xbr="306.00" ybr="292.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="203.00" ytl="174.00" xbr="254.00" ybr="273.00" z_order="0">
+    </box>
+  </image>
+  <image id="68" name="2007_000999.jpg" width="375" height="500">
+    <box label="bottle" occluded="0" source="manual" xtl="233.00" ytl="317.00" xbr="289.00" ybr="405.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="2.00" ytl="16.00" xbr="280.00" ybr="500.00" z_order="0">
+    </box>
+  </image>
+  <image id="67" name="2007_000925.jpg" width="500" height="353">
+    <box label="sheep" occluded="0" source="manual" xtl="309.00" ytl="105.00" xbr="460.00" ybr="333.00" z_order="0">
+    </box>
+    <box label="sheep" occluded="0" source="manual" xtl="29.00" ytl="101.00" xbr="216.00" ybr="343.00" z_order="0">
+    </box>
+  </image>
+  <image id="66" name="2007_000904.jpg" width="500" height="375">
+    <box label="horse" occluded="0" source="manual" xtl="1.00" ytl="213.00" xbr="305.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="17.00" ytl="113.00" xbr="165.00" ybr="238.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="237.00" ytl="167.00" xbr="338.00" ybr="263.00" z_order="0">
+    </box>
+  </image>
+  <image id="65" name="2007_000876.jpg" width="500" height="334">
+    <box label="cat" occluded="0" source="manual" xtl="117.00" ytl="31.00" xbr="376.00" ybr="329.00" z_order="0">
+    </box>
+    <box label="cat" occluded="0" source="manual" xtl="261.00" ytl="14.00" xbr="398.00" ybr="132.00" z_order="0">
+    </box>
+  </image>
+  <image id="64" name="2007_000862.jpg" width="500" height="375">
+    <box label="boat" occluded="0" source="manual" xtl="304.00" ytl="142.00" xbr="354.00" ybr="160.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="305.00" ytl="131.00" xbr="318.00" ybr="151.00" z_order="0">
+    </box>
+  </image>
+  <image id="63" name="2007_000847.jpg" width="375" height="500">
+    <box label="person" occluded="0" source="manual" xtl="61.00" ytl="111.00" xbr="296.00" ybr="500.00" z_order="0">
+    </box>
+    <box label="diningtable" occluded="0" source="manual" xtl="1.00" ytl="279.00" xbr="208.00" ybr="500.00" z_order="0">
+    </box>
+  </image>
+  <image id="62" name="2007_000837.jpg" width="500" height="275">
+    <box label="boat" occluded="0" source="manual" xtl="261.00" ytl="65.00" xbr="365.00" ybr="159.00" z_order="0">
+    </box>
+  </image>
+  <image id="61" name="2007_000836.jpg" width="318" height="480">
+    <box label="person" occluded="0" source="manual" xtl="69.00" ytl="99.00" xbr="224.00" ybr="297.00" z_order="0">
+    </box>
+    <box label="horse" occluded="0" source="manual" xtl="93.00" ytl="162.00" xbr="226.00" ybr="442.00" z_order="0">
+    </box>
+  </image>
+  <image id="60" name="2007_000830.jpg" width="500" height="375">
+    <box label="diningtable" occluded="0" source="manual" xtl="124.00" ytl="182.00" xbr="352.00" ybr="370.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="150.00" ytl="221.00" xbr="259.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="252.00" ytl="201.00" xbr="348.00" ybr="347.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="250.00" ytl="175.00" xbr="318.00" ybr="248.00" z_order="0">
+    </box>
+  </image>
+  <image id="59" name="2007_000822.jpg" width="500" height="374">
+    <box label="motorbike" occluded="0" source="manual" xtl="231.00" ytl="168.00" xbr="353.00" ybr="323.00" z_order="0">
+    </box>
+    <box label="motorbike" occluded="0" source="manual" xtl="98.00" ytl="165.00" xbr="230.00" ybr="346.00" z_order="0">
+    </box>
+  </image>
+  <image id="58" name="2007_000807.jpg" width="334" height="500">
+    <box label="person" occluded="0" source="manual" xtl="34.00" ytl="31.00" xbr="200.00" ybr="500.00" z_order="0">
+    </box>
+  </image>
+  <image id="57" name="2007_000804.jpg" width="333" height="500">
+    <box label="chair" occluded="0" source="manual" xtl="94.00" ytl="243.00" xbr="153.00" ybr="304.00" z_order="0">
+    </box>
+    <box label="sofa" occluded="0" source="manual" xtl="191.00" ytl="265.00" xbr="332.00" ybr="470.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="32.00" ytl="352.00" xbr="126.00" ybr="491.00" z_order="0">
+    </box>
+  </image>
+  <image id="56" name="2007_000799.jpg" width="500" height="441">
+    <box label="horse" occluded="0" source="manual" xtl="95.00" ytl="23.00" xbr="500.00" ybr="441.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="230.00" ytl="225.00" xbr="500.00" ybr="441.00" z_order="0">
+    </box>
+  </image>
+  <image id="55" name="2007_000793.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="273.00" ytl="103.00" xbr="295.00" ybr="182.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="96.00" ytl="107.00" xbr="114.00" ybr="159.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="65.00" ytl="110.00" xbr="84.00" ybr="161.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="402.00" ytl="67.00" xbr="467.00" ybr="259.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="218.00" ytl="107.00" xbr="236.00" ybr="178.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="241.00" ytl="111.00" xbr="270.00" ybr="180.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="289.00" ytl="100.00" xbr="316.00" ybr="183.00" z_order="0">
+    </box>
+    <box label="bus" occluded="0" source="manual" xtl="2.00" ytl="80.00" xbr="51.00" ybr="135.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="151.00" ytl="160.00" xbr="310.00" ybr="280.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="100.00" ytl="78.00" xbr="190.00" ybr="282.00" z_order="0">
+    </box>
+  </image>
+  <image id="54" name="2007_000783.jpg" width="480" height="437">
+    <box label="horse" occluded="0" source="manual" xtl="112.00" ytl="100.00" xbr="441.00" ybr="409.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="201.00" ytl="57.00" xbr="325.00" ybr="259.00" z_order="0">
+    </box>
+  </image>
+  <image id="53" name="2007_000768.jpg" width="500" height="375">
+    <box label="bus" occluded="0" source="manual" xtl="33.00" ytl="46.00" xbr="369.00" ybr="330.00" z_order="0">
+    </box>
+    <box label="bus" occluded="0" source="manual" xtl="369.00" ytl="103.00" xbr="475.00" ybr="283.00" z_order="0">
+    </box>
+  </image>
+  <image id="52" name="2007_000762.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="4.00" ytl="22.00" xbr="124.00" ybr="252.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="199.00" ytl="140.00" xbr="220.00" ybr="187.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="143.00" ytl="127.00" xbr="266.00" ybr="223.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="342.00" ytl="142.00" xbr="393.00" ybr="202.00" z_order="0">
+    </box>
+    <box label="diningtable" occluded="0" source="manual" xtl="1.00" ytl="189.00" xbr="500.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="3.00" ytl="249.00" xbr="174.00" ybr="328.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="29.00" ytl="152.00" xbr="118.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="382.00" ytl="61.00" xbr="500.00" ybr="261.00" z_order="0">
+    </box>
+  </image>
+  <image id="51" name="2007_000738.jpg" width="500" height="332">
+    <box label="aeroplane" occluded="0" source="manual" xtl="1.00" ytl="124.00" xbr="496.00" ybr="235.00" z_order="0">
+    </box>
+  </image>
+  <image id="50" name="2007_000733.jpg" width="450" height="435">
+    <box label="person" occluded="0" source="manual" xtl="48.00" ytl="25.00" xbr="273.00" ybr="383.00" z_order="0">
+    </box>
+    <box label="motorbike" occluded="0" source="manual" xtl="103.00" ytl="201.00" xbr="448.00" ybr="435.00" z_order="0">
+    </box>
+  </image>
+  <image id="49" name="2007_000727.jpg" width="375" height="500">
+    <box label="car" occluded="0" source="manual" xtl="2.00" ytl="380.00" xbr="89.00" ybr="435.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="113.00" ytl="138.00" xbr="160.00" ybr="164.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="49.00" ytl="367.00" xbr="90.00" ybr="389.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="354.00" ytl="363.00" xbr="375.00" ybr="414.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="319.00" ytl="357.00" xbr="341.00" ybr="424.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="333.00" ytl="356.00" xbr="358.00" ybr="438.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="272.00" ytl="369.00" xbr="323.00" ybr="388.00" z_order="0">
+    </box>
+    <box label="bus" occluded="0" source="manual" xtl="89.00" ytl="323.00" xbr="273.00" ybr="436.00" z_order="0">
+    </box>
+  </image>
+  <image id="48" name="2007_000720.jpg" width="500" height="333">
+    <box label="dog" occluded="0" source="manual" xtl="217.00" ytl="118.00" xbr="305.00" ybr="263.00" z_order="0">
+    </box>
+  </image>
+  <image id="47" name="2007_000713.jpg" width="500" height="336">
+    <box label="boat" occluded="0" source="manual" xtl="80.00" ytl="168.00" xbr="254.00" ybr="312.00" z_order="0">
+    </box>
+    <box label="boat" occluded="0" source="manual" xtl="184.00" ytl="160.00" xbr="472.00" ybr="269.00" z_order="0">
+    </box>
+  </image>
+  <image id="46" name="2007_000676.jpg" width="500" height="375">
+    <box label="sheep" occluded="0" source="manual" xtl="59.00" ytl="94.00" xbr="472.00" ybr="270.00" z_order="0">
+    </box>
+  </image>
+  <image id="45" name="2007_000664.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="51.00" ytl="2.00" xbr="325.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="44" name="2007_000663.jpg" width="422" height="500">
+    <box label="car" occluded="0" source="manual" xtl="373.00" ytl="68.00" xbr="422.00" ybr="108.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="376.00" ytl="98.00" xbr="422.00" ybr="210.00" z_order="0">
+    </box>
+    <box label="bus" occluded="0" source="manual" xtl="12.00" ytl="2.00" xbr="417.00" ybr="467.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="7.00" ytl="39.00" xbr="63.00" ybr="94.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="362.00" ytl="24.00" xbr="422.00" ybr="53.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="376.00" ytl="36.00" xbr="422.00" ybr="81.00" z_order="0">
+    </box>
+  </image>
+  <image id="43" name="2007_000661.jpg" width="500" height="375">
+    <box label="chair" occluded="0" source="manual" xtl="133.00" ytl="159.00" xbr="179.00" ybr="197.00" z_order="0">
+    </box>
+    <box label="sofa" occluded="0" source="manual" xtl="119.00" ytl="177.00" xbr="331.00" ybr="278.00" z_order="0">
+    </box>
+    <box label="pottedplant" occluded="0" source="manual" xtl="65.00" ytl="90.00" xbr="170.00" ybr="197.00" z_order="0">
+    </box>
+  </image>
+  <image id="42" name="2007_000648.jpg" width="500" height="333">
+    <box label="person" occluded="0" source="manual" xtl="394.00" ytl="199.00" xbr="404.00" ybr="223.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="434.00" ytl="196.00" xbr="444.00" ybr="220.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="443.00" ytl="195.00" xbr="452.00" ybr="220.00" z_order="0">
+    </box>
+    <box label="bus" occluded="0" source="manual" xtl="29.00" ytl="113.00" xbr="353.00" ybr="266.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="328.00" ytl="86.00" xbr="474.00" ybr="192.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="2.00" ytl="213.00" xbr="28.00" ybr="235.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="424.00" ytl="199.00" xbr="436.00" ybr="220.00" z_order="0">
+    </box>
+  </image>
+  <image id="41" name="2007_000645.jpg" width="500" height="375">
+    <box label="bird" occluded="0" source="manual" xtl="135.00" ytl="46.00" xbr="500.00" ybr="374.00" z_order="0">
+    </box>
+    <box label="bird" occluded="0" source="manual" xtl="124.00" ytl="146.00" xbr="365.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="40" name="2007_000636.jpg" width="500" height="335">
+    <box label="train" occluded="0" source="manual" xtl="79.00" ytl="96.00" xbr="392.00" ybr="300.00" z_order="0">
+    </box>
+  </image>
+  <image id="39" name="2007_000629.jpg" width="500" height="230">
+    <box label="train" occluded="0" source="manual" xtl="34.00" ytl="84.00" xbr="500.00" ybr="184.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="87.00" ytl="100.00" xbr="107.00" ybr="124.00" z_order="0">
+    </box>
+  </image>
+  <image id="38" name="2007_000584.jpg" width="500" height="375">
+    <box label="sofa" occluded="0" source="manual" xtl="344.00" ytl="207.00" xbr="500.00" ybr="374.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="31.00" ytl="74.00" xbr="369.00" ybr="346.00" z_order="0">
+    </box>
+  </image>
+  <image id="37" name="2007_000572.jpg" width="500" height="331">
+    <box label="bicycle" occluded="0" source="manual" xtl="8.00" ytl="134.00" xbr="226.00" ybr="297.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="1.00" ytl="178.00" xbr="235.00" ybr="331.00" z_order="0">
+    </box>
+  </image>
+  <image id="36" name="2007_000559.jpg" width="500" height="370">
+    <box label="tvmonitor" occluded="0" source="manual" xtl="160.00" ytl="26.00" xbr="371.00" ybr="241.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="36.00" ytl="250.00" xbr="79.00" ybr="354.00" z_order="0">
+    </box>
+  </image>
+  <image id="35" name="2007_000549.jpg" width="375" height="500">
+    <box label="cat" occluded="0" source="manual" xtl="1.00" ytl="49.00" xbr="341.00" ybr="499.00" z_order="0">
+    </box>
+  </image>
+  <image id="34" name="2007_000529.jpg" width="500" height="375">
+    <box label="boat" occluded="0" source="manual" xtl="290.00" ytl="143.00" xbr="500.00" ybr="250.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="422.00" ytl="237.00" xbr="461.00" ybr="255.00" z_order="0">
+    </box>
+  </image>
+  <image id="33" name="2007_000528.jpg" width="500" height="375">
+    <box label="cat" occluded="0" source="manual" xtl="124.00" ytl="68.00" xbr="319.00" ybr="310.00" z_order="0">
+    </box>
+  </image>
+  <image id="32" name="2007_000515.jpg" width="500" height="375">
+    <box label="bicycle" occluded="0" source="manual" xtl="1.00" ytl="199.00" xbr="40.00" ybr="293.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="1.00" ytl="85.00" xbr="29.00" ybr="279.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="64.00" ytl="164.00" xbr="151.00" ybr="210.00" z_order="0">
+    </box>
+    <box label="car" occluded="0" source="manual" xtl="147.00" ytl="167.00" xbr="186.00" ybr="200.00" z_order="0">
+    </box>
+  </image>
+  <image id="31" name="2007_000504.jpg" width="500" height="412">
+    <box label="cow" occluded="0" source="manual" xtl="341.00" ytl="102.00" xbr="500.00" ybr="406.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="36.00" ytl="34.00" xbr="79.00" ybr="123.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="2.00" ytl="44.00" xbr="36.00" ybr="120.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="29.00" ytl="42.00" xbr="41.00" ybr="64.00" z_order="0">
+    </box>
+  </image>
+  <image id="30" name="2007_000491.jpg" width="500" height="334">
+    <box label="cow" occluded="0" source="manual" xtl="2.00" ytl="2.00" xbr="459.00" ybr="334.00" z_order="0">
+    </box>
+  </image>
+  <image id="29" name="2007_000480.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="5.00" ytl="172.00" xbr="116.00" ybr="373.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="114.00" ytl="165.00" xbr="228.00" ybr="373.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="293.00" ytl="162.00" xbr="419.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="2.00" ytl="68.00" xbr="486.00" ybr="325.00" z_order="0">
+    </box>
+  </image>
+  <image id="28" name="2007_000464.jpg" width="375" height="500">
+    <box label="cow" occluded="0" source="manual" xtl="71.00" ytl="252.00" xbr="216.00" ybr="314.00" z_order="0">
+    </box>
+    <box label="cow" occluded="0" source="manual" xtl="58.00" ytl="202.00" xbr="241.00" ybr="295.00" z_order="0">
+    </box>
+  </image>
+  <image id="27" name="2007_000452.jpg" width="500" height="375">
+    <box label="chair" occluded="0" source="manual" xtl="474.00" ytl="140.00" xbr="500.00" ybr="284.00" z_order="0">
+    </box>
+    <box label="sofa" occluded="0" source="manual" xtl="50.00" ytl="121.00" xbr="295.00" ybr="338.00" z_order="0">
+    </box>
+  </image>
+  <image id="26" name="2007_000423.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="367.00" ytl="92.00" xbr="461.00" ybr="315.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="51.00" ytl="80.00" xbr="122.00" ybr="266.00" z_order="0">
+    </box>
+  </image>
+  <image id="25" name="2007_000392.jpg" width="500" height="332">
+    <box label="horse" occluded="0" source="manual" xtl="100.00" ytl="96.00" xbr="355.00" ybr="324.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="198.00" ytl="58.00" xbr="286.00" ybr="197.00" z_order="0">
+    </box>
+  </image>
+  <image id="24" name="2007_000364.jpg" width="500" height="375">
+    <box label="motorbike" occluded="0" source="manual" xtl="318.00" ytl="37.00" xbr="489.00" ybr="161.00" z_order="0">
+    </box>
+    <box label="motorbike" occluded="0" source="manual" xtl="54.00" ytl="25.00" xbr="454.00" ybr="315.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="369.00" ytl="1.00" xbr="458.00" ybr="130.00" z_order="0">
+    </box>
+  </image>
+  <image id="23" name="2007_000363.jpg" width="500" height="333">
+    <box label="bird" occluded="0" source="manual" xtl="161.00" ytl="122.00" xbr="500.00" ybr="333.00" z_order="0">
+    </box>
+    <box label="bird" occluded="0" source="manual" xtl="59.00" ytl="15.00" xbr="220.00" ybr="239.00" z_order="0">
+    </box>
+  </image>
+  <image id="22" name="2007_000346.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="137.00" ytl="78.00" xbr="497.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="72.00" ytl="209.00" xbr="111.00" ybr="259.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="124.00" ytl="107.00" xbr="230.00" ybr="343.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="89.00" ytl="202.00" xbr="129.00" ybr="247.00" z_order="0">
+    </box>
+  </image>
+  <image id="21" name="2007_000333.jpg" width="500" height="333">
+    <box label="train" occluded="0" source="manual" xtl="1.00" ytl="39.00" xbr="367.00" ybr="270.00" z_order="0">
+    </box>
+  </image>
+  <image id="20" name="2007_000332.jpg" width="500" height="333">
+    <box label="horse" occluded="0" source="manual" xtl="54.00" ytl="50.00" xbr="285.00" ybr="262.00" z_order="0">
+    </box>
+  </image>
+  <image id="19" name="2007_000323.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="277.00" ytl="3.00" xbr="500.00" ybr="375.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="12.00" ytl="3.00" xbr="305.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="18" name="2007_000272.jpg" width="333" height="500">
+    <box label="person" occluded="0" source="manual" xtl="25.00" ytl="71.00" xbr="304.00" ybr="500.00" z_order="0">
+    </box>
+  </image>
+  <image id="17" name="2007_000256.jpg" width="500" height="343">
+    <box label="aeroplane" occluded="0" source="manual" xtl="8.00" ytl="96.00" xbr="491.00" ybr="232.00" z_order="0">
+    </box>
+  </image>
+  <image id="16" name="2007_000250.jpg" width="500" height="375">
+    <box label="bottle" occluded="0" source="manual" xtl="97.00" ytl="124.00" xbr="150.00" ybr="297.00" z_order="0">
+    </box>
+    <box label="diningtable" occluded="0" source="manual" xtl="1.00" ytl="170.00" xbr="474.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="15" name="2007_000243.jpg" width="500" height="333">
+    <box label="aeroplane" occluded="0" source="manual" xtl="181.00" ytl="127.00" xbr="274.00" ybr="193.00" z_order="0">
+    </box>
+  </image>
+  <image id="14" name="2007_000241.jpg" width="500" height="375">
+    <box label="boat" occluded="0" source="manual" xtl="246.00" ytl="134.00" xbr="348.00" ybr="217.00" z_order="0">
+    </box>
+    <box label="boat" occluded="0" source="manual" xtl="60.00" ytl="109.00" xbr="142.00" ybr="213.00" z_order="0">
+    </box>
+    <box label="boat" occluded="0" source="manual" xtl="356.00" ytl="183.00" xbr="500.00" ybr="280.00" z_order="0">
+    </box>
+  </image>
+  <image id="13" name="2007_000187.jpg" width="500" height="375">
+    <box label="tvmonitor" occluded="0" source="manual" xtl="1.00" ytl="95.00" xbr="240.00" ybr="336.00" z_order="0">
+    </box>
+  </image>
+  <image id="12" name="2007_000175.jpg" width="500" height="332">
+    <box label="sheep" occluded="0" source="manual" xtl="25.00" ytl="34.00" xbr="419.00" ybr="271.00" z_order="0">
+    </box>
+  </image>
+  <image id="11" name="2007_000170.jpg" width="500" height="375">
+    <box label="person" occluded="0" source="manual" xtl="3.00" ytl="91.00" xbr="43.00" ybr="206.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="4.00" ytl="28.00" xbr="461.00" ybr="372.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="426.00" ytl="157.00" xbr="443.00" ybr="195.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="324.00" ytl="148.00" xbr="352.00" ybr="206.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="41.00" ytl="114.00" xbr="73.00" ybr="181.00" z_order="0">
+    </box>
+    <box label="bottle" occluded="0" source="manual" xtl="87.00" ytl="100.00" xbr="109.00" ybr="165.00" z_order="0">
+    </box>
+  </image>
+  <image id="10" name="2007_000129.jpg" width="334" height="500">
+    <box label="bicycle" occluded="0" source="manual" xtl="70.00" ytl="202.00" xbr="255.00" ybr="500.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="252.00" ytl="19.00" xbr="334.00" ybr="487.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="74.00" ytl="1.00" xbr="272.00" ybr="462.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="1.00" ytl="1.00" xbr="66.00" ybr="363.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="1.00" ytl="144.00" xbr="67.00" ybr="436.00" z_order="0">
+    </box>
+    <box label="bicycle" occluded="0" source="manual" xtl="251.00" ytl="242.00" xbr="334.00" ybr="500.00" z_order="0">
+    </box>
+  </image>
+  <image id="9" name="2007_000123.jpg" width="500" height="375">
+    <box label="train" occluded="0" source="manual" xtl="1.00" ytl="26.00" xbr="358.00" ybr="340.00" z_order="0">
+    </box>
+  </image>
+  <image id="8" name="2007_000121.jpg" width="500" height="375">
+    <box label="tvmonitor" occluded="0" source="manual" xtl="251.00" ytl="28.00" xbr="475.00" ybr="267.00" z_order="0">
+    </box>
+    <box label="tvmonitor" occluded="0" source="manual" xtl="22.00" ytl="28.00" xbr="251.00" ybr="273.00" z_order="0">
+    </box>
+  </image>
+  <image id="7" name="2007_000068.jpg" width="500" height="375">
+    <box label="bird" occluded="0" source="manual" xtl="27.00" ytl="45.00" xbr="266.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="6" name="2007_000063.jpg" width="500" height="375">
+    <box label="dog" occluded="0" source="manual" xtl="123.00" ytl="115.00" xbr="379.00" ybr="275.00" z_order="0">
+    </box>
+    <box label="chair" occluded="0" source="manual" xtl="75.00" ytl="1.00" xbr="428.00" ybr="375.00" z_order="0">
+    </box>
+  </image>
+  <image id="5" name="2007_000061.jpg" width="500" height="333">
+    <box label="boat" occluded="0" source="manual" xtl="184.00" ytl="214.00" xbr="281.00" ybr="252.00" z_order="0">
+    </box>
+    <box label="boat" occluded="0" source="manual" xtl="274.00" ytl="11.00" xbr="437.00" ybr="279.00" z_order="0">
+    </box>
+  </image>
+  <image id="4" name="2007_000042.jpg" width="500" height="335">
+    <box label="train" occluded="0" source="manual" xtl="1.00" ytl="36.00" xbr="235.00" ybr="299.00" z_order="0">
+    </box>
+    <box label="train" occluded="0" source="manual" xtl="263.00" ytl="32.00" xbr="500.00" ybr="295.00" z_order="0">
+    </box>
+  </image>
+  <image id="3" name="2007_000039.jpg" width="500" height="375">
+    <box label="tvmonitor" occluded="0" source="manual" xtl="156.00" ytl="89.00" xbr="344.00" ybr="279.00" z_order="0">
+    </box>
+  </image>
+  <image id="2" name="2007_000033.jpg" width="500" height="366">
+    <box label="aeroplane" occluded="0" source="manual" xtl="325.00" ytl="188.00" xbr="411.00" ybr="223.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="9.00" ytl="107.00" xbr="499.00" ybr="263.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="421.00" ytl="200.00" xbr="482.00" ybr="226.00" z_order="0">
+    </box>
+  </image>
+  <image id="1" name="2007_000032.jpg" width="500" height="281">
+    <box label="person" occluded="0" source="manual" xtl="26.00" ytl="189.00" xbr="44.00" ybr="238.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="133.00" ytl="88.00" xbr="197.00" ybr="123.00" z_order="0">
+    </box>
+    <box label="aeroplane" occluded="0" source="manual" xtl="104.00" ytl="78.00" xbr="375.00" ybr="183.00" z_order="0">
+    </box>
+    <box label="person" occluded="0" source="manual" xtl="195.00" ytl="180.00" xbr="213.00" ybr="229.00" z_order="0">
+    </box>
+  </image>
+  <image id="0" name="2007_000027.jpg" width="486" height="500">
+    <box label="person" occluded="0" source="manual" xtl="174.00" ytl="101.00" xbr="349.00" ybr="351.00" z_order="0">
+    </box>
+  </image>
+</annotations>
