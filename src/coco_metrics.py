@@ -66,11 +66,11 @@ def coco_summary(detected_bbs, groundtruth_bbs):
         return res
 
     iou_thresholds = np.linspace(
-        0.5, 0.95, int(np.round((0.95 - 0.5) / 0.05)) + 1, endpoint=true
+        0.5, 0.95, int(np.round((0.95 - 0.5) / 0.05)) + 1, endpoint=True
     )
     # compute simple AP with all thresholds, using all dets, and all areas
     APs = {
-        i: _evaluate(iou_threshold=i, max_dets=None, area_range=(0, np.inf))
+        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(0, np.inf))
         for i in iou_thresholds
     }
     max_dets = [1, 10, 100]
@@ -81,7 +81,7 @@ def coco_summary(detected_bbs, groundtruth_bbs):
     }
     scales = [(0, 32 ** 2), (32 ** 2, 96 ** 2), (96 ** 2, np.inf)]
     APscales = {
-        (i, s): _evaluate(iou_threshold=i, max_dets=None, area_range=s)
+        (i, s): _evaluate(iou_threshold=i, max_dets=100, area_range=s)
         for i in iou_thresholds
         for s in scales
     }
@@ -94,7 +94,7 @@ def get_coco_metrics(
     groundtruth_bbs,
     iou_threshold=0.5,
     area_range=(0, np.inf),
-    max_dets=None,
+    max_dets=100,
 ):
     """Calculate the Average Precision metric as in COCO's official implementation given an IOU threshold.
     Parameters
@@ -280,7 +280,7 @@ def _compute_ap_recall(scores, matched, NP, recall_thresholds=None):
     # by default evaluate on 101 recall levels
     if recall_thresholds is None:
         recall_thresholds = np.linspace(
-            0.0, 1.00, int(np.round((1.00 - 0.0) / 0.01)) + 1, endpoint=true
+            0.0, 1.00, int(np.round((1.00 - 0.0) / 0.01)) + 1, endpoint=True
         )
 
     # sort in descending score order
@@ -292,11 +292,11 @@ def _compute_ap_recall(scores, matched, NP, recall_thresholds=None):
     tp = np.cumsum(matched)
     fp = np.cumsum(~matched)
 
-    rc = tp / n_gts
+    rc = tp / NP
     pr = tp / (tp + fp)
 
     # make precision monotonically decreasing
-    ipr = np.maximum.accumulate(pr[::-1])[::-1]
+    pr = np.maximum.accumulate(pr[::-1])[::-1]
 
     rec_idx = np.searchsorted(rc, recall_thresholds, side="left")
     n_recalls = len(recall_thresholds)
