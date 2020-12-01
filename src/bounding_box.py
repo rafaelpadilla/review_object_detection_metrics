@@ -1,3 +1,5 @@
+from math import isclose
+
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 from src.utils.general_utils import (convert_to_absolute_values,
                                      convert_to_relative_values)
@@ -219,7 +221,7 @@ class BoundingBox:
         return (self._width_img, self._height_img)
 
     def get_area(self):
-        assert (self._w * self._h) == (self._x2 - self._x) * (self._y2 - self._y)
+        assert isclose(self._w * self._h, (self._x2 - self._x) * (self._y2 - self._y))
         assert (self._x2 > self._x)
         assert (self._y2 > self._y)
         return (self._x2 - self._x + 1) * (self._y2 - self._y + 1)

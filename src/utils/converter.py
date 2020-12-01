@@ -56,13 +56,14 @@ def coco2bb(path, bb_type=BBType.GROUND_TRUTH):
         for annotation in annotations:
             img_id = annotation['image_id']
             x1, y1, bb_width, bb_height = annotation['bbox']
-            x1, y1, bb_width, bb_height = int(x1), int(y1), int(bb_width), int(bb_height)
+            #x1, y1, bb_width, bb_height = int(x1), int(y1), int(bb_width), int(bb_height)
             # create BoundingBox object
             bb = BoundingBox(image_name=images[img_id]['file_name'],
                              class_id=classes[annotation['category_id']],
                              coordinates=(x1, y1, bb_width, bb_height),
                              type_coordinates=CoordinatesType.ABSOLUTE,
                              img_size=images[img_id]['img_size'],
+                             confidence=annotation['score'] if bb_type == BBType.DETECTED else None,
                              bb_type=bb_type,
                              format=BBFormat.XYWH)
             ret.append(bb)
