@@ -14,9 +14,13 @@ def test_converters_gts():
     assert os.path.isdir(gts_dir)
 
     # COCO
-    coco_dir = os.path.join(gts_dir, 'coco_format')
-    coco_bbs = converter.coco2bb(coco_dir)
-    coco_bbs.sort(key=lambda x: str(x), reverse=True)
+    coco_dir = os.path.join(gts_dir, 'coco_format_v1')
+    coco_bbs_v1 = converter.coco2bb(coco_dir)
+    coco_bbs_v1.sort(key=lambda x: str(x), reverse=True)
+    # COCO
+    coco_dir = os.path.join(gts_dir, 'coco_format_v2')
+    coco_bbs_v2 = converter.coco2bb(coco_dir)
+    coco_bbs_v2.sort(key=lambda x: str(x), reverse=True)
     # CVAT
     cvat_dir = os.path.join(gts_dir, 'cvat_format')
     cvat_bbs = converter.cvat2bb(cvat_dir)
@@ -46,12 +50,13 @@ def test_converters_gts():
                                  bb_type=BBType.GROUND_TRUTH)
     yolo_bbs.sort(key=lambda x: str(x), reverse=True)
 
-    assert len(coco_bbs) == len(cvat_bbs) == len(imagenet_bbs) == len(labelme_bbs) == len(
-        openimage_bbs) == len(vocpascal_bbs) == len(yolo_bbs)
+    assert len(coco_bbs_v1) == len(coco_bbs_v2) == len(cvat_bbs) == len(imagenet_bbs) == len(
+        labelme_bbs) == len(openimage_bbs) == len(vocpascal_bbs) == len(yolo_bbs)
 
-    for coco_bb, cvat_bb, imagenet_bb, labelme_bb, openimage_bb, vocpascal_bb, yolo_bb in zip(
-            coco_bbs, cvat_bbs, imagenet_bbs, labelme_bbs, openimage_bbs, vocpascal_bbs, yolo_bbs):
-        assert coco_bb == cvat_bb == imagenet_bb == labelme_bb == openimage_bb == vocpascal_bb == yolo_bb
+    for coco_bb_v1, coco_bb_v2, cvat_bb, imagenet_bb, labelme_bb, openimage_bb, vocpascal_bb, yolo_bb in zip(
+            coco_bbs_v1, coco_bbs_v2, cvat_bbs, imagenet_bbs, labelme_bbs, openimage_bbs,
+            vocpascal_bbs, yolo_bbs):
+        assert coco_bb_v1 == coco_bb_v2 == cvat_bb == imagenet_bb == labelme_bb == openimage_bb == vocpascal_bb == yolo_bb
 
 
 def test_converters_dets():
@@ -62,9 +67,13 @@ def test_converters_dets():
     assert os.path.isdir(gts_dir)
 
     # COCO
-    coco_dir = os.path.join(gts_dir, 'coco_format')
-    coco_bbs = converter.coco2bb(coco_dir)
-    coco_bbs.sort(key=lambda x: str(x), reverse=True)
+    coco_dir = os.path.join(gts_dir, 'coco_format_v1')
+    coco_bbs_v1 = converter.coco2bb(coco_dir)
+    coco_bbs_v1.sort(key=lambda x: str(x), reverse=True)
+    # COCO
+    coco_dir = os.path.join(gts_dir, 'coco_format_v2')
+    coco_bbs_v2 = converter.coco2bb(coco_dir)
+    coco_bbs_v2.sort(key=lambda x: str(x), reverse=True)
     # CVAT
     cvat_dir = os.path.join(gts_dir, 'cvat_format')
     cvat_bbs = converter.cvat2bb(cvat_dir)
@@ -94,12 +103,13 @@ def test_converters_dets():
                                  bb_type=BBType.GROUND_TRUTH)
     yolo_bbs.sort(key=lambda x: str(x), reverse=True)
 
-    assert len(coco_bbs) == len(cvat_bbs) == len(imagenet_bbs) == len(labelme_bbs) == len(
-        openimage_bbs) == len(vocpascal_bbs) == len(yolo_bbs)
+    assert len(coco_bbs_v1) == len(coco_bbs_v2) == len(cvat_bbs) == len(imagenet_bbs) == len(
+        labelme_bbs) == len(openimage_bbs) == len(vocpascal_bbs) == len(yolo_bbs)
 
-    for coco_bb, cvat_bb, imagenet_bb, labelme_bb, openimage_bb, vocpascal_bb, yolo_bb in zip(
-            coco_bbs, cvat_bbs, imagenet_bbs, labelme_bbs, openimage_bbs, vocpascal_bbs, yolo_bbs):
-        assert coco_bb == cvat_bb == imagenet_bb == labelme_bb == openimage_bb == vocpascal_bb == yolo_bb
+    for coco_bb_v1, coco_bb_v2, cvat_bb, imagenet_bb, labelme_bb, openimage_bb, vocpascal_bb, yolo_bb in zip(
+            coco_bbs_v1, coco_bbs_v2, cvat_bbs, imagenet_bbs, labelme_bbs, openimage_bbs,
+            vocpascal_bbs, yolo_bbs):
+        assert coco_bb_v1 == cvat_bb == imagenet_bb == labelme_bb == openimage_bb == vocpascal_bb == yolo_bb
 
 
 def test_toy_example_dets():
