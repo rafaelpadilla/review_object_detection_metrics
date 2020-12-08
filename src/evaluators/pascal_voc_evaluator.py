@@ -224,7 +224,7 @@ def get_pascalvoc_metrics(gt_boxes,
     return ret
 
 
-def plot_precision_recallcurve(results,
+def plot_precision_recall_curve(results,
                                showAP=False,
                                showInterpolatedPrecision=False,
                                savePath=None,
