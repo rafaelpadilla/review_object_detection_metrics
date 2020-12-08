@@ -4,6 +4,7 @@ from collections import Counter
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 from src.bounding_box import BoundingBox
 from src.utils.enumerators import (BBFormat, CoordinatesType, MethodAveragePrecision)
 
@@ -82,7 +83,8 @@ def calculate_ap_11_point_interp(rec, prec, recall_vals=11):
 def get_pascalvoc_metrics(gt_boxes,
                           det_boxes,
                           iou_threshold=0.5,
-                          method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION):
+                          method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+                          generate_table=False):
     """TODO:Get the metrics used by the VOC Pascal 2012 challenge.
         Get
         Args:
@@ -131,12 +133,26 @@ def get_pascalvoc_metrics(gt_boxes,
         for key, val in detected_gt_per_image.items():
             detected_gt_per_image[key] = np.zeros(val)
         # print(f'Evaluating class: {c}')
+        dict_table = {
+            'image': [],
+            'confidence': [],
+            'TP': [],
+            'FP': [],
+            'acc TP': [],
+            'acc FP': [],
+            'precision': [],
+            'recall': []
+        }
         # Loop through detections
         for idx_det, det in enumerate(dects):
             img_det = det.get_image_name()
+
+            if generate_table:
+                dict_table['image'].append(img_det)
+                dict_table['confidence'].append(f'{100*det.get_confidence():.2f}%')
+
             # Find ground truth image
             gt = [gt for gt in gt_boxes if gt.get_image_name() == img_det]
-
             # Get the maximum iou among all detectins in the image
             iouMax = sys.float_info.min
             # Given the detection det, find ground-truth with the highest iou
@@ -155,23 +171,42 @@ def get_pascalvoc_metrics(gt_boxes,
                     detected_gt_per_image[img_det][
                         id_match_gt] = 1  # set flag to identify gt as already 'matched'
                     # print("TP")
+                    if generate_table:
+                        dict_table['TP'].append(1)
+                        dict_table['FP'].append(0)
                 else:
                     FP[idx_det] = 1  # detection is set as false positive
+                    if generate_table:
+                        dict_table['FP'].append(1)
+                        dict_table['TP'].append(0)
                     # print("FP")
             # - A detected "cat" is overlaped with a GT "cat" with IOU >= iou_threshold.
             else:
                 FP[idx_det] = 1  # detection is set as false positive
+                if generate_table:
+                    dict_table['FP'].append(1)
+                    dict_table['TP'].append(0)
                 # print("FP")
         # compute precision, recall and average precision
         acc_FP = np.cumsum(FP)
         acc_TP = np.cumsum(TP)
         rec = acc_TP / npos
         prec = np.divide(acc_TP, (acc_FP + acc_TP))
+        if generate_table:
+            dict_table['acc TP'] = list(acc_TP)
+            dict_table['acc FP'] = list(acc_FP)
+            dict_table['precision'] = list(prec)
+            dict_table['recall'] = list(rec)
+            table = pd.DataFrame(dict_table)
+        else:
+            table = None
         # Depending on the method, call the right implementation
         if method == MethodAveragePrecision.EVERY_POINT_INTERPOLATION:
             [ap, mpre, mrec, ii] = calculate_ap_every_point(rec, prec)
-        else:
+        elif method == MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION:
             [ap, mpre, mrec, _] = calculate_ap_11_point_interp(rec, prec)
+        else:
+            Exception('method not defined')
         # add class result in the dictionary to be returned
         ret[c] = {
             'precision': prec,
@@ -183,15 +218,17 @@ def get_pascalvoc_metrics(gt_boxes,
             'total TP': np.sum(TP),
             'total FP': np.sum(FP),
             'method': method,
+            'iou': iou_threshold,
+            'table': table
         }
     return ret
 
 
-def PlotPrecisionRecallCurve(results,
-                             showAP=False,
-                             showInterpolatedPrecision=False,
-                             savePath=None,
-                             showGraphic=True):
+def plot_precision_recallcurve(results,
+                               showAP=False,
+                               showInterpolatedPrecision=False,
+                               savePath=None,
+                               showGraphic=True):
     result = None
     # Each resut represents a class
     for classId, result in results.items():

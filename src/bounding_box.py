@@ -1,8 +1,7 @@
 from math import isclose
 
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
-from src.utils.general_utils import (convert_to_absolute_values,
-                                     convert_to_relative_values)
+from src.utils.general_utils import (convert_to_absolute_values, convert_to_relative_values)
 
 
 class BoundingBox:
@@ -339,6 +338,10 @@ class BoundingBox:
     # boxB = (Bx1,By1,Bx2,By2)
     @staticmethod
     def have_intersection(boxA, boxB):
+        if isinstance(boxA, BoundingBox):
+            boxA = boxA.get_absolute_bounding_box(BBFormat.XYX2Y2)
+        if isinstance(boxB, BoundingBox):
+            boxB = boxB.get_absolute_bounding_box(BBFormat.XYX2Y2)
         if boxA[0] > boxB[2]:
             return False  # boxA is right of boxB
         if boxB[0] > boxA[2]:
@@ -351,6 +354,10 @@ class BoundingBox:
 
     @staticmethod
     def get_intersection_area(boxA, boxB):
+        if isinstance(boxA, BoundingBox):
+            boxA = boxA.get_absolute_bounding_box(BBFormat.XYX2Y2)
+        if isinstance(boxB, BoundingBox):
+            boxB = boxB.get_absolute_bounding_box(BBFormat.XYX2Y2)
         xA = max(boxA[0], boxB[0])
         yA = max(boxA[1], boxB[1])
         xB = min(boxA[2], boxB[2])
