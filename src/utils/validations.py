@@ -281,7 +281,7 @@ def is_coco_format(file_path):
         True if the file contains annotations in coco format, False otherwise.
     """
     return is_json(file_path) and json_contains_tags(
-        file_path, ['annotations/bbox', 'annotations/image_id', 'annotations/id'])
+        file_path, ['annotations/bbox', 'annotations/image_id',])
 
 
 def is_cvat_format(file_path):
