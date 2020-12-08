@@ -9,7 +9,7 @@ from src.utils.converter import coco2bb
 gts = coco2bb('tests/test_coco_eval/gts', BBType.GROUND_TRUTH)
 dts = coco2bb('tests/test_coco_eval/dets', BBType.DETECTED)
 
-res = get_coco_summary(dts, gts)
+res = get_coco_summary(gts, dts)
 
 # Compare results to those obtained with coco's official implementation
 tol = 1e-6

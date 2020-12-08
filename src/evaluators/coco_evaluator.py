@@ -25,7 +25,7 @@ import numpy as np
 from src.bounding_box import BBFormat
 
 
-def get_coco_summary(detected_bbs, groundtruth_bbs):
+def get_coco_summary(groundtruth_bbs, detected_bbs):
     """Calculate the 12 standard metrics used in COCOEval,
         AP, AP50, AP75,
         AR1, AR10, AR100,
@@ -38,10 +38,10 @@ def get_coco_summary(detected_bbs, groundtruth_bbs):
 
     Parameters
         ----------
-            detected_bbs : list
-                A list containing objects of type BoundingBox representing the detected bounding boxes.
             groundtruth_bbs : list
                 A list containing objects of type BoundingBox representing the ground-truth bounding boxes.
+            detected_bbs : list
+                A list containing objects of type BoundingBox representing the detected bounding boxes.
     Returns:
             A dictionary with one entry for each metric.
     """
@@ -160,8 +160,8 @@ def get_coco_summary(detected_bbs, groundtruth_bbs):
 
 
 def get_coco_metrics(
-        detected_bbs,
         groundtruth_bbs,
+        detected_bbs,
         iou_threshold=0.5,
         area_range=(0, np.inf),
         max_dets=100,
@@ -170,10 +170,10 @@ def get_coco_metrics(
         given an IOU threshold, area range and maximum number of detections.
     Parameters
         ----------
-            detected_bbs : list
-                A list containing objects of type BoundingBox representing the detected bounding boxes.
             groundtruth_bbs : list
                 A list containing objects of type BoundingBox representing the ground-truth bounding boxes.
+            detected_bbs : list
+                A list containing objects of type BoundingBox representing the detected bounding boxes.
             iou_threshold : float
                 Intersection Over Union (IOU) value used to consider a TP detection.
             area_range : (numerical x numerical)
