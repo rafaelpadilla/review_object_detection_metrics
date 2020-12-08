@@ -30,7 +30,7 @@ def calculate_ap_every_point(rec, prec):
     return [ap, mpre[0:len(mpre) - 1], mrec[0:len(mpre) - 1], ii]
 
 
-def calculate_ap_11_point_interp(rec, prec):
+def calculate_ap_11_point_interp(rec, prec, recall_vals=11):
     # def CalculateAveragePrecision2(rec, prec):
     mrec = []
     # mrec.append(0)
@@ -40,7 +40,7 @@ def calculate_ap_11_point_interp(rec, prec):
     # mpre.append(0)
     [mpre.append(e) for e in prec]
     # mpre.append(0)
-    recallValues = np.linspace(0, 1, 11)
+    recallValues = np.linspace(0, 1, recall_vals)
     recallValues = list(recallValues[::-1])
     rhoInterp = []
     recallValid = []
@@ -55,7 +55,7 @@ def calculate_ap_11_point_interp(rec, prec):
         recallValid.append(r)
         rhoInterp.append(pmax)
     # By definition AP = sum(max(precision whose recall is above r))/11
-    ap = sum(rhoInterp) / 11
+    ap = sum(rhoInterp) / len(recallValues)
     # Generating values for the plot
     rvals = []
     rvals.append(recallValid[0])
