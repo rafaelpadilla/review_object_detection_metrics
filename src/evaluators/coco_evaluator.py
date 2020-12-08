@@ -20,9 +20,10 @@
 """
 
 from collections import defaultdict
-import numpy as np
 
+import numpy as np
 from src.bounding_box import BBFormat
+
 
 def get_coco_summary(detected_bbs, groundtruth_bbs):
     """Calculate the 12 standard metrics used in COCOEval,
@@ -79,17 +80,13 @@ def get_coco_summary(detected_bbs, groundtruth_bbs):
         # run ap calculation per-class
         for class_id in _evals:
             ev = _evals[class_id]
-            res.append(
-                {
-                    "class": class_id,
-                    **_compute_ap_recall(ev["scores"], ev["matched"], ev["NP"]),
-                }
-            )
+            res.append({
+                "class": class_id,
+                **_compute_ap_recall(ev["scores"], ev["matched"], ev["NP"]),
+            })
         return res
 
-    iou_thresholds = np.linspace(
-        0.5, 0.95, int(np.round((0.95 - 0.5) / 0.05)) + 1, endpoint=True
-    )
+    iou_thresholds = np.linspace(0.5, 0.95, int(np.round((0.95 - 0.5) / 0.05)) + 1, endpoint=True)
 
     # compute simple AP with all thresholds, using up to 100 dets, and all areas
     full = {
@@ -102,63 +99,72 @@ def get_coco_summary(detected_bbs, groundtruth_bbs):
     AP = np.mean([x['AP'] for k in full for x in full[k] if x['AP'] is not None])
 
     # max recall for 100 dets can also be calculated here
-    AR100 = np.mean([x['TP']/x['total positives'] for k in full for x in full[k] if x['TP'] is not None])
+    AR100 = np.mean(
+        [x['TP'] / x['total positives'] for k in full for x in full[k] if x['TP'] is not None])
 
     small = {
         i: _evaluate(iou_threshold=i, max_dets=100, area_range=(0, 32**2))
         for i in iou_thresholds
     }
     APsmall = np.mean([x['AP'] for k in small for x in small[k] if x['AP'] is not None])
-    ARsmall = np.mean([x['TP']/x['total positives'] for k in small for x in small[k] if x['TP'] is not None])
+    ARsmall = np.mean(
+        [x['TP'] / x['total positives'] for k in small for x in small[k] if x['TP'] is not None])
 
     medium = {
         i: _evaluate(iou_threshold=i, max_dets=100, area_range=(32**2, 96**2))
         for i in iou_thresholds
     }
     APmedium = np.mean([x['AP'] for k in medium for x in medium[k] if x['AP'] is not None])
-    ARmedium = np.mean([x['TP']/x['total positives'] for k in medium for x in medium[k] if x['TP'] is not None])
+    ARmedium = np.mean(
+        [x['TP'] / x['total positives'] for k in medium for x in medium[k] if x['TP'] is not None])
 
     large = {
         i: _evaluate(iou_threshold=i, max_dets=100, area_range=(96**2, np.inf))
         for i in iou_thresholds
     }
     APlarge = np.mean([x['AP'] for k in large for x in large[k] if x['AP'] is not None])
-    ARlarge = np.mean([x['TP']/x['total positives'] for k in large for x in large[k] if x['TP'] is not None])
+    ARlarge = np.mean(
+        [x['TP'] / x['total positives'] for k in large for x in large[k] if x['TP'] is not None])
 
     max_det1 = {
         i: _evaluate(iou_threshold=i, max_dets=1, area_range=(0, np.inf))
         for i in iou_thresholds
     }
-    AR1 = np.mean([x['TP']/x['total positives'] for k in max_det1 for x in max_det1[k] if x['TP'] is not None])
+    AR1 = np.mean([
+        x['TP'] / x['total positives'] for k in max_det1 for x in max_det1[k] if x['TP'] is not None
+    ])
 
     max_det10 = {
         i: _evaluate(iou_threshold=i, max_dets=10, area_range=(0, np.inf))
         for i in iou_thresholds
     }
-    AR10 = np.mean([x['TP']/x['total positives'] for k in max_det10 for x in max_det10[k] if x['TP'] is not None])
+    AR10 = np.mean([
+        x['TP'] / x['total positives'] for k in max_det10 for x in max_det10[k]
+        if x['TP'] is not None
+    ])
 
-
-    return {"AP": AP,
-            "AP50": AP50,
-            "AP75": AP75,
-            "APsmall": APsmall,
-            "APmedium": APmedium,
-            "APlarge": APlarge,
-            "AR1": AR1,
-            "AR10": AR10,
-            "AR100": AR100,
-            "ARsmall": ARsmall,
-            "ARmedium": ARmedium,
-            "ARlarge": ARlarge}
-
+    return {
+        "AP": AP,
+        "AP50": AP50,
+        "AP75": AP75,
+        "APsmall": APsmall,
+        "APmedium": APmedium,
+        "APlarge": APlarge,
+        "AR1": AR1,
+        "AR10": AR10,
+        "AR100": AR100,
+        "ARsmall": ARsmall,
+        "ARmedium": ARmedium,
+        "ARlarge": ARlarge
+    }
 
 
 def get_coco_metrics(
-    detected_bbs,
-    groundtruth_bbs,
-    iou_threshold=0.5,
-    area_range=(0, np.inf),
-    max_dets=100,
+        detected_bbs,
+        groundtruth_bbs,
+        iou_threshold=0.5,
+        area_range=(0, np.inf),
+        max_dets=100,
 ):
     """ Calculate the Average Precision and Recall metrics as in COCO's official implementation
         given an IOU threshold, area range and maximum number of detections.
@@ -222,16 +228,14 @@ def get_coco_metrics(
         acc["matched"] = np.concatenate(acc["matched"]).astype(np.bool)
         acc["NP"] = np.sum(acc["NP"])
 
-    res = []
+    res = {}
     # run ap calculation per-class
     for class_id in _evals:
         ev = _evals[class_id]
-        res.append(
-            {
-                "class": class_id,
-                **_compute_ap_recall(ev["scores"], ev["matched"], ev["NP"]),
-            }
-        )
+        res[class_id] = {
+            "class": class_id,
+            **_compute_ap_recall(ev["scores"], ev["matched"], ev["NP"])
+        }
     return res
 
 
@@ -247,6 +251,7 @@ def _group_detections(dt, gt):
         c_id = g.get_class_id()
         bb_info[i_id, c_id]["gt"].append(g)
     return bb_info
+
 
 def _get_area(a):
     """ COCO does not consider the outer edge as included in the bbox """
@@ -334,14 +339,11 @@ def _evaluate_image(dt, gt, ious, iou_threshold, max_dets=None, area_range=None)
 
     # generate ignore list for dts
     dt_ignore = [
-        gt_ignore[dtm[d_idx]] if d_idx in dtm else _is_ignore(d)
-        for d_idx, d in enumerate(dt)
+        gt_ignore[dtm[d_idx]] if d_idx in dtm else _is_ignore(d) for d_idx, d in enumerate(dt)
     ]
 
     # get score for non-ignored dts
-    scores = [
-        dt[d_idx].get_confidence() for d_idx in range(len(dt)) if not dt_ignore[d_idx]
-    ]
+    scores = [dt[d_idx].get_confidence() for d_idx in range(len(dt)) if not dt_ignore[d_idx]]
     matched = [d_idx in dtm for d_idx in range(len(dt)) if not dt_ignore[d_idx]]
 
     n_gts = len([g_idx for g_idx in range(len(gt)) if not gt_ignore[g_idx]])
@@ -352,20 +354,23 @@ def _compute_ap_recall(scores, matched, NP, recall_thresholds=None):
     """ This curve tracing method has some quirks that do not appear when only unique confidence thresholds
     are used (i.e. Scikit-learn's implementation), however, in order to be consistent, the COCO's method is reproduced. """
     if NP == 0:
-        return {"precision": None,
-                "recall": None,
-                "AP": None,
-                "interpolated precision": None,
-                "interpolated recall": None,
-                "total positives": None,
-                "TP": None,
-                "FP": None}
+        return {
+            "precision": None,
+            "recall": None,
+            "AP": None,
+            "interpolated precision": None,
+            "interpolated recall": None,
+            "total positives": None,
+            "TP": None,
+            "FP": None
+        }
 
     # by default evaluate on 101 recall levels
     if recall_thresholds is None:
-        recall_thresholds = np.linspace(
-            0.0, 1.00, int(np.round((1.00 - 0.0) / 0.01)) + 1, endpoint=True
-        )
+        recall_thresholds = np.linspace(0.0,
+                                        1.00,
+                                        int(np.round((1.00 - 0.0) / 0.01)) + 1,
+                                        endpoint=True)
 
     # sort in descending score order
     inds = np.argsort(-scores, kind="stable")
@@ -388,11 +393,13 @@ def _compute_ap_recall(scores, matched, NP, recall_thresholds=None):
     # get interpolated precision values at the evaluation thresholds
     i_pr = np.array([i_pr[r] if r < len(i_pr) else 0 for r in rec_idx])
 
-    return {"precision": pr,
-            "recall": rc,
-            "AP": np.mean(i_pr),
-            "interpolated precision": i_pr,
-            "interpolated recall": recall_thresholds,
-            "total positives": NP,
-            "TP": tp[-1] if len(tp) != 0 else 0,
-            "FP": fp[-1] if len(fp) != 0 else 0}
+    return {
+        "precision": pr,
+        "recall": rc,
+        "AP": np.mean(i_pr),
+        "interpolated precision": i_pr,
+        "interpolated recall": recall_thresholds,
+        "total positives": NP,
+        "TP": tp[-1] if len(tp) != 0 else 0,
+        "FP": fp[-1] if len(fp) != 0 else 0
+    }
