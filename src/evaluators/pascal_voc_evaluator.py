@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from src.bounding_box import BoundingBox
-from src.utils.enumerators import (BBFormat, CoordinatesType, MethodAveragePrecision)
+from src.utils.enumerators import (BBFormat, CoordinatesType,
+                                   MethodAveragePrecision)
 
 
 def calculate_ap_every_point(rec, prec):
@@ -27,12 +28,10 @@ def calculate_ap_every_point(rec, prec):
     ap = 0
     for i in ii:
         ap = ap + np.sum((mrec[i] - mrec[i - 1]) * mpre[i])
-    # return [ap, mpre[1:len(mpre)-1], mrec[1:len(mpre)-1], ii]
     return [ap, mpre[0:len(mpre) - 1], mrec[0:len(mpre) - 1], ii]
 
 
 def calculate_ap_11_point_interp(rec, prec, recall_vals=11):
-    # def CalculateAveragePrecision2(rec, prec):
     mrec = []
     # mrec.append(0)
     [mrec.append(e) for e in rec]
@@ -79,43 +78,44 @@ def calculate_ap_11_point_interp(rec, prec, recall_vals=11):
     rhoInterp = [i[1] for i in cc]
     return [ap, rhoInterp, recallValues, None]
 
-
 def get_pascalvoc_metrics(gt_boxes,
                           det_boxes,
                           iou_threshold=0.5,
                           method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                           generate_table=False):
     """TODO:Get the metrics used by the VOC Pascal 2012 challenge.
-        Get
-        Args:
-            boundingboxes: Object of the class BoundingBoxes representing ground truth and detected
-            bounding boxes;
-            iou_threshold: IOU threshold indicating which detections will be considered TP or FP
-            (default value = 0.5);
-            method (default = EVERY_POINT_INTERPOLATION): It can be calculated as the implementation
-            in the official PASCAL VOC toolkit (EVERY_POINT_INTERPOLATION), or applying the 11-point
-            interpolatio as described in the paper "The PASCAL Visual Object Classes(VOC) Challenge"
-            or EVERY_POINT_INTERPOLATION"  (ELEVEN_POINT_INTERPOLATION);
-        Returns:
-            A list of dictionaries. Each dictionary contains information and metrics of each class.
-            The keys of each dictionary are:
-            dict['class']: class representing the current dictionary;
-            dict['precision']: array with the precision values;
-            dict['recall']: array with the recall values;
-            dict['AP']: average precision;
-            dict['interpolated precision']: interpolated precision values;
-            dict['interpolated recall']: interpolated recall values;
-            dict['total positives']: total number of ground truth positives;
-            dict['total TP']: total number of True Positive detections;
-            dict['total FP']: total number of False Positive detections;
-        """
+    Get
+    Args:
+        boundingboxes: Object of the class BoundingBoxes representing ground truth and detected
+        bounding boxes;
+        iou_threshold: IOU threshold indicating which detections will be considered TP or FP
+        (default value = 0.5);
+        method (default = EVERY_POINT_INTERPOLATION): It can be calculated as the implementation
+        in the official PASCAL VOC toolkit (EVERY_POINT_INTERPOLATION), or applying the 11-point
+        interpolatio as described in the paper "The PASCAL Visual Object Classes(VOC) Challenge"
+        or EVERY_POINT_INTERPOLATION"  (ELEVEN_POINT_INTERPOLATION);
+    Returns:
+        A dictioanry contains information and metrics of each class.
+        The key represents the class and the values are:
+        dict['class']: class representing the current dictionary;
+        dict['precision']: array with the precision values;
+        dict['recall']: array with the recall values;
+        dict['AP']: average precision;
+        dict['interpolated precision']: interpolated precision values;
+        dict['interpolated recall']: interpolated recall values;
+        dict['total positives']: total number of ground truth positives;
+        dict['total TP']: total number of True Positive detections;
+        dict['total FP']: total number of False Positive detections;"""
     ret = {}
     # Get classes of all bounding boxes separating them by classes
+    gt_classes_only = []
     classes_bbs = {}
     for bb in gt_boxes:
         c = bb.get_class_id()
+        gt_classes_only.append(c)
         classes_bbs.setdefault(c, {'gt': [], 'det': []})
         classes_bbs[c]['gt'].append(bb)
+    gt_classes_only = list(set(gt_classes_only))
     for bb in det_boxes:
         c = bb.get_class_id()
         classes_bbs.setdefault(c, {'gt': [], 'det': []})
@@ -123,6 +123,9 @@ def get_pascalvoc_metrics(gt_boxes,
 
     # Precision x Recall is obtained individually by each class
     for c, v in classes_bbs.items():
+        # Report results only in the classes that are in the GT
+        if c not in gt_classes_only:
+            continue
         npos = len(v['gt'])
         # sort detections by decreasing confidence
         dects = [a for a in sorted(v['det'], key=lambda bb: bb.get_confidence(), reverse=True)]
@@ -152,7 +155,7 @@ def get_pascalvoc_metrics(gt_boxes,
                 dict_table['confidence'].append(f'{100*det.get_confidence():.2f}%')
 
             # Find ground truth image
-            gt = [gt for gt in gt_boxes if gt.get_image_name() == img_det]
+            gt = [gt for gt in classes_bbs[c]['gt'] if gt.get_image_name() == img_det]
             # Get the maximum iou among all detectins in the image
             iouMax = sys.float_info.min
             # Given the detection det, find ground-truth with the highest iou
@@ -221,14 +224,16 @@ def get_pascalvoc_metrics(gt_boxes,
             'iou': iou_threshold,
             'table': table
         }
-    return ret
+    # For mAP, only the classes in the gt set should be considered
+    mAP = sum([v['AP'] for c, v in ret.items() if c in gt_classes_only])/len(gt_classes_only)
+    return ret, mAP
 
 
 def plot_precision_recall_curve(results,
-                               showAP=False,
-                               showInterpolatedPrecision=False,
-                               savePath=None,
-                               showGraphic=True):
+                                showAP=False,
+                                showInterpolatedPrecision=False,
+                                savePath=None,
+                                showGraphic=True):
     result = None
     # Each resut represents a class
     for classId, result in results.items():
