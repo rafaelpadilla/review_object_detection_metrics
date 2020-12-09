@@ -24,7 +24,7 @@ def test_case_1():
     # ELEVEN_POINT_INTERPOLATION
     expected_APs = {'object': {0.1: 0.3333333333, 0.3: 0.2683982683, 0.5: 0.0303030303, 0.75: 0.0}}
     for idx, iou in enumerate(testing_ious):
-        results = get_pascalvoc_metrics(gts,
+        results, mAP = get_pascalvoc_metrics(gts,
                                         dets,
                                         iou_threshold=iou,
                                         method=MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION)
@@ -34,9 +34,10 @@ def test_case_1():
     # EVERY_POINT_INTERPOLATION
     expected_APs = {'object': {0.1: 0.3371980676, 0.3: 0.2456866804, 0.5: 0.0222222222, 0.75: 0.0}}
     for idx, iou in enumerate(testing_ious):
-        results = get_pascalvoc_metrics(gts,
+        results, mAP = get_pascalvoc_metrics(gts,
                                         dets,
                                         iou_threshold=iou,
                                         method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION)
         for c, res in results.items():
             assert isclose(expected_APs[c][iou], res['AP'])
+
