@@ -6,7 +6,7 @@ Our  previously  available  [tool  for  object  detection assessment](https:// g
 The motivation of this project is the lack of consensus used by different works and implementations concerning the evaluation metrics of the object detection problem. Although on-line competitions use their own metrics to evaluate the task of object detection, just some of them offer reference code snippets to calculate the assertiveness of the detected objects.
 Researchers who want to evaluate their work using different datasets than those offered by the competitions, need to implement their own version of the metrics or spend a considerable amount of time converting bounding box to formats that are supported by evaluation tools. Sometimes a wrong or different implementation can create different and biased results. Even though many tools have been developed to convert the annotated boxes from one type to another, the quality assessment of the final detections still lacks a tool compatible with different bounding box formats and multiple performance metrics. 
 
-Ideally, in order to have trustworthy benchmarking among different approaches, it is necessary to have an implementation that can be used by everyone regardless the dataset used. This work attempts to cover this gap, providing an open-source tool flexible to support many bounding box formats and evaluate detections with different metrics (AP@[.5:.05:.95], AP@50, mAP, AR_{1}, AR_{10}, AR_{100}, etc). We also provide a detailed explanation pointing out their divergences, showing how different implementations may result into different results.
+Ideally, in order to have trustworthy benchmarking among different approaches, it is necessary to have an implementation that can be used by everyone regardless the dataset used. This work attempts to cover this gap, providing an open-source tool flexible to support many bounding box formats and evaluate detections with different metrics (AP@[.5:.05:.95], AP@50, mAP, AR<sub>1</sub>, AR<sub>10</sub>, AR<sub>100</sub>, etc). We also provide a detailed explanation pointing out their divergences, showing how different implementations may result into different results.
 
 
 ## Table of contents
@@ -25,7 +25,7 @@ Ideally, in order to have trustworthy benchmarking among different approaches, i
 - [Computing different metrics](#computing-different-metrics)
 - [Tube Average Precision (TAP)](#tube-average-precision-tap)
 - [How to use this project](#how-to-use-this-project)
-- [How to contribute](#how-to-contribute)
+- [Contributing](#how-to-contribute)
 - [References](#references)
 
 
@@ -47,9 +47,8 @@ This implementation does not require modifications of the detection models to ma
 To ensure the accuracy of the results, the implementation strictly followed the metric definitions and the output results were carefully compared against the official implementations
 
 
-
-- [Important definitions](#important-definitions)
-## Metrics]
+## Important definitions
+## Metrics
 ### Precision x Recall curve
 ### Average Precision
 #### N-point interpolation
@@ -60,6 +59,15 @@ To ensure the accuracy of the results, the implementation strictly followed the 
 ## A practical example
 ## Computing different metrics
 ## **Tube Average Precision (TAP)**
-## How to contribute
+
+
+## Contributing
+
+We appreciate all contributions. If you are planning to contribute with this repository, please do so without any further discussion.
+
+If you plan to add new features, support other bounding box formats, create tutorials, please first open an issue and discuss the feature with us. If you send a PR without previous discussion, it might be rejected.
+
+It is also important that for each new feature, supporting other bounding box formats, and metrics, a pytest must be created.
+
 ## References
 
