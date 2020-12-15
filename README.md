@@ -16,31 +16,50 @@ Ideally, in order to have trustworthy benchmarking among different approaches, i
 - [Metrics](#metrics)
   - [Precision x Recall curve](#precision-x-recall-curve)
   - [Average Precision](#average-precision)
-    - [N-point interpolation](#N-point-interpolation)
+    - [N-point interpolation](n-point-interpolation)
     - [Interpolating all  points](#interpolating-all-points)
-  - [Mean Average Precision (mAP)](#mean-average-precision)
+  - [Mean Average Precision (mAP)](#mean-average-precision-map)
   - [Average recall](#average-recall)
-  - [Mean Average Recall (mAR)](#mean-average-recall)
-- [A practical example](#practical-example)
+  - [Mean Average Recall (mAR)](#mean-average-recall-mar)
+- [A practical example](#a-practical-example)
 - [Computing different metrics](#computing-different-metrics)
-- [**How to use this project**](#how-to-use-this-project)
+- [Tube Average Precision (TAP)](#tube-average-precision-tap)
+- [How to use this project](#how-to-use-this-project)
 - [How to contribute](#how-to-contribute)
 - [References](#references)
 
 
 
-# Supported types
+## Supported bounding box formats
 
 This implementation does not require modifications of the detection models to match complicated input formats, avoiding conversions to XML, JSON, CSV, or other file types. It supports more than 8 different kinds of annotation formats, including the ones presented in the Table below. 
 
 |             Annotation tool            |       Annotation types      |                                               Output formats                                               |
 |:--------------------------------------:|:---------------------------:|:----------------------------------------------------------------------------------------------------------:|
-|                Label me                | Bounding boxes and polygons |                           Labelme, but provides conversion to COCO and PASCAL VOC                          |
-|                LabelIMG                |        Bounding boxes       |                                             PASCAL VOC and YOLO                                            |
-|             Microsoft VoTT             | Bounding boxes and polygons | PASCAL VOC, TFRecords, specific CSV, Azure Custom Vision Service, Microsoft Cognitive Toolkit (CNTK), VoTT |
-| Computer Vision Annotation Tool (CVAT) | Bounding boxes and polygons |                            COCO, CVAT, Labelme, PASCAL VOC, TFRecord, YOLO, etc                            |
-|     VGG Image Annotation Tool (VIA)    | Bounding boxes and polygons |                                       COCO and specific CSV and JSON                                       |
+|                [Label me](https://github.com/wkentaro/labelme)                | Bounding boxes and polygons |                           Labelme format, but provides conversion to COCO and PASCAL VOC                          |
+|                [LabelIMG](https://github.com/tzutalin/labelImg)                |        Bounding boxes       |                                             PASCAL VOC and YOLO                                            |
+|             [Microsoft VoTT](https://github.com/Microsoft/VoTT)             | Bounding boxes and polygons | PASCAL VOC, TFRecords, specific CSV, Azure Custom Vision Service, Microsoft Cognitive Toolkit (CNTK), VoTT |
+| [Computer Vision Annotation Tool (CVAT)](https://github.com/openvinotoolkit/cvat) | Bounding boxes and polygons |                            COCO, CVAT, Labelme, PASCAL VOC, TFRecord, YOLO, etc                            |
+|     [VGG Image Annotation Tool (VIA)](https://www.robots.ox.ac.uk/~vgg/software/via/)    | Bounding boxes and polygons |                                       COCO and specific CSV and JSON                                       |
 
 
 
 To ensure the accuracy of the results, the implementation strictly followed the metric definitions and the output results were carefully compared against the official implementations
+
+
+
+- [Important definitions](#important-definitions)
+## Metrics]
+### Precision x Recall curve
+### Average Precision
+#### N-point interpolation
+#### Interpolating all points
+### Mean Average Precision (mAP)
+### Average recall
+### Mean Average Recall (mAR)
+## A practical example
+## Computing different metrics
+## **Tube Average Precision (TAP)**
+## How to contribute
+## References
+
