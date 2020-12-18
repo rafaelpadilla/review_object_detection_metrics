@@ -1,109 +1,73 @@
-Review on Object Detection Metrics
-==============================
+Open-Source Toolbox for Object Detection Metrics
+================================================
 
-Repositório de trabalho para o journal paper [Electronics - Special Issue](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection).  
+Our  previously  available  [tool  for  object  detection assessment](https:// github.com/ rafaelpadilla/ Object-Detection-Metrics) has received many positive feedbacks, which motivated us to upgrade it with other metrics and support more bounding box formats. As some external tools, competitions and works are already using the older version, we decided not to modify it but release a newer and more complete project. 
 
-**Deadline da implementação dos tipos de bounding boxes: 18 de novembro**  
-**Deadline da implementação COMPLETA: 24 de novembro**
+The motivation of this project is the lack of consensus used by different works and implementations concerning the evaluation metrics of the object detection problem. Although on-line competitions use their own metrics to evaluate the task of object detection, just some of them offer reference code snippets to calculate the assertiveness of the detected objects.
+Researchers who want to evaluate their work using different datasets than those offered by the competitions, need to implement their own version of the metrics or spend a considerable amount of time converting bounding box to formats that are supported by evaluation tools. Sometimes a wrong or different implementation can create different and biased results. Even though many tools have been developed to convert the annotated boxes from one type to another, the quality assessment of the final detections still lacks a tool compatible with different bounding box formats and multiple performance metrics. 
 
-### Tarefas:
+Ideally, in order to have trustworthy benchmarking among different approaches, it is necessary to have an implementation that can be used by everyone regardless the dataset used. This work attempts to cover this gap, providing an open-source tool flexible to support many bounding box formats and evaluate detections with different metrics (AP@[.5:.05:.95], AP@50, mAP, AR<sub>1</sub>, AR<sub>10</sub>, AR<sub>100</sub>, etc). We also provide a detailed explanation pointing out their divergences, showing how different implementations may result into different results.
 
-#### Wesley:  
 
-i) Implementação da métrica proposta para detecção de objetos em vídeos (tubos)  
-ii) Implementaço da métrica min-min-max usada no ImageNet challenge (detalhes [aqui](https://www.kaggle.com/c/imagenet-object-localization-challenge/overview/evaluation))  
+## Table of contents
 
-#### Thadeu:  
-
-i) Implementação das métricas COCO  
-ii) Implementação da métrica Average Delay  
-
-Referências:  
-[Métricas COCO](https://cocodataset.org/#detection-eval)  
-[Métricas em geral](https://blog.zenggyu.com/en/post/2018-12-16/an-introduction-to-evaluation-metrics-for-object-detection/#fn3)  
-[Average Recall](https://manalelaidouni.github.io/manalelaidouni.github.io/Evaluating-Object-Detection-Models-Guide-to-Performance-Metrics.html#average-recall-ar) 
-[Paper Average Delay](https://arxiv.org/pdf/1908.06368.pdf)
-[Implementação Average Delay](https://github.com/RalphMao/VMetrics)
-
-Implementações:  
-[Oficial COCO (cocoeval.py)](https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py)  
-[Official Detectron (voc_eval.py)](https://github.com/facebookresearch/Detectron/blob/cbb0236dfdc17790658c146837215d2728e6fadd/detectron/datasets/voc_eval.py)  
-[Implementação do paper de Niteroi](https://github.com/rafaelpadilla/Object-Detection-Metrics)  
-[Localization Recall Precision (LRP): A New Performance Metric for Object Detection](https://arxiv.org/pdf/1807.01696.pdf)   
-
-#### Padilla:  
-
-i) Escrever o paper  
-ii) Codar módulo para reconhecer diferentes tipos de anotações  
-iii) Desenvolver UI para facilitar o uso da API  
-
-Referências:  
-[Métricas para detecço de silhueta (mAP e mIOU)](https://www.youtube.com/watch?v=pDhCbYc0NBQ)  
-[MOTP and MOTA](https://arxiv.org/pdf/2007.14863.pdf)  
-[Evaluating image segmentation](https://www.jeremyjordan.me/evaluating-image-segmentation-models/) 
-[Forum 1](https://stats.stackexchange.com/questions/462279/why-is-map-mean-average-precision-used-for-instance-segmentation-tasks)  
-[Panoptic Segmentation Metric](https://openaccess.thecvf.com/content_CVPR_2019/papers/Kirillov_Panoptic_Segmentation_CVPR_2019_paper.pdf)  
-[Pixelwise Instance Segmentation with a Dynamically Instantiated Network]()  
-[Metrics for tracking](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4479472&casa_token=qVqK8NIQsNYAAAAA:F0uihc_37NUlyDWny3Yvwowb7k5xSM9ZZa7g8W5kAHVs0fXovPxNfQxpWNgPWBezt0MueFqzGA&tag=1)  
-[Performance Evaluation of Object Detection Algorithms](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1048198&casa_token=7g5QwzVvBycAAAAA:3jQBF9mrWJ9OIYHO9O5gbvJme9q7nSNyRO7IJNJywuZCiliGOSkIiXpqrp6JiSpaHPv-fYnY3Q)  
-[A Review of Detection and Tracking of Object from Image and Video Sequences](http://www.ripublication.com/ijcir17/ijcirv13n5_07.pdf)  
-[A Review on Moving Object Detection and Tracking Methods in Video](https://acadpubl.eu/jsi/2018-118-16-17/articles/16/33.pdf)  
-[Framework for Performance Evaluation of Face, Text, and Vehicle Detection and Tracking in Video: Data, Metrics, and Protocol](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=4479472&casa_token=qVqK8NIQsNYAAAAA:F0uihc_37NUlyDWny3Yvwowb7k5xSM9ZZa7g8W5kAHVs0fXovPxNfQxpWNgPWBezt0MueFqzGA&tag=1)  
-[Object Detection With Deep Learning: A Review](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8627998&casa_token=AQl_UN40niwAAAAA:yxPx_j_ul-lgCnon8F5FmHhRIkZJMNugSximoi6SHmLrG_W8l-UOb5YxvoTQ69HCdluwVJhrHQ)  
-[New trends on moving object detection in video images captured by a moving camera: A survey]()  
-[COCO format](https://www.immersivelimit.com/tutorials/create-coco-annotations-from-scratch#:~:text=According%20to%20cocodataset.org%2F%23format%2Ddata%3A,annotations%20are%20stored%20using%20JSON.)  
-[Conversores de formatos](https://roboflow.com/formats)  
-[Formato anotações OpenImage Dataset](https://storage.googleapis.com/openimages/web/download.html)  
+- [Supported bounding box formats](#different-bb-formats)
+- [Important definitions](#important-definitions)
+- [Metrics](#metrics)
+  - [Precision x Recall curve](#precision-x-recall-curve)
+  - [Average Precision](#average-precision)
+    - [N-point interpolation](n-point-interpolation)
+    - [Interpolating all  points](#interpolating-all-points)
+  - [Mean Average Precision (mAP)](#mean-average-precision-map)
+  - [Average recall](#average-recall)
+  - [Mean Average Recall (mAR)](#mean-average-recall-mar)
+- [A practical example](#a-practical-example)
+- [Computing different metrics](#computing-different-metrics)
+- [Tube Average Precision (TAP)](#tube-average-precision-tap)
+- [How to use this project](#how-to-use-this-project)
+- [Contributing](#how-to-contribute)
+- [References](#references)
 
 
 
-Project Organization
-------------
+## Supported bounding box formats
 
-    ├── LICENSE
-    ├── Makefile           <- Makefile with commands like `make data` or `make train`
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── data
-    │   ├── external       <- Data from third party sources.
-    │   ├── interim        <- Intermediate data that has been transformed.
-    │   ├── processed      <- The final, canonical data sets for modeling.
-    │   └── raw            <- The original, immutable data dump.
-    │
-    ├── docs               <- A default Sphinx project; see sphinx-doc.org for details
-    │
-    ├── models             <- Trained and serialized models, model predictions, or model summaries
-    │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is a number (for ordering),
-    │                         the creator's initials, and a short `-` delimited description, e.g.
-    │                         `1.0-jqp-initial-data-exploration`.
-    │
-    ├── references         <- Data dictionaries, manuals, and all other explanatory materials. 
-    │
-    ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
-    │   └── figures        <- Generated graphics and figures to be used in reporting
-    │
-    ├── requirements.txt   <- The requirements file for reproducing the analysis environment, e.g.
-    │                         generated with `pip freeze > requirements.txt`
-    │
-    ├── setup.py           <- makes project pip installable (pip install -e .) so src can be imported
-    ├── src                <- Source code for use in this project.
-    │   ├── __init__.py    <- Makes src a Python module
-    │   │
-    │   ├── data           <- Scripts to download or generate data
-    │   │   └── make_dataset.py
-    │   │
-    │   ├── features       <- Scripts to turn raw data into features for modeling
-    │   │   └── build_features.py
-    │   │
-    │   ├── models         <- Scripts to train models and then use trained models to make
-    │   │   │                 predictions
-    │   │   ├── predict_model.py
-    │   │   └── train_model.py
-    │   │
-    │   └── visualization  <- Scripts to create exploratory and results oriented visualizations
-    │       └── visualize.py
-    │
-    └── tox.ini            <- tox file with settings for running tox; see tox.readthedocs.io
+This implementation does not require modifications of the detection models to match complicated input formats, avoiding conversions to XML, JSON, CSV, or other file types. It supports more than 8 different kinds of annotation formats, including the ones presented in the Table below. 
+
+|             Annotation tool            |       Annotation types      |                                               Output formats                                               |
+|:--------------------------------------:|:---------------------------:|:----------------------------------------------------------------------------------------------------------:|
+|                [Label me](https://github.com/wkentaro/labelme)                | Bounding boxes and polygons |                           Labelme format, but provides conversion to COCO and PASCAL VOC                          |
+|                [LabelIMG](https://github.com/tzutalin/labelImg)                |        Bounding boxes       |                                             PASCAL VOC and YOLO                                            |
+|             [Microsoft VoTT](https://github.com/Microsoft/VoTT)             | Bounding boxes and polygons | PASCAL VOC, TFRecords, specific CSV, Azure Custom Vision Service, Microsoft Cognitive Toolkit (CNTK), VoTT |
+| [Computer Vision Annotation Tool (CVAT)](https://github.com/openvinotoolkit/cvat) | Bounding boxes and polygons |                            COCO, CVAT, Labelme, PASCAL VOC, TFRecord, YOLO, etc                            |
+|     [VGG Image Annotation Tool (VIA)](https://www.robots.ox.ac.uk/~vgg/software/via/)    | Bounding boxes and polygons |                                       COCO and specific CSV and JSON                                       |
 
 
+
+To ensure the accuracy of the results, the implementation strictly followed the metric definitions and the output results were carefully compared against the official implementations
+
+
+## Important definitions
+## Metrics
+### Precision x Recall curve
+### Average Precision
+#### N-point interpolation
+#### Interpolating all points
+### Mean Average Precision (mAP)
+### Average recall
+### Mean Average Recall (mAR)
+## A practical example
+## Computing different metrics
+## **Tube Average Precision (TAP)**
+
+
+## Contributing
+
+We appreciate all contributions. If you are planning to contribute with this repository, please do so without any further discussion.
+
+If you plan to add new features, support other bounding box formats, create tutorials, please first open an issue and discuss the feature with us. If you send a PR without previous discussion, it might be rejected.
+
+It is also important that for each new feature, supporting other bounding box formats, and metrics, a pytest must be created.
+
+## References
 
