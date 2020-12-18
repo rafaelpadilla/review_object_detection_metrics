@@ -59,6 +59,43 @@ To ensure the accuracy of the results, the implementation strictly followed the 
 ## A practical example
 ## Computing different metrics
 ## **Tube Average Precision (TAP)**
+## How to use this project
+
+### Requirements
+We highly suggest you to create an (anaconda)[https://docs.anaconda.com/anaconda/install/] environment using the `environment.yml` file available in this repository. To create the environment and install all necessary packages, run the following command:
+
+`conda env create -n <env_name> --file environment.yml`
+
+Now activate the evironment
+
+`conda activate <env_name>`
+
+And you are ready to run!
+
+### Running
+
+To help users to apply different metrics using multiple bounding box formats, a UI was designed to facilitate the evaluation process. By running the command `python run.py`, the following screen will show:
+
+<!--- interpolated precision AUC --->
+<p align="center">
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/printshot_main_screen.png" align="center"/>
+</p>
+
+Each number in red represents a funcionality described below:
+
+1)
+2)
+3)
+4)
+5)
+6)
+7)
+8)
+9)
+10)
+11)
+12)
+
 
 
 ## Contributing
