@@ -32,7 +32,7 @@ Ideally, in order to have trustworthy benchmarking among different approaches, i
 
 ## Supported bounding box formats
 
-This implementation does not require modifications of the detection models to match complicated input formats, avoiding conversions to XML, JSON, CSV, or other file types. It supports more than 8 different kinds of annotation formats, including the ones presented in the Table below. 
+This implementation does not require modifications of the detection models to match complicated input formats, avoiding conversions to XML, JSON, CSV, or other file types. It supports more than 8 different kinds of annotation formats, including the most popular ones, as presented in the Table below. 
 
 |             Annotation tool            |       Annotation types      |                                               Output formats                                               |
 |:--------------------------------------:|:---------------------------:|:----------------------------------------------------------------------------------------------------------:|
@@ -49,6 +49,34 @@ To ensure the accuracy of the results, the implementation strictly followed the 
 
 ## Important definitions
 ## Metrics
+
+As each dataset adopts a specific annotation format, works tend to use the evaluation tools provided by the datasets considered to test the performance of their methods, what makes their results dependent to the implemented metric type. PASCAL VOC dataset uses the PASCAL VOC annotation format, which provides a MATLAB evaluation code of the metrics AP and mAP (IOU=.50) hampering other types of metrics to be reported with this dataset. The following table shows that among the listed methods, results are reported using a total of 14 different metrics. Due to the fact that the evaluation metrics are directly associated with the annotation format of the datasets, almost all works report their results using only the metrics implemented by the benchmarking datasets, making such cross-datasets comparative results quite rare in the object detection literature.
+
+|    Method    |               Benchmark dataset              |                                     Metrics                                     |
+|:------------:|:--------------------------------------------:|:-------------------------------------------------------------------------------:|
+|   CornerNet  |                     COCO                     |                  AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL                 |
+| EfficientDet |                     COCO                     |                         AP@[.5:.05:.95]; AP@.50; AP@.75                         |
+|  Fast R-CNN  |          PASCAL VOC 2007, 2010, 2012         |                                AP; mAP (IOU=.50)                                |
+| Faster R-CNN |            PASCAL VOC 2007, 2012             |                                AP; mAP (IOU=.50)                                |
+| Faster R-CNN |                     COCO                     |                             AP@[.5:.05:.95]; AP@.50                             |
+|     R-CNN    |         PASCAL VOC 2007, 2010, 2012          |                                AP; mAP (IOU=.50)                                |
+|    RFB Net   |                   VOC 2007                   |                                  mAP (IOU=.50)                                  |
+|    RFB Net   |                     COCO                     |                  AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL                 |
+|   RefineDet  |                VOC 2007, 2012                |                                  mAP (IOU=.50)                                  |
+|   RefineDet  |                     COCO                     |                  AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL                 |
+|   RetinaNet  |                     COCO                     |                  AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL                 |
+|     R-FCN    |                VOC 2007, 2012                |                                  mAP (IOU=.50)                                  |
+|     R-FCN    |                     COCO                     |                      AP@[.5:.05:.95];AP@.50; APS; APM; APL                      |
+|      SSD     |                VOC 2007, 2012                |                                  mAP (IOU=.50)                                  |
+|      SSD     |                     COCO                     | AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL; AR1; AR10; AR100; ARS; ARM; ARL |
+|      SSD     |                   ImageNet                   |                                  mAP (IOU=.50)                                  |
+|    Yolo v1   |  PASCAL VOC 2007, 2012; Picasso; People-Art  |                                AP; mAP (IOU=.50)                                |
+|    Yolo v2   |            PASCAL VOC 2007, 2012             |                                AP; mAP (IOU=.50)                                |
+|    Yolo v2   |                     COCO                     | AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL; AR1; AR10; AR100; ARS; ARM; ARL |
+|    Yolo v3   |                     COCO                     | AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL; AR1; AR10; AR100; ARS; ARM; ARL |
+|    Yolo v4   |                     COCO                     |                  AP@[.5:.05:.95]; AP@.50; AP@.75; APS; APM; APL                 |
+|    Yolo v5   |                     COCO                     |                             AP@[.5:.05:.95]; AP@.50                             |
+
 ### Precision x Recall curve
 ### Average Precision
 #### N-point interpolation
