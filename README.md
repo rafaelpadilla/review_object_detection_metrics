@@ -62,7 +62,7 @@ To ensure the accuracy of the results, the implementation strictly followed the 
 ## How to use this project
 
 ### Requirements
-We highly suggest you to create an (anaconda)[https://docs.anaconda.com/anaconda/install/] environment using the `environment.yml` file available in this repository. To create the environment and install all necessary packages, run the following command:
+We highly suggest you to create an [anaconda](https://docs.anaconda.com/anaconda/install/) environment using the `environment.yml` file available in this repository. To create the environment and install all necessary packages, run the following command:
 
 `conda env create -n <env_name> --file environment.yml`
 
@@ -74,7 +74,7 @@ And you are ready to run!
 
 ### Running
 
-To help users to apply different metrics using multiple bounding box formats, a UI was designed to facilitate the evaluation process. By running the command `python run.py`, the following screen will show:
+To help users to apply different metrics using multiple bounding box formats, a GUI was created to facilitate the evaluation process. By running the command `python run.py`, the following screen will show:
 
 <!--- interpolated precision AUC --->
 <p align="center">
@@ -83,20 +83,27 @@ To help users to apply different metrics using multiple bounding box formats, a 
 
 Each number in red represents a funcionality described below:
 
-1)
-2)
-3)
-4)
-5)
-6)
-7)
-8)
-9)
-10)
-11)
-12)
+1) **Annotations**: Select the folder containing the ground-truth annotation file(s). 
+2) **Images**: Select the folder containing the images. This is only necessary  if your ground-truth file contains formats in relative coordinates and to visualize the images (see item 5).  
+3) **Classes**: YOLO (.txt) training format represents the classes with IDs (sequential integers). For this annotation type, you need to inform a txt file listing one class per line. The first line refers to the class with id 0, the second line is the class with id 1, and so on. See [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/toyexample/voc.names) an example of file used to represent classes of the VOC PASCAL dataset. 
+4) **Coordinate formats**: Choose the format of the annotations file(s). 
+5) **Ground-truth statistics**: This is an optional feature that provides the amount of bounding boxes of each ground-truth class and to visualize the images with bounding boxes. To access this option, you must have selected the images (see item 2).   
+6) **Annotations**: Select the folder containing the annotation file(s) with your detections.  
+7) **Classes**: If your coordinats formats represent the classes with IDs (sequential integers), you need to inform a text file listing one class per line. The first line refers to the class with id 0, the second line is the class with id 1, and so on. See [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/toyexample/voc.names) an example of file used to represent classes of the VOC PASCAL dataset. 
+8) **Coordinate formats**: Choose the format of the files used to represent the the detections.  
+9) **Detections statistics**: This is an optional feature that provides the amount of detections per class. You can also visualize the quality of the detections by plotting the detected and ground-truth boxes on the images.  
+10) **Metrics**: Select at least one metric to evaluate your detections. For the PASCAL VOC AP and mAP, you can choose different IOUs. Note that the default IOU threshold used in the PASCAL VOC AP metric is 0.5. 
+11) **Output**: Choose a folder where PASCAL VOC AP plots will be saved.  
+12) **RUN**: Run the metrics. Depending on the amount of your dataset and the format of your detections, it may take a while. Detections in relative coordinates usually take a little longer to read than other formats. 
 
+Visualize the statistics of your dataset (Options #5 and #9: Ground-truth and detection statistics) to make sure you have chosen the right formats. If somehow the formats are incorrect the boxes are going to appear incorreclty on the images. 
 
+<!--- interpolated precision AUC --->
+<p align="center">
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/printshot_details_groundtruth.png" align="center"/>
+</p>
+
+You can also save the images and plot a bar plot with the distribution of the boxes per class. 
 
 ## Contributing
 
