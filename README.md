@@ -242,6 +242,56 @@ As each dataset adopts a specific annotation format, works tend to use the evalu
 ### Average recall
 ### Mean Average Recall (mAR)
 ## A practical example
+
+Considering the set of 12 images in the figure below:
+
+<!--- Toy example figure --->
+<p align="center"> 
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/toy_example_mosaic.png" align="center"/>
+</p>
+
+Each image, except (a), (g), and (j), has at least one target object of the class *cat*, whose locations are limited by the green rectangles.
+There is a total of 12 target objects limited by the green boxes. Images (b), (e), and (f) have two ground-truth samples of the target class.
+An object detector predicted 12 objects represented by the red rectangles (labeled with letters *A* to *L*) and their associated confidence levels are represented in percentages. Images (a), (g), and (j) are expected to have no detection. Conversely, images (b), (e), and (f) have two ground-truth bounding boxes.
+
+To evaluate the precision and recall of the 12 detections it is necessary to establish an IOU threshold *t*, which will classify each detection as TP or FP.
+In this example, let us first consider as TP the detections with *IOU > 50%*, that is *t=0.5*.
+
+<!--- Toy example table t=0.5 --->
+<p align="center"> 
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_1_toyexample.png" align="center"/>
+</p>
+
+As stated before, AP is a metric to evaluate precision and recall in different confidence values. Thus, it is necessary to count the amount of TP and FP classifications given different confidence levels. 
+
+By choosing a more restrictive IOU threshold, different precision x recall values can be obtained. The following table computes the precision and recall values with a more strict IOU threshold of *t = 0.75*. By that, it is noticeable the occurrence of more FP detections, reducing the recall.
+
+<!--- Toy example table t=0.75 --->
+<p align="center"> 
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_2_toyexample.png" align="center"/>
+</p>
+
+
+Graphical representations of the precision x values presented in both cases *t= 0.5* and *t=0.75* are shown below:  
+
+<!--- Curves t=0.5 and t=0.75 --->
+<p align="center"> 
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/precision_recall_curve_toyexample.png" align="center"/>
+</p>
+
+
+By comparing both curves, one may note that for this example:  
+
+1) With a less restrictive IOU threshold (*t=0.5*), higher recall values can be obtained with the highest precision. In other words, the detector can retrieve about *66.5%* of the total ground truths without any miss detection.  
+2) Using *t=0.75*, the detector is more sensitive with different confidence values. This is explained by the amount of ups and downs of the curve.  
+3) Regardless the IOU threshold applied, this detector can never retrieve *100%* of the ground truths (recall = 1). This is due to the fact that the algorithm did not predict any bounding box for one of the ground truths in image (e).  
+
+
+
+
+
+
+
 ## Computing different metrics
 ## **Tube Average Precision (TAP)**
 ## How to use this project
