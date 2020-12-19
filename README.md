@@ -109,7 +109,7 @@ Therefore, a particular object detector can be considered good if its precision 
 In the N-point interpolation, the shape of the precision x recall curve is summarized by averaging the maximum precision values at the set L, containing N equally spaced recall levels varying from 0 to 1, as given by:
 
 <!--- N-point interpolation equation--->
-<p align="center"> 
+<p align="center"> <a name="AP_Npointseq">
 <img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/AP_Npointseq.png" align="center"/>
 </p>
 <!-- {\rm AP} = \frac{1}{N} \sum_{R \in L} P_{\text{interp}}(R) -->
@@ -271,7 +271,6 @@ By choosing a more restrictive IOU threshold, different precision x recall value
 <img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_2_toyexample.png" align="center"/>
 </p>
 
-
 Graphical representations of the precision x values presented in both cases *t= 0.5* and *t=0.75* are shown below:  
 
 <!--- Curves t=0.5 and t=0.75 --->
@@ -286,7 +285,17 @@ By comparing both curves, one may note that for this example:
 2) Using *t=0.75*, the detector is more sensitive with different confidence values. This is explained by the amount of ups and downs of the curve.  
 3) Regardless the IOU threshold applied, this detector can never retrieve *100%* of the ground truths (recall = 1). This is due to the fact that the algorithm did not predict any bounding box for one of the ground truths in image (e).  
 
+As previously explained, different methods can be applied to measure the AUC of the precision x recall curve. Considering the [N-point equation](#AP_Npointseq), with Nwith *N=11* points, the interpolation measures the recall in the points L=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], and to consider the all-point interpolation approach, let us consider Equation~\eqref{eq:interpolating_all_points_part1}. The results can be seen in Figure~\ref{fig:interpolations_toy_example}. When an IOU threshold $t=0.5$ was applied, the 11-point interpolation method obtained ${\rm AP} = 88.64\%$ while the all-point interpolation method improved the results a little, reaching ${\rm AP} = 89.58\%$.
+Similarly, for an IOU threshold of $t=0.75\%$,
+the 11-point interpolation method obtained ${\rm AP} = 49.24\%$
+and the all-point interpolation ${\rm AP} = 50.97\%$.
 
+
+
+<!--- Interpolating curves --->
+<p align="center"> 
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_2_toyexample.png" align="center"/>
+</p>
 
 
 
