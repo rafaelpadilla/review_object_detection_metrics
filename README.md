@@ -1,3 +1,21 @@
+## Citation
+This work was submited to the Journal [Electronics](https://www.mdpi.com/journal/electronics).
+
+<!----
+```
+@INPROCEEDINGS {padillaCITE2020,
+    author    = {R. {Padilla} and W. L. {Passos} and T. L. B. {Dias} and S. L. {Netto} and E. A. B. {da Silva}},
+    title     = {A Survey on Object Detection Metrics with a Companion Open-Source Toolbox}, 
+    journal   = {Electronics},
+    volume    = {9},
+    year      = {2020},
+    pages     = {},
+    publisher = {Multidisciplinary Digital Publishing Institute}}
+```
+Download the paper [here](TODO)
+--->
+
+
 Open-Source Toolbox for Object Detection Metrics
 ================================================
 
@@ -67,7 +85,7 @@ and can be illustrated as:
 
 <!--- IOU figure --->
 <p align="center">
-<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/iou.png" align="center"/>
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/iou.png" align="center" width="380" />
 </p>
 
 A perfect match occurs when IOU=1 and, if both bounding boxes do not intercept each other, IOU=0. The closer to 1 the IOU gets, the better the detection is considered. It is important to mention that as object detectors also perform the classification of each bounding box, only ground-truth and detected boxes of the same class are comparable.
@@ -219,7 +237,7 @@ Considering the set of 12 images in the figure below:
 
 <!--- Toy example figure --->
 <p align="center"> 
-<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/toy_example_mosaic.png" align="center"/>
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/toy_example_mosaic.png" align="center" width="1000"/>
 </p>
 
 Each image, except (a), (g), and (j), has at least one target object of the class *cat*, whose locations are limited by the green rectangles.
@@ -231,7 +249,7 @@ In this example, let us first consider as TP the detections with *IOU > 50%*, th
 
 <!--- Toy example table t=0.5 --->
 <p align="center"> 
-<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_1_toyexample.png" align="center"/>
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_1_toyexample.png" align="center" width="700"/>
 </p>
 
 As stated before, AP is a metric to evaluate precision and recall in different confidence values. Thus, it is necessary to count the amount of TP and FP classifications given different confidence levels. 
@@ -240,7 +258,7 @@ By choosing a more restrictive IOU threshold, different precision x recall value
 
 <!--- Toy example table t=0.75 --->
 <p align="center"> 
-<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_2_toyexample.png" align="center"/>
+<img src="https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/data/images/table_2_toyexample.png" align="center" width="720"/>
 </p>
 
 Graphical representations of the precision x values presented in both cases *t= 0.5* and *t=0.75* are shown below:  
