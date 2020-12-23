@@ -71,8 +71,7 @@ def add_bb_into_image(image, bb, color=(255, 0, 0), thickness=2, label=None):
     fontScale = 0.5
     fontThickness = 1
 
-    x1, y1, x2, y2 = bb.get_absolute_boundi
-    ng_box(BBFormat.XYX2Y2)
+    x1, y1, x2, y2 = bb.get_absolute_bounding_box(BBFormat.XYX2Y2)
     x1 = int(x1)
     y1 = int(y1)
     x2 = int(x2)
