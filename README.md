@@ -379,10 +379,7 @@ Similarly to the AR variations with limited number of detections per image, thes
 When dealing with videos, one may be interested in evaluating the model performance at  video level, i.e., whether the object was detected in the video as a whole. This metric is an extension of the AP metric that integrates spatial and temporal localizations; it is concise, yet expressive.
 A spatio-temporal tube *To* of an object *o* is the spatio-temporal region defined as the concatenation of the bounding boxes of an object from each frame of a video, that is *T_o = [B<sub>o,q</sub> B<sub>o,q+1</sub> ... B<sub>o,q+Q-1</sub>*, where *B<sub>o,k</sub>* is the bounding box of the object *o* in frame *k* of the video that is constituted of *Q* frames indexed by *k= q, q+1,..., q+Q-1*.
 Considering a ground-truth spatio-temporal tube *T<sub>gt</sub>* and a predicted spatio-temporal tube *T<sub>p</sub>*, the spatio-temporal tube IOU (STT-IOU) measures the ratio of the overlapping to the union of the "discrete volume" between *T<sub>gt</sub>* and *T<sub>p</sub>*, such that
-$$
-{\text{STT-IOU}} =\frac{\text{volume}(T_p \cap T_\textit{gt}\text{)}}{\text{volume}(T_p \cup T_\textit{gt})}
-    = \frac{\displaystyle\sum_{k}\text{area of overlap in frame }k}{\displaystyle\sum_{k}\text{area of union in frame } k},
-$$
+$$ {\text{STT-IOU}} =\frac{\text{volume}(T_p \cap T_\textit{gt}\text{)}}{\text{volume}(T_p \cup T_\textit{gt})} = \frac{\displaystyle\sum_{k}\text{area of overlap in frame }k}{\displaystyle\sum_{k}\text{area of union in frame } k}, $$
 
 as illustrated bellow:
 <!--- STT_IOU figure --->
