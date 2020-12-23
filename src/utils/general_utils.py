@@ -15,6 +15,20 @@ def get_files_recursively(directory, extension="*"):
     return files
 
 
+def convert_box_xywh2xyxy(box):
+    arr = box.copy()
+    arr[:, 2] += arr[:, 0]
+    arr[:, 3] += arr[:, 1]
+    return arr
+
+
+def convert_box_xyxy2xywh(box):
+    arr = box.copy()
+    arr[:, 2] -= arr[:, 0]
+    arr[:, 3] -= arr[:, 1]
+    return arr
+
+
 # size => (width, height) of the image
 # box => (X1, X2, Y1, Y2) of the bounding box
 def convert_to_relative_values(size, box):
