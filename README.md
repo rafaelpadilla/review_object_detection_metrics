@@ -54,6 +54,11 @@ Ideally, in order to have trustworthy benchmarking among different approaches, i
   - [How to use this project](#how-to-use-this-project)
     - [Requirements](#requirements)
     - [Running](#running)
+      - [Images](#images)
+      - [Spatio-Temporal Tube](#spatio-temporal-tube)
+        - [annotation format](#annotation-format)
+        - [predictions format](#predictions-format)
+        - [run](#run)
   - [Contributing](#contributing)
   - [References](#references)
 
@@ -372,12 +377,12 @@ Similarly to the AR variations with limited number of detections per image, thes
 
 ## **Spatio-Temporal Tube Average Precision (STT-AP)**
 When dealing with videos, one may be interested in evaluating the model performance at  video level, i.e., whether the object was detected in the video as a whole. This metric is an extension of the AP metric that integrates spatial and temporal localizations; it is concise, yet expressive.
-A spatio-temporal tube $T_o$ of an object $o$ is the spatio-temporal region defined as the concatenation of the bounding boxes of an object from each frame of a video, that is $T_o = \begin{bmatrix} B_{o,q} B_{o,q+1} \cdots B_{o,q+Q-1} \end{bmatrix}$, where $B_{o,k}$ is the bounding box of the object $o$ in frame $k$ of the video that is constituted of $Q$ frames indexed by $k= q,q+1,\ldots, q+Q-1$.
+A spatio-temporal tube $`To`$ of an object *o* is the spatio-temporal region defined as the concatenation of the bounding boxes of an object from each frame of a video, that is *T_o = \begin{bmatrix} B_{o,q} B_{o,q+1} \cdots B_{o,q+Q-1} \end{bmatrix}*, where $B_{o,k}$ is the bounding box of the object $o$ in frame $k$ of the video that is constituted of $Q$ frames indexed by $k= q,q+1,\ldots, q+Q-1$.
 Considering a ground-truth spatio-temporal tube $T_\textit{gt}$ and a predicted spatio-temporal tube $T_p$, the spatio-temporal tube IOU (STT-IOU) measures the ratio of the overlapping to the union of the "discrete volume" between $T_\textit{gt}$ and $T_{p}$, such that
-$
+```math
 {\text{STT-IOU}} =\frac{\text{volume}(T_p \cap T_\textit{gt}\text{)}}{\text{volume}(T_p \cup T_\textit{gt})}
     = \frac{\displaystyle\sum_{k}\text{area of overlap in frame }k}{\displaystyle\sum_{k}\text{area of union in frame } k},
-$
+```
 
 as illustrated bellow:
 <!--- STT_IOU figure --->
@@ -403,6 +408,7 @@ And you are ready to run!
 
 ### Running
 
+#### Images
 To help users to apply different metrics using multiple bounding box formats, a GUI was created to facilitate the evaluation process. By running the command `python run.py`, the following screen will show:
 
 <!--- interpolated precision AUC --->
@@ -433,6 +439,74 @@ Visualize the statistics of your dataset (Options #5 and #9: Ground-truth and de
 </p>
 
 You can also save the images and plot a bar plot with the distribution of the boxes per class.
+
+#### Spatio-Temporal Tube
+
+##### annotation format
+For annotation with STT, use a .json file following format:
+
+```
+{
+"videos": [
+  {
+    "id": int,
+    "file_name": str,
+    "width": int,
+    "height": int
+  }
+]
+
+"annotations": [
+  {
+    "id": int,
+    "video_id": int,
+    "category_id": int,
+    "track":[
+      {
+        "frame": int,
+        "bbox": [x ,y , width, height],
+        "confidence": float
+      }
+    ]
+  }]
+
+"categories": [
+  {
+    "id": int,
+    "name": str
+  }
+]
+}
+```
+
+##### predictions format
+For detection with STT, use a .json file following format:
+
+```
+[
+  {
+    "id": int,
+    "video_id": int,
+    "category_id": int,
+    "track":[
+      {
+        "frame": int,
+        "bbox": [x ,y , width, height],
+        "confidence": float
+      }
+    ]
+  }
+]
+```
+See [example annotation](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/tests/tube/example_anno.json)  and [example predictions](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/tests/tube/example_preds.json) for examples of annotation and prediction .json files.
+
+##### run
+```python
+from src.evaluators.tube_evaluator import TubeEvaluator
+
+tube_evaluator = TubeEvaluator(annot_filepath, preds_filepath)
+res, mAP = tube_evaluator.evaluate(thr=0.5)
+```
 
 ## Contributing
 
