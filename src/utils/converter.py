@@ -1,4 +1,3 @@
-### xml to csv
 import base64
 import json
 import os
@@ -13,6 +12,8 @@ from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 
 def _get_annotation_files(file_path):
     # Path can be a directory containing all files or a directory containing multiple files
+    if file_path is None:
+        return []
     annotation_files = []
     if os.path.isfile(file_path):
         annotation_files = [file_path]
@@ -56,21 +57,28 @@ def coco2bb(path, bb_type=BBType.GROUND_TRUTH):
         for annotation in annotations:
             img_id = annotation['image_id']
             x1, y1, bb_width, bb_height = annotation['bbox']
-            #x1, y1, bb_width, bb_height = int(x1), int(y1), int(bb_width), int(bb_height)
+            if bb_type == BBType.DETECTED and 'score' not in annotation.keys():
+                print('Warning: Confidence not found in the JSON file!')
+                return ret
+            confidence = annotation['score'] if bb_type == BBType.DETECTED else None
+            # Make image name only the filename, without extension
+            img_name = images[img_id]['file_name']
+            img_name = general_utils.get_file_name_only(img_name)
             # create BoundingBox object
-            bb = BoundingBox(image_name=images[img_id]['file_name'],
+            bb = BoundingBox(image_name=img_name,
                              class_id=classes[annotation['category_id']],
                              coordinates=(x1, y1, bb_width, bb_height),
                              type_coordinates=CoordinatesType.ABSOLUTE,
                              img_size=images[img_id]['img_size'],
-                             confidence=annotation['score'] if bb_type == BBType.DETECTED else None,
+                             confidence=confidence,
                              bb_type=bb_type,
                              format=BBFormat.XYWH)
             ret.append(bb)
     return ret
 
 
-def cvat2bb(path, bb_type=BBType.GROUND_TRUTH):
+def cvat2bb(path):
+    '''This format supports ground-truth only'''
     ret = []
     # Get annotation files in the path
     annotation_files = _get_annotation_files(path)
@@ -83,6 +91,7 @@ def cvat2bb(path, bb_type=BBType.GROUND_TRUTH):
         for image_info in ET.parse(file_path).iter('image'):
             img_size = (int(image_info.attrib['width']), int(image_info.attrib['height']))
             img_name = image_info.attrib['name']
+            img_name = general_utils.get_file_name_only(img_name)
 
             # Loop through the boxes
             for box_info in image_info.iter('box'):
@@ -96,7 +105,7 @@ def cvat2bb(path, bb_type=BBType.GROUND_TRUTH):
                                  coordinates=(x1, y1, x2, y2),
                                  img_size=img_size,
                                  type_coordinates=CoordinatesType.ABSOLUTE,
-                                 bb_type=bb_type,
+                                 bb_type=BBType.GROUND_TRUTH,
                                  format=BBFormat.XYX2Y2)
                 ret.append(bb)
     return ret
@@ -135,7 +144,10 @@ def openimage2bb(annotations_path, images_dir, bb_type=BBType.GROUND_TRUTH):
             y2 = y2.replace(',', '.') if isinstance(y2, str) else y2
             x1, x2, y1, y2 = float(x1), float(x2), float(y1), float(y2)
             confidence = None if pd.isna(row['Confidence']) else float(row['Confidence'])
-            bb = BoundingBox(image_name=row['ImageID'],
+            if bb_type == BBType.DETECTED and confidence is None:
+                print(f'Warning: Confidence value found in the CSV file for the image {img_name}')
+                return ret
+            bb = BoundingBox(image_name=general_utils.get_file_name_only(row['ImageID']),
                              class_id=row['LabelName'],
                              coordinates=(x1, y1, x2, y2),
                              img_size=img_size,
@@ -157,6 +169,7 @@ def imagenet2bb(annotations_path):
             continue
         # Open XML
         img_name = ET.parse(file_path).find('filename').text
+        img_name = general_utils.get_file_name_only(img_name)
         img_width = int(ET.parse(file_path).find('size/width').text)
         img_height = int(ET.parse(file_path).find('size/height').text)
         img_size = (img_width, img_height)
@@ -195,6 +208,7 @@ def labelme2bb(annotations_path):
             json_object = json.load(f)
         img_path = json_object['imagePath']
         img_path = os.path.basename(img_path)
+        img_path = general_utils.get_file_name_only(img_path)
         img_size = (int(json_object['imageWidth']), int(json_object['imageHeight']))
         # If there are annotated objects
         if 'shapes' in json_object:
@@ -219,15 +233,47 @@ def labelme2bb(annotations_path):
     return ret
 
 
-def text2bb(annotations_path, bb_type=BBType.GROUND_TRUTH):
+def text2bb(annotations_path,
+            bb_type=BBType.GROUND_TRUTH,
+            bb_format=BBFormat.XYWH,
+            type_coordinates=CoordinatesType.ABSOLUTE,
+            img_dir=None):
     ret = []
+
     # Get annotation files in the path
     annotation_files = _get_annotation_files(annotations_path)
     for file_path in annotation_files:
+        if type_coordinates == CoordinatesType.ABSOLUTE:
+            if bb_type == BBType.GROUND_TRUTH and not validations.is_absolute_text_format(
+                    file_path, num_blocks=[5], blocks_abs_values=[4]):
+                continue
+            if bb_type == BBType.DETECTED and not validations.is_absolute_text_format(
+                    file_path, num_blocks=[6], blocks_abs_values=[4]):
+                continue
+        elif type_coordinates == CoordinatesType.RELATIVE:
+            if bb_type == BBType.GROUND_TRUTH and not validations.is_relative_text_format(
+                    file_path, num_blocks=[5], blocks_rel_values=[4]):
+                continue
+            if bb_type == BBType.DETECTED and not validations.is_relative_text_format(
+                    file_path, num_blocks=[6], blocks_rel_values=[4]):
+                continue
         # Loop through lines
         with open(file_path, "r") as f:
+
             img_filename = os.path.basename(file_path)
             img_filename = os.path.splitext(img_filename)[0]
+
+            img_size = None
+            # If coordinates are relative, image size must be obtained in the img_dir
+            if type_coordinates == CoordinatesType.RELATIVE:
+                img_path = general_utils.find_file(img_dir, img_filename, match_extension=False)
+                if img_path is None or os.path.isfile(img_path) is False:
+                    print(
+                        f'Warning: Image not found in the directory {img_path}. It is required to get its dimensions'
+                    )
+                    return ret
+                resolution = general_utils.get_image_resolution(img_path)
+                img_size = (resolution['width'], resolution['height'])
             for line in f:
                 splitted_line = line.split(' ')
                 class_id = splitted_line[0]
@@ -246,23 +292,29 @@ def text2bb(annotations_path, bb_type=BBType.GROUND_TRUTH):
                 bb = BoundingBox(image_name=img_filename,
                                  class_id=class_id,
                                  coordinates=(x1, y1, w, h),
-                                 img_size=None,
+                                 img_size=img_size,
                                  confidence=confidence,
-                                 type_coordinates=CoordinatesType.ABSOLUTE,
+                                 type_coordinates=type_coordinates,
                                  bb_type=bb_type,
-                                 format=BBFormat.XYWH)
+                                 format=bb_format)
+                # If the format is correct, x,y,w,h,x2,y2 must be positive
+                x, y, w, h = bb.get_absolute_bounding_box(format=BBFormat.XYWH)
+                _, _, x2, y2 = bb.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
+                if x < 0 or y < 0 or w < 0 or h < 0 or x2 < 0 or y2 < 0:
+                    continue
                 ret.append(bb)
     return ret
 
 
-def yolo2bb(annotations_path, images_dir, yolo_obj_names, bb_type=BBType.GROUND_TRUTH):
+def yolo2bb(annotations_path, images_dir, file_obj_names, bb_type=BBType.GROUND_TRUTH):
     ret = []
-    assert os.path.isfile(yolo_obj_names)
+    if not os.path.isfile(file_obj_names):
+        print(f'Warning: File with names of classes {file_obj_names} not found.')
+        return ret
     # Load classes
     all_classes = []
-    with open(yolo_obj_names, "r") as f:
+    with open(file_obj_names, "r") as f:
         all_classes = [line.replace('\n', '') for line in f]
-
     # Get annotation files in the path
     annotation_files = _get_annotation_files(annotations_path)
     # Loop through each file
@@ -280,21 +332,30 @@ def yolo2bb(annotations_path, images_dir, yolo_obj_names, bb_type=BBType.GROUND_
         with open(file_path, "r") as f:
             for line in f:
                 splitted_line = line.split(' ')
+                class_id = splitted_line[0]
+                if not general_utils.is_str_int(class_id):
+                    print(
+                        f'Warning: Class id represented in the {file_path} is not a valid integer.')
+                    return []
+                class_id = int(class_id)
+                if class_id not in range(len(all_classes)):
+                    print(
+                        f'Warning: Class id represented in the {file_path} is not in the range of classes specified in the file {file_obj_names}.'
+                    )
+                    return []
                 if bb_type == BBType.GROUND_TRUTH:
-                    class_id = int(splitted_line[0])
                     confidence = None
                     x1 = float(splitted_line[1])
                     y1 = float(splitted_line[2])
                     w = float(splitted_line[3])
                     h = float(splitted_line[4])
                 elif bb_type == BBType.DETECTED:
-                    class_id = int(splitted_line[0])
                     confidence = float(splitted_line[1])
                     x1 = float(splitted_line[2])
                     y1 = float(splitted_line[3])
                     w = float(splitted_line[4])
                     h = float(splitted_line[5])
-                bb = BoundingBox(image_name=os.path.basename(img_file),
+                bb = BoundingBox(image_name=general_utils.get_file_name_only(img_file),
                                  class_id=all_classes[class_id],
                                  coordinates=(x1, y1, w, h),
                                  img_size=img_size,
