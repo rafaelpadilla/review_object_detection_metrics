@@ -393,13 +393,13 @@ Based on these definitions, the proposed STT-AP metric follows the AP.
 
 We highly suggest you to create an [anaconda](https://docs.anaconda.com/anaconda/install/) environment using the `environment.yml` file available in this repository. To create the environment and install all necessary packages, run the following command:
 
-`conda env create -n <env_name> --file environment.yml`
+`conda env create -n <env_name> --file environment.yml`  
 
-Now activate the evironment
+Now activate the evironment: `conda activate <env_name>`  
 
-`conda activate <env_name>`
+Install the tool: `python setup.py install`  
 
-And you are ready to run!
+Run the UI: `python run.py`  
 
 ### Running
 
