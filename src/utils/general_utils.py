@@ -2,7 +2,10 @@ import fnmatch
 import os
 
 import cv2
+import matplotlib.pyplot as plt
 import numpy as np
+from PyQt5 import QtCore, QtGui
+from src.utils.enumerators import BBFormat
 
 
 def get_files_recursively(directory, extension="*"):
@@ -102,6 +105,28 @@ def get_files_dir(directory, extensions=['*']):
     return ret
 
 
+def remove_file_extension(filename):
+    return os.path.join(os.path.dirname(filename), os.path.splitext(filename)[0])
+
+
+def image_to_pixmap(image):
+    image = image.astype(np.uint8)
+    if image.shape[2] == 4:
+        qformat = QtGui.QImage.Format_RGBA8888
+    else:
+        qformat = QtGui.QImage.Format_RGB888
+
+    image = QtGui.QImage(image.data, image.shape[1], image.shape[0], image.strides[0], qformat)
+    # image= image.rgbSwapped()
+    return QtGui.QPixmap(image)
+
+
+def show_image_in_qt_component(image, label_component):
+    pix = image_to_pixmap((image).astype(np.uint8))
+    label_component.setPixmap(pix)
+    label_component.setAlignment(QtCore.Qt.AlignCenter)
+
+
 def get_files_recursively(directory, extension="*"):
     if '.' not in extension:
         extension = '*.' + extension
@@ -112,7 +137,21 @@ def get_files_recursively(directory, extension="*"):
     return files
 
 
+def is_str_int(s):
+    if s[0] in ('-', '+'):
+        return s[1:].isdigit()
+    return s.isdigit()
+
+
+def get_file_name_only(file_path):
+    if file_path is None:
+        return ''
+    return os.path.splitext(os.path.basename(file_path))[0]
+
+
 def find_file(directory, file_name, match_extension=True):
+    if os.path.isdir(directory) is False:
+        return None
     for dirpath, dirnames, files in os.walk(directory):
         for f in files:
             f1 = os.path.basename(f)
@@ -171,3 +210,32 @@ def draw_bb_into_image(image, boundingBox, color, thickness, label=None):
         cv2.putText(image, label, (xin_bb, yin_bb), font, fontScale, (0, 0, 0), fontThickness,
                     cv2.LINE_AA)
     return image
+
+
+def plot_bb_per_classes(dict_bbs_per_class,
+                        horizontally=True,
+                        rotation=0,
+                        show=False,
+                        extra_title=''):
+    plt.close()
+    if horizontally:
+        ypos = np.arange(len(dict_bbs_per_class.keys()))
+        plt.barh(ypos, dict_bbs_per_class.values())
+        plt.yticks(ypos, dict_bbs_per_class.keys())
+        plt.xlabel('amount of bounding boxes')
+        plt.ylabel('classes')
+    else:
+        plt.bar(dict_bbs_per_class.keys(), dict_bbs_per_class.values())
+        plt.xlabel('classes')
+        plt.ylabel('amount of bounding boxes')
+    plt.xticks(rotation=rotation)
+    title = f'Distribution of bounding boxes per class {extra_title}'
+    plt.title(title)
+    if show:
+        # plt.tight_layout()
+        # plt.show(aspect='auto')
+        fig = plt.gcf()
+        fig.canvas.set_window_title(title)
+        fig.tight_layout()
+        fig.show()
+    return plt
