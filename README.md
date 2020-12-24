@@ -106,7 +106,7 @@ By comparing both curves, one may note that for this example:
 2) Using *t=0.75*, the detector is more sensitive with different confidence values. This is explained by the amount of ups and downs of the curve.
 3) Regardless the IOU threshold applied, this detector can never retrieve *100%* of the ground truths (recall = 1). This is due to the fact that the algorithm did not predict any bounding box for one of the ground truths in image (e).
 
-As previously explained, different methods can be applied to measure the AUC of the precision x recall curve. Considering the [N-point interpolation equation](#AP_Npointseq) to calculate the AP with N with *N=11*, the interpolation measures the recall in the points L=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], and to consider the all-point interpolation approach, let us consider the [All-point interpolation equation](#interpolating_all_points_part1). Both approaches result in different plots as shown below:
+Different methods can be applied to measure the AUC of the precision x recall curve. Considering the *N-point interpolation* to calculate the AP with *N=11*, the interpolation measures the recall in the points L=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], and considering the *All-point interpolation* approach, all points are considered. Both approaches result in different plots as shown below:
 
 
 <!--- Interpolating curves --->
