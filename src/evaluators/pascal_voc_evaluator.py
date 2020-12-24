@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from src.bounding_box import BoundingBox
-from src.utils.enumerators import (BBFormat, CoordinatesType,
-                                   MethodAveragePrecision)
+from src.utils.enumerators import (BBFormat, CoordinatesType, MethodAveragePrecision)
 
 
 def calculate_ap_every_point(rec, prec):
@@ -78,23 +77,18 @@ def calculate_ap_11_point_interp(rec, prec, recall_vals=11):
     rhoInterp = [i[1] for i in cc]
     return [ap, rhoInterp, recallValues, None]
 
+
 def get_pascalvoc_metrics(gt_boxes,
                           det_boxes,
                           iou_threshold=0.5,
                           method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                           generate_table=False):
-    """TODO:Get the metrics used by the VOC Pascal 2012 challenge.
-    Get
+    """Get the metrics used by the VOC Pascal 2012 challenge.
     Args:
         boundingboxes: Object of the class BoundingBoxes representing ground truth and detected
         bounding boxes;
         iou_threshold: IOU threshold indicating which detections will be considered TP or FP
-        (default value = 0.5);
-        method (default = EVERY_POINT_INTERPOLATION): It can be calculated as the implementation
-        in the official PASCAL VOC toolkit (EVERY_POINT_INTERPOLATION), or applying the 11-point
-        interpolatio as described in the paper "The PASCAL Visual Object Classes(VOC) Challenge"
-        or EVERY_POINT_INTERPOLATION"  (ELEVEN_POINT_INTERPOLATION);
-    Returns:
+        (dget_pascalvoc_metricsns:
         A dictioanry contains information and metrics of each class.
         The key represents the class and the values are:
         dict['class']: class representing the current dictionary;
@@ -225,8 +219,8 @@ def get_pascalvoc_metrics(gt_boxes,
             'table': table
         }
     # For mAP, only the classes in the gt set should be considered
-    mAP = sum([v['AP'] for c, v in ret.items() if c in gt_classes_only])/len(gt_classes_only)
-    return ret, mAP
+    mAP = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only)
+    return {'per_class': ret, 'mAP': mAP}
 
 
 def plot_precision_recall_curve(results,
