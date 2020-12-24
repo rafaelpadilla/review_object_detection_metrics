@@ -6,25 +6,12 @@ import src.evaluators.pascal_voc_evaluator as pascal_voc_evaluator
 import src.utils.converter as converter
 import src.utils.general_utils as general_utils
 from src.bounding_box import BoundingBox
-from src.utils.enumerators import BBFormat, BBType
+from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 
-current_dir = os.path.dirname(os.path.realpath(__file__))
-dir_imgs = os.path.join(current_dir, 'images')
-dir_gts = os.path.join(current_dir, 'gts_vocpascal_format')
-dir_dets = os.path.join(current_dir, 'dets_yolo_format manipulated')
-filepath_yolo_names = os.path.join(current_dir, 'voc.names')
-dir_outputs = os.path.join(current_dir, 'images_with_bbs2')
-
-dir_imgs = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/JPEGImages'
-dir_gts = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/gts'
-dir_dets = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/dets'
-filepath_yolo_names = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/coco.names'
-
-dir_imgs = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/deleteme/imgs'
-dir_gts = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/deleteme/gt'
-dir_dets = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/deleteme/det'
-filepath_yolo_name = '/home/rafael/thesis/review_object_detection_metrics/data/vocpascal2012_trainval/deleteme/coco.names'
-
+dir_imgs = 'toyexample/images'
+dir_gts = 'toyexample/gts_vocpascal_format'
+dir_dets = 'toyexample/dets_classname_abs_xywh'
+dir_outputs = 'toyexample/images_with_bbs'
 
 def draw_bb_into_image(image, bounding_box, color, thickness, label=None):
     if isinstance(image, str):
@@ -52,7 +39,7 @@ def draw_bb_into_image(image, bounding_box, color, thickness, label=None):
         xin_bb, yin_bb = int(xin_bb), int(yin_bb)
         # Checking position of the text top-left (outside or inside the bb)
         if yin_bb - th <= 0:  # if outside the image
-            yin_bb = yIn + th  # put it inside the bb
+            yin_bb = int(yIn + th)  # put it inside the bb
         r_Xin = int(xIn - int(thickness / 2))
         r_Yin = int(yin_bb - th - int(thickness / 2))
         # Draw filled rectangle to put the text in it
@@ -63,12 +50,6 @@ def draw_bb_into_image(image, bounding_box, color, thickness, label=None):
                     cv2.LINE_AA)
     return image
 
-
-# dir_imgs = os.path.join('/home/rafael/Downloads/VOC2012/JPEGImages')
-# dir_gts = os.path.join('/home/rafael/Downloads/VOC2012/gts')
-# dir_dets = os.path.join('/home/rafael/thesis/review_object_detection_metrics/official_detectors/yolov5/runs/detect/exp4/labels')
-# filepath_yolo_names = os.path.join('/home/rafael/thesis/review_object_detection_metrics/official_detectors/yolov5/runs/detect/coco.names')
-# dir_outputs = os.path.join(current_dir, 'images_with_bbs2')
 
 # Drawing bb into the images
 green_color = [62, 235, 59]
@@ -84,10 +65,10 @@ for img_file in general_utils.get_files_recursively(dir_imgs):
     if det_annotation_file is None:
         det_bbs = []
     else:
-        det_bbs = converter.yolo2bb(det_annotation_file, dir_imgs, filepath_yolo_names, bb_type=BBType.DETECTED)
+        det_bbs = converter.text2bb(det_annotation_file, bb_type=BBType.DETECTED, bb_format=BBFormat.XYWH,type_coordinates=CoordinatesType.ABSOLUTE, img_dir=dir_imgs)
     # Leave only the annotations of cats
-    # gt_bbs = [bb for bb in gt_bbs if bb.get_class_id() == 'cat']
-    # det_bbs = [bb for bb in det_bbs if bb.get_class_id() == 'cat']
+    gt_bbs = [bb for bb in gt_bbs if bb.get_class_id() == 'cat']
+    det_bbs = [bb for bb in det_bbs if bb.get_class_id() == 'cat']
     image = cv2.imread(img_file)
     img_h, img_w, _ = image.shape
     # Draw gt bb
@@ -103,8 +84,8 @@ for img_file in general_utils.get_files_recursively(dir_imgs):
         bb._y2 = min(bb._y2, img_h-3)
         bb._x2 = min(bb._x2, img_w-3)
         image = draw_bb_into_image(image, bb, red_color, thickness=6, label=bb.get_class_id())
-    # Save images
-    filename = os.path.basename(img_file)
+    # Uncomment to Save images
+    # filename = os.path.basename(img_file)
     # cv2.imwrite(os.path.join(dir_outputs, filename), image)
     cv2.imshow('', image)
     cv2.waitKey()
