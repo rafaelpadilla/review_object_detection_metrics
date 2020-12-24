@@ -171,20 +171,9 @@ This metric expands the AP@.5 and AP@.75 metrics by computing the AP@ with ten d
 
 ### AP<sub>S</sub>, AP<sub>M</sub>, and AP<sub>L</sub>
 
-These three metrics, also referred to as AP Across Scales, apply the AP@[.5,.05:.95] taking into consideration the size of the ground-truth object. AP<sub>S</sub> only evaluates the ground-truth objects of small sizes (area < $32^2$ pixels); AP<sub>M</sub> considers only ground-truth objects of medium sizes ($32^2$ < area < $96^2$ pixels); AP<sub>L</sub> considers large ground-truth objects (area > $96^2$) only.
+These three metrics, also referred to as AP Across Scales, apply the AP@[.5,.05:.95] taking into consideration the size of the ground-truth object. AP<sub>S</sub> only evaluates the ground-truth objects of small sizes (area < 32^2 pixels); AP<sub>M</sub> considers only ground-truth objects of medium sizes (32^2 < area < 96^2 pixels); AP<sub>L</sub> considers large ground-truth objects (area > 96^2) only.
 
 When evaluating objects of a given size, objects of the other sizes (both ground-truth and predicted) are not considered in the evaluation. This metric is also part of the COCO evaluation dataset.
-
-### AR<sub>1</sub>, AR<sub>10</sub>, and AR<sub>100</sub>
-
-These AR variations apply AR with a limiting number of detections per image. Therefore, they calculate the AR given a fixed amount of detections per image, averaged over all classes and IOUs.
-The IOUs used to measure the recall values are the same as in AP@[.5,.05:.95].
-
-AR<sub>1</sub> considers up to one detection per image, while AR<sub>10</sub> and AR<sub>100</sub> consider at most 10 and 100 objects, respectively.
-
-### AR\textsubscript{S}, AR\textsubscript{M} and AR\textsubscript{L}
-
-Similarly to the AR variations with limited number of detections per image, these metrics evaluate detections considering the same areas as the AP Across Scales.
 
 
 ## **Spatio-Temporal Tube Average Precision (STT-AP)**
