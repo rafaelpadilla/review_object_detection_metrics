@@ -19,7 +19,7 @@ Download the paper [here](TODO)
 Open-Source Toolbox for Object Detection Metrics
 ================================================
 
-Our  [previously available  tool](https://github.com/rafaelpadilla/Object-Detection-Metrics) for  object  detection assessment has received many positive feedbacks, which motivated us to upgrade it with other metrics and support more bounding box formats. As some external tools, competitions and works are already using the older version, we decided not to modify it but release a newer and more complete project.
+Our  [previously available  tool](https://github.com/rafaelpadilla/Object-Detection-MetAP-s-AP-M-AP-Lrics) for  object  detection assessment has received many positive feedbacks, which motivated us to upgrade it with other metrics and support more bounding box formats. As some external tools, competitions and works are already using the older version, we decided not to modify it but release a newer and more complete project.
 
 The motivation of this project is the lack of consensus used by different works and implementations concerning the evaluation metrics of the object detection problem. Although on-line competitions use their own metrics to evaluate the task of object detection, just some of them offer reference code snippets to calculate the assertiveness of the detected objects.
 Researchers, who want to evaluate their work using different datasets than those offered by the competitions, need to implement their own version of the metrics or spend a considerable amount of time converting their bounding boxes to formats that are supported by evaluation tools. Sometimes a wrong or different implementation can create different and biased results. Even though many tools have been developed to convert the annotated boxes from one type to another, the quality assessment of the final detections still lacks a tool compatible with different bounding box formats and multiple performance metrics.
@@ -38,7 +38,7 @@ Ideally, in order to have trustworthy benchmarking among different approaches, i
     - [mAP with IOU Threshold *t=0.5*](#map-with-iou-threshold-t05)
     - [AP@.5 and AP@.75](#ap5-and-ap75)
     - [AP@[.5:.05:.95]](#ap50595)
-    - [AP<sub>S</sub>, AP<sub>M</sub>, and AP<sub>L</sub>}(#AP<sub>S</sub>-AP<sub>M</sub>-and-AP<sub>L</sub>)
+    - [AP<sub>S</sub>, AP<sub>M</sub> and AP<sub>L</sub>](#AP-s-AP-M-AP-L)  
   - [**Spatio-Temporal Tube Average Precision (STT-AP)**](#spatio-temporal-tube-average-precision-stt-ap)
   - [How to use this project](#how-to-use-this-project)
     - [Requirements](#requirements)
@@ -161,13 +161,13 @@ This metric is also used by PASCAL VOC dataset and is calculated as the AP with 
 
 These two metrics evaluate the precision x curve differently than the PASCAL VOC metrics. In this method, the interpolation is performed in *N=101* recall points. Then, the computed results for each class are summed up and divided by the number of classes.
 
-The only difference between AP@.5 and AP@.75 is the applied IOU thresholds. AP@.5 uses *t=0.5* whereas AP@.75 applies *t=0.75*. These metrics are commonly used to report detections performed in the COCO dataset.
+The only difference between AP@.5 and AP@.75 is the applied IOU thresholds. AP@.5 uses *t=0.5* whereas AP@.75 applies *t=0.75*. These metrics are commonly used to report detectAP<sub>S</sub>, AP<sub>M</sub> and AP<sub>L</sub>ions performed in the COCO dataset.
 
 ### AP@[.5:.05:.95]
 
 This metric expands the AP@.5 and AP@.75 metrics by computing the AP@ with ten different IOU thresholds (*t=[0.5, 0.55, ..., 0.95]*) and taking the average among all computed results.
 
-### AP<sub>S</sub>, AP<sub>M</sub>, and AP<sub>L</sub>
+### AP<sub>S</sub>, AP<sub>M</sub> and AP<sub>L</sub> <a name="AP-s-AP-M-AP-L">
 
 These three metrics, also referred to as AP Across Scales, apply the AP@[.5,.05:.95] taking into consideration the size of the ground-truth object. AP<sub>S</sub> only evaluates the ground-truth objects of small sizes (area < 32^2 pixels); AP<sub>M</sub> considers only ground-truth objects of medium sizes (32^2 < area < 96^2 pixels); AP<sub>L</sub> considers large ground-truth objects (area > 96^2) only.
 
