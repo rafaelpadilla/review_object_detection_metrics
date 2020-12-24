@@ -113,7 +113,7 @@ def test_converters_dets():
 
 
 def test_toy_example_dets():
-    dir_annots_dets = 'toyexample/dets_yolo_format'
+    dir_annots_dets = 'toyexample/dets_classid_rel_xywh'
 
     yolo_files = general_utils.get_files_recursively(dir_annots_dets)
     assert len(yolo_files) > 0
@@ -122,9 +122,35 @@ def test_toy_example_dets():
 
 
 def test_toy_example_gts():
-    dir_annots_dets = 'toyexample/gts_vocpascal_format'
+    ############################################################################
+    # Verify if all files in the toy example follow their expected format
+    ############################################################################
 
-    yolo_files = general_utils.get_files_recursively(dir_annots_dets)
-    assert len(yolo_files) > 0
-    for yolo_file in yolo_files:
-        assert validations.is_pascal_format(yolo_file)
+    # PASCAL VOC
+    dir_annots_gts_pascal = 'toyexample/gts_vocpascal_format'
+    files = general_utils.get_files_recursively(dir_annots_gts_pascal)
+    assert len(files) > 0
+    for f in files:
+        assert validations.is_pascal_format(
+            f), 'File {f} does not follow the expected format (PASCAL VOC)'
+
+    # COCO
+    dir_annots_gts_coco = 'toyexample/gts_coco_format'
+    files = general_utils.get_files_recursively(dir_annots_gts_coco)
+    assert len(files) > 0
+    for f in files:
+        assert validations.is_coco_format(f), 'File {f} does not follow the expected format (COCO)'
+
+    ############################################################################
+    # Compare if all bounding boxes are the same
+    ############################################################################
+    pascal_bbs = converter.vocpascal2bb(dir_annots_gts_pascal)
+    coco_bbs = converter.coco2bb(dir_annots_gts_coco)
+
+    coco_bbs.sort(key=lambda x: str(x), reverse=True)
+    pascal_bbs.sort(key=lambda x: str(x), reverse=True)
+
+    assert len(coco_bbs) == len(pascal_bbs)
+
+    for coco_bb, pascal_bb in zip(coco_bbs, pascal_bbs):
+        assert coco_bb == pascal_bb
