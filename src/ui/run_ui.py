@@ -4,7 +4,8 @@ import src.utils.converter as converter
 import src.utils.general_utils as general_utils
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from src.evaluators.coco_evaluator import get_coco_summary
-from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics, plot_precision_recall_curve)
+from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics,
+                                                 plot_precision_recall_curve)
 from src.ui.details import Details_Dialog
 from src.ui.main_ui import Ui_Dialog as Main_UI
 from src.ui.results import Results_Dialog
@@ -100,6 +101,17 @@ class Main_Dialog(QMainWindow, Main_UI):
 
     def load_annotations_det(self):
         ret = []
+        # If relative format was required
+        if self.rad_det_ci_format_text_xywh_rel.isChecked(
+        ) or self.rad_det_cn_format_text_xywh_rel.isChecked():
+            # Verify if directory with images was provided
+            if self.dir_images_gt is None or not os.path.isdir(self.dir_images_gt):
+                self.show_popup(
+                    f'For the selected annotation type, it is necessary to inform a directory with the dataset images.\nDirectory is empty or does not have valid images.',
+                    'Invalid image directory',
+                    buttons=QMessageBox.Ok,
+                    icon=QMessageBox.Information)
+                return ret, False
         if self.rad_det_format_coco_json.isChecked():
             ret = converter.coco2bb(self.dir_dets, bb_type=BBType.DETECTED)
         elif self.rad_det_ci_format_text_xywh_rel.isChecked(
@@ -131,7 +143,7 @@ class Main_Dialog(QMainWindow, Main_UI):
             if self.filepath_classes_det is None or os.path.isfile(
                     self.filepath_classes_det) is False or len(
                         general_utils.get_files_dir(
-                            self.dir_images,
+                            self.dir_images_gt,
                             extensions=['jpg', 'jpge', 'png', 'bmp', 'tiff', 'tif'])) == 0:
                 self.show_popup(
                     f'For the selected annotation type, it is necessary to inform a directory with the dataset images.\nDirectory is empty or does not have valid images.',
@@ -140,6 +152,13 @@ class Main_Dialog(QMainWindow, Main_UI):
                     icon=QMessageBox.Information)
                 return ret, False
             ret = self.replace_id_with_classes(ret, self.filepath_classes_det)
+        if len(ret) == 0:
+            self.show_popup(
+                f'No files was found in the selected directory for the selected annotation format.\nDirectory is empty or does not have valid annotation files.',
+                'Invalid directory',
+                buttons=QMessageBox.Ok,
+                icon=QMessageBox.Information)
+            return ret, False
         return ret, True
 
     def btn_gt_statistics_clicked(self):
@@ -235,19 +254,12 @@ class Main_Dialog(QMainWindow, Main_UI):
             self.dir_dets = directory
         else:
             self.dir_dets = None
-
+filepath_classes_det
     def btn_statistics_det_clicked(self):
         det_annotations, passed = self.load_annotations_det()
         if passed is False:
             return
         gt_annotations = self.load_annotations_gt()
-        if det_annotations is None or len(det_annotations) == 0:
-            self.show_popup(
-                'Directory with detections was not specified or do not contain annotations in the chosen format.',
-                'Annotations not found',
-                buttons=QMessageBox.Ok,
-                icon=QMessageBox.Information)
-            return
         if self.dir_images_gt is None or os.path.isdir(self.dir_images_gt) is False:
             self.show_popup(
                 'Directory with ground-truth images was not specified or do not contain images.',
