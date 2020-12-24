@@ -130,7 +130,7 @@ class TubeEvaluator():
         return self._res, mAP
 
     def _classify_tubes(self, preds: list, gts: list, thr: float) -> tuple:
-        """This method classify the `preds` in TP or \~TP and the `gts` in FN or \~FN, by setting an attribute in each tube in the lists.
+        """This method classify the `preds` in TP or !TP and the `gts` in FN or !FN, by setting an attribute in each tube in the lists.
         This is done according to the threshold chosen. Detections with higher confidences have priority.
 
         Args:
