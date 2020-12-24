@@ -4,8 +4,7 @@ import src.utils.converter as converter
 import src.utils.general_utils as general_utils
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from src.evaluators.coco_evaluator import get_coco_summary
-from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics,
-                                                 plot_precision_recall_curve)
+from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics, plot_precision_recall_curve)
 from src.ui.details import Details_Dialog
 from src.ui.main_ui import Ui_Dialog as Main_UI
 from src.ui.results import Results_Dialog
@@ -254,7 +253,7 @@ class Main_Dialog(QMainWindow, Main_UI):
             self.dir_dets = directory
         else:
             self.dir_dets = None
-filepath_classes_det
+
     def btn_statistics_det_clicked(self):
         det_annotations, passed = self.load_annotations_det()
         if passed is False:
