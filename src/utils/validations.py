@@ -3,7 +3,10 @@ import os
 import xml.etree.ElementTree as ET
 
 import pandas as pd
-from src.utils.enumerators import BBFormat, BBType, FileFormat
+from src.utils.enumerators import CoordinatesType
+from src.utils.general_utils import get_files_recursively
+
+from .enumerators import BBFormat, BBType, FileFormat
 
 
 def validate_formats(arg_format, arg_name, errors):
@@ -267,6 +270,22 @@ def is_labelme_format(file_path, allow_empty_detections=True):
     return is_json(file_path) and json_contains_tags(file_path, tags)
 
 
+def is_valid_coco_dir(dir):
+    bb_files = get_files_recursively(dir)
+    if len(bb_files) != 1:
+        return False
+    for file_path in bb_files:
+        return verify_format(file_path, FileFormat.COCO)
+
+
+def is_valid_cvat_dir(dir):
+    bb_files = get_files_recursively(dir)
+    if len(bb_files) != 1:
+        return False
+    for file_path in bb_files:
+        return verify_format(file_path, FileFormat.CVAT)
+
+
 def is_coco_format(file_path):
     """ Verify if a given file path represents a file with annotations in coco format.
 
@@ -280,8 +299,10 @@ def is_coco_format(file_path):
     bool
         True if the file contains annotations in coco format, False otherwise.
     """
-    return is_json(file_path) and json_contains_tags(
-        file_path, ['annotations/bbox', 'annotations/image_id',])
+    return is_json(file_path) and json_contains_tags(file_path, [
+        'annotations/bbox',
+        'annotations/image_id',
+    ])
 
 
 def is_cvat_format(file_path):
@@ -300,7 +321,27 @@ def is_cvat_format(file_path):
     return is_xml(file_path) and xml_contains_tags(file_path, ['annotations', './image/box'])
 
 
-def is_absolute_text_format(file_path):
+def is_specific_text_format(file_path,
+                            type_coordinates=CoordinatesType.ABSOLUTE,
+                            bb_type=BBType.GROUND_TRUTH):
+    if type_coordinates == CoordinatesType.ABSOLUTE:
+        if bb_type == BBType.GROUND_TRUTH and is_absolute_text_format(
+                file_path, num_blocks=[5], blocks_abs_values=[4]):
+            return True
+        if bb_type == BBType.DETECTED and is_absolute_text_format(
+                file_path, num_blocks=[6], blocks_abs_values=[4]):
+            return True
+    elif type_coordinates == CoordinatesType.RELATIVE:
+        if bb_type == BBType.GROUND_TRUTH and is_relative_text_format(
+                file_path, num_blocks=[5], blocks_rel_values=[4]):
+            return True
+        if bb_type == BBType.DETECTED and is_relative_text_format(
+                file_path, num_blocks=[6], blocks_rel_values=[4]):
+            return True
+    return False
+
+
+def is_absolute_text_format(file_path, num_blocks=[6, 5], blocks_abs_values=[4]):
     """ Verify if a given file path represents a file with annotations in text format with absolute coordinates.
 
     Parameters
@@ -316,9 +357,19 @@ def is_absolute_text_format(file_path):
     if not is_text(file_path):
         return False
     if not is_empty_file(file_path):
-        return all_lines_have_blocks(
-            file_path, num_blocks=[6, 5]) and all_blocks_have_absolute_values(file_path,
-                                                                              blocks_abs_values=[4])
+        return all_lines_have_blocks(file_path,
+                                     num_blocks=num_blocks) and all_blocks_have_absolute_values(
+                                         file_path, blocks_abs_values=blocks_abs_values)
+    return True
+
+
+def is_relative_text_format(file_path, num_blocks=[6, 5], blocks_rel_values=[4]):
+    if not is_text(file_path):
+        return False
+    if not is_empty_file(file_path):
+        return all_lines_have_blocks(file_path,
+                                     num_blocks=num_blocks) and all_blocks_have_relative_values(
+                                         file_path, blocks_rel_values=blocks_rel_values)
     return True
 
 
@@ -428,7 +479,7 @@ def all_blocks_have_absolute_values(file_path, blocks_abs_values=[]):
                 if len(splitted) < block:
                     return False
                 try:
-                    if float(splitted[block]) == int(splitted[block]):
+                    if float(splitted[block]) == int(float(splitted[block])):
                         passed = True
                 except:
                     passed = False
