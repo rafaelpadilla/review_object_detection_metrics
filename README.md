@@ -38,7 +38,7 @@ Ideally, in order to have trustworthy benchmarking among different approaches, i
     - [mAP with IOU Threshold *t=0.5*](#map-with-iou-threshold-t05)
     - [AP@.5 and AP@.75](#ap5-and-ap75)
     - [AP@[.5:.05:.95]](#ap50595)
-    - [AP<sub>S</sub>, AP<sub>M</sub>, and AP<sub>L</sub>} \label{sec:AP_sizes}](#aptextsubscripts-aptextsubscriptm-and-aptextsubscriptl-labelsecap_sizes)
+    - [AP<sub>S</sub>, AP<sub>M</sub>, and AP<sub>L</sub>}(#AP<sub>S</sub>-AP<sub>M</sub>-and-AP<sub>L</sub>)
   - [**Spatio-Temporal Tube Average Precision (STT-AP)**](#spatio-temporal-tube-average-precision-stt-ap)
   - [How to use this project](#how-to-use-this-project)
     - [Requirements](#requirements)
