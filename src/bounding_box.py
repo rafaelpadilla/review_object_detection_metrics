@@ -1,8 +1,9 @@
 from math import isclose
 
-from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 from src.utils.general_utils import (convert_to_absolute_values,
                                      convert_to_relative_values)
+
+from .utils.enumerators import BBFormat, BBType, CoordinatesType
 
 
 class BoundingBox:
@@ -164,12 +165,12 @@ class BoundingBox:
         if img_size is None and self._width_img is None and self._height_img is None:
             raise IOError(
                 'Parameter \'img_size\' is required. It is necessary to inform the image size.')
-        if img_size is None:
+        if img_size is not None:
             return convert_to_relative_values((img_size[0], img_size[1]),
-                                              (self._x, self._y, self._w, self._h))
+                                              (self._x, self._x2, self._y, self._y2))
         else:
             return convert_to_relative_values((self._width_img, self._height_img),
-                                              (self._x, self._y, self._w, self._h))
+                                              (self._x, self._x2, self._y, self._y2))
 
     def get_image_name(self):
         """ Get the string that represents the image.
@@ -206,6 +207,9 @@ class BoundingBox:
 
     def set_class_id(self, class_id):
         self._class_id = class_id
+
+    def set_bb_type(self, bb_type):
+        self._bb_type = bb_type
 
     def get_class_id(self):
         """ Get the class of the object the bounding box represents.
@@ -380,3 +384,32 @@ class BoundingBox:
         if interArea is None:
             interArea = BoundingBox.get_intersection_area(boxA, boxB)
         return float(area_A + area_B - interArea)
+
+    @staticmethod
+    def get_amount_bounding_box_all_classes(bounding_boxes, reverse=False):
+        classes = list(set([bb._class_id for bb in bounding_boxes]))
+        ret = {}
+        for c in classes:
+            ret[c] = len(BoundingBox.get_bounding_box_by_class(bounding_boxes, c))
+        # Sort dictionary by the amount of bounding boxes
+        ret = {k: v for k, v in sorted(ret.items(), key=lambda item: item[1], reverse=reverse)}
+        return ret
+
+    @staticmethod
+    def get_bounding_box_by_class(bounding_boxes, class_id):
+        # get only specified bounding box type
+        return [bb for bb in bounding_boxes if bb.get_class_id() == class_id]
+
+    @staticmethod
+    def get_bounding_boxes_by_image_name(bounding_boxes, image_name):
+        # get only specified bounding box type
+        return [bb for bb in bounding_boxes if bb.get_image_name() == image_name]
+
+    @staticmethod
+    def get_total_images(bounding_boxes):
+        return len(list(set([bb.get_image_name() for bb in bounding_boxes])))
+
+    @staticmethod
+    def get_average_area(bounding_boxes):
+        areas = [bb.get_area() for bb in bounding_boxes]
+        return sum(areas) / len(areas)
