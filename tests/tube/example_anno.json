@@ -1,0 +1,108 @@
+{
+    "videos": [
+        {
+            "file_name": "video1.mp4",
+            "width": 1080,
+            "height": 920,
+            "id": 0
+        },
+        {
+            "file_name": "video2.mp4",
+            "width": 1080,
+            "height": 920,
+            "id": 1
+        }
+    ],
+    "annotations": [
+        {
+            "id": 0,
+            "video_id": 0,
+            "category_id": 0,
+            "track": [
+                {
+                    "frame": 0,
+                    "bbox": [
+                        0,
+                        15,
+                        20,
+                        30
+                    ],
+                    "outside": 1,
+                    "occluded": 0
+                },
+                {
+                    "frame": 1,
+                    "bbox": [
+                        10,
+                        15,
+                        25,
+                        30
+                    ],
+                    "outside": 0,
+                    "occluded": 0
+                },
+                {
+                    "frame": 2,
+                    "bbox": [
+                        15,
+                        15,
+                        30,
+                        30
+                    ],
+                    "outside": 0,
+                    "occluded": 0
+                }
+            ]
+        },
+        {
+            "id": 1,
+            "video_id": 0,
+            "category_id": 1,
+            "track": [
+                {
+                    "frame": 7,
+                    "bbox": [
+                        0,
+                        15,
+                        20,
+                        30
+                    ],
+                    "outside": 1,
+                    "occluded": 0
+                },
+                {
+                    "frame": 9,
+                    "bbox": [
+                        10,
+                        15,
+                        25,
+                        30
+                    ],
+                    "outside": 0,
+                    "occluded": 0
+                },
+                {
+                    "frame": 10,
+                    "bbox": [
+                        15,
+                        15,
+                        30,
+                        30
+                    ],
+                    "outside": 1,
+                    "occluded": 0
+                }
+            ]
+        }
+    ],
+    "categories": [
+        {
+            "id": 0,
+            "name": "cat"
+        },
+        {
+            "id": 1,
+            "name": "dog"
+        }
+    ]
+}
