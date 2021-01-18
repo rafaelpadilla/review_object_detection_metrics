@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1067</width>
-    <height>917</height>
+    <height>955</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -19,7 +19,7 @@
   <property name="maximumSize">
    <size>
     <width>1067</width>
-    <height>917</height>
+    <height>955</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -514,7 +514,7 @@
      <x>10</x>
      <y>650</y>
      <width>1051</width>
-     <height>195</height>
+     <height>231</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -658,7 +658,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>280</y>
+      <y>195</y>
       <width>191</width>
       <height>22</height>
      </rect>
@@ -705,8 +705,8 @@
    <widget class="QCheckBox" name="chb_metric_AR_large">
     <property name="geometry">
      <rect>
-      <x>240</x>
-      <y>280</y>
+      <x>430</x>
+      <y>195</y>
       <width>111</width>
       <height>22</height>
      </rect>
@@ -839,6 +839,26 @@
      <string>IOU threshold:</string>
     </property>
    </widget>
+   <zorder>lbl_groundtruth_dir_26</zorder>
+   <zorder>chb_metric_AP75_coco</zorder>
+   <zorder>chb_metric_AP50_coco</zorder>
+   <zorder>chb_metric_AP_coco</zorder>
+   <zorder>chb_metric_AR_max100</zorder>
+   <zorder>chb_metric_AR_max10</zorder>
+   <zorder>chb_metric_AR_max1</zorder>
+   <zorder>chb_metric_APmedium_coco</zorder>
+   <zorder>chb_metric_APlarge_coco</zorder>
+   <zorder>chb_metric_APsmall_coco</zorder>
+   <zorder>chb_metric_AR_medium</zorder>
+   <zorder>chb_metric_AR_small</zorder>
+   <zorder>lbl_groundtruth_dir_31</zorder>
+   <zorder>lbl_detections_dir_6</zorder>
+   <zorder>dsb_IOU_pascal</zorder>
+   <zorder>chb_metric_AP_pascal</zorder>
+   <zorder>chb_metric_mAP_pascal</zorder>
+   <zorder>lbl_IOU_thresh</zorder>
+   <zorder>btn_run</zorder>
+   <zorder>chb_metric_AR_large</zorder>
   </widget>
   <widget class="QLabel" name="lbl_groundtruth_dir_23">
    <property name="geometry">
@@ -883,7 +903,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>885</y>
+     <y>920</y>
      <width>1051</width>
      <height>27</height>
     </rect>
@@ -1441,7 +1461,7 @@
    <property name="geometry">
     <rect>
      <x>1030</x>
-     <y>855</y>
+     <y>890</y>
      <width>31</width>
      <height>27</height>
     </rect>
@@ -1454,26 +1474,13 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>855</y>
+     <y>890</y>
      <width>941</width>
      <height>27</height>
     </rect>
    </property>
    <property name="readOnly">
     <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lbl_groundtruth_dir_28">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>860</y>
-     <width>101</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Output:</string>
    </property>
   </widget>
   <widget class="QLabel" name="lbl_groundtruth_dir_29">
@@ -1490,6 +1497,19 @@
    </property>
    <property name="alignment">
     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lbl_groundtruth_dir_28">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>895</y>
+     <width>101</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Output:</string>
    </property>
   </widget>
  </widget>
