@@ -1,3 +1,15 @@
+
+
+<p align="left">
+  
+<a>[![Build Status](https://travis-ci.com/rafaelpadilla/review_object_detection_metrics.svg?branch=main)](https://travis-ci.com/rafaelpadilla/review_object_detection_metrics)</a>
+<a href="https://github.com/rafaelpadilla/review_object_detection_metrics/raw/main/published_paper.pdf">
+    <img src="https://img.shields.io/badge/paper-published-blue"/></a>
+<a><img src="https://img.shields.io/badge/version-0.1-orange"/></a>
+<a href="https://doi.org/10.3390/electronics10030279">
+    <img src="https://img.shields.io/badge/DOI-10.3390%2Felectronics10030279-gray"/></a>
+</p>
+
 ## Citation
 
 This work was published in the [Journal Electronics - Special Issue Deep Learning Based Object Detection](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection). 
