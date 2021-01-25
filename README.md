@@ -1,19 +1,24 @@
 ## Citation
-This work was submited to the Journal [Electronics](https://www.mdpi.com/journal/electronics).
 
-<!----
+This work was published in the [Journal Electronics - Special Issue Deep Learning Based Object Detection](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection). 
+
+If you use this code for your research, please consider citing:
+
 ```
-@INPROCEEDINGS {padillaCITE2020,
-    author    = {R. {Padilla} and W. L. {Passos} and T. L. B. {Dias} and S. L. {Netto} and E. A. B. {da Silva}},
-    title     = {A Survey on Object Detection Metrics with a Companion Open-Source Toolbox},
-    journal   = {Electronics},
-    volume    = {9},
-    year      = {2020},
-    pages     = {},
-    publisher = {Multidisciplinary Digital Publishing Institute}}
+@Article{electronics10030279,
+AUTHOR = {Padilla, Rafael and Passos, Wesley L. and Dias, Thadeu L. B. and Netto, Sergio L. and da Silva, Eduardo A. B.},
+TITLE = {A Comparative Analysis of Object Detection Metrics with a Companion Open-Source Toolkit},
+JOURNAL = {Electronics},
+VOLUME = {10},
+YEAR = {2021},
+NUMBER = {3},
+ARTICLE-NUMBER = {279},
+URL = {https://www.mdpi.com/2079-9292/10/3/279},
+ISSN = {2079-9292},
+DOI = {10.3390/electronics10030279}
+}
 ```
-Download the paper [here](TODO)
---->
+Download the paper [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/published_paper.pdf).
 
 
 Open-Source Toolbox for Object Detection Metrics
