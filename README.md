@@ -1,25 +1,42 @@
-## Citation
-This work was submited to the Journal [Electronics](https://www.mdpi.com/journal/electronics).
 
-<!----
+
+<p align="left">
+  
+<a>[![Build Status](https://travis-ci.com/rafaelpadilla/review_object_detection_metrics.svg?branch=main)](https://travis-ci.com/rafaelpadilla/review_object_detection_metrics)</a>
+<a href="https://github.com/rafaelpadilla/review_object_detection_metrics/raw/main/published_paper.pdf">
+    <img src="https://img.shields.io/badge/paper-published-blue"/></a>
+<a><img src="https://img.shields.io/badge/version-0.1-orange"/></a>
+<a href="https://doi.org/10.3390/electronics10030279">
+    <img src="https://img.shields.io/badge/DOI-10.3390%2Felectronics10030279-gray"/></a>
+</p>
+
+## Citation
+
+This work was published in the [Journal Electronics - Special Issue Deep Learning Based Object Detection](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection). 
+
+If you use this code for your research, please consider citing:
+
 ```
-@INPROCEEDINGS {padillaCITE2020,
-    author    = {R. {Padilla} and W. L. {Passos} and T. L. B. {Dias} and S. L. {Netto} and E. A. B. {da Silva}},
-    title     = {A Survey on Object Detection Metrics with a Companion Open-Source Toolbox},
-    journal   = {Electronics},
-    volume    = {9},
-    year      = {2020},
-    pages     = {},
-    publisher = {Multidisciplinary Digital Publishing Institute}}
+@Article{electronics10030279,
+AUTHOR = {Padilla, Rafael and Passos, Wesley L. and Dias, Thadeu L. B. and Netto, Sergio L. and da Silva, Eduardo A. B.},
+TITLE = {A Comparative Analysis of Object Detection Metrics with a Companion Open-Source Toolkit},
+JOURNAL = {Electronics},
+VOLUME = {10},
+YEAR = {2021},
+NUMBER = {3},
+ARTICLE-NUMBER = {279},
+URL = {https://www.mdpi.com/2079-9292/10/3/279},
+ISSN = {2079-9292},
+DOI = {10.3390/electronics10030279}
+}
 ```
-Download the paper [here](TODO)
---->
+Download the paper [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/published_paper.pdf).
 
 
 Open-Source Toolbox for Object Detection Metrics
 ================================================
 
-Our  [previously available  tool](https://github.com/rafaelpadilla/Object-Detection-MetAP-s-AP-M-AP-Lrics) for  object  detection assessment has received many positive feedbacks, which motivated us to upgrade it with other metrics and support more bounding box formats. As some external tools, competitions and works are already using the older version, we decided not to modify it but release a newer and more complete project.
+Our  [previously available  tool](https://github.com/rafaelpadilla/Object-Detection-Metrics) for  object  detection assessment has received many positive feedbacks, which motivated us to upgrade it with other metrics and support more bounding box formats. As some external tools, competitions and works are already using the older version, we decided not to modify it but release a newer and more complete project.
 
 The motivation of this project is the lack of consensus used by different works and implementations concerning the evaluation metrics of the object detection problem. Although on-line competitions use their own metrics to evaluate the task of object detection, just some of them offer reference code snippets to calculate the assertiveness of the detected objects.
 Researchers, who want to evaluate their work using different datasets than those offered by the competitions, need to implement their own version of the metrics or spend a considerable amount of time converting their bounding boxes to formats that are supported by evaluation tools. Sometimes a wrong or different implementation can create different and biased results. Even though many tools have been developed to convert the annotated boxes from one type to another, the quality assessment of the final detections still lacks a tool compatible with different bounding box formats and multiple performance metrics.
