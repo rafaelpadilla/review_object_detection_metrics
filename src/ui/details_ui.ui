@@ -114,9 +114,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="lbl_image_file_name">
    <property name="geometry">
     <rect>
-     <x>640</x>
+     <x>560</x>
      <y>10</y>
-     <width>241</width>
+     <width>281</width>
      <height>20</height>
     </rect>
    </property>
@@ -124,7 +124,7 @@ p, li { white-space: pre-wrap; }
     <string>no image to show</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QCheckBox" name="chb_gt_bb">

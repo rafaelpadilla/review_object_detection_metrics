@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'details_ui.ui'
 #
-# Created by: PyQt5 UI code generator 5.6
+# Created by: PyQt5 UI code generator 5.12.3
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -32,8 +34,8 @@ class Ui_Dialog(object):
         self.btn_save_image.setGeometry(QtCore.QRect(520, 410, 361, 27))
         self.btn_save_image.setObjectName("btn_save_image")
         self.lbl_image_file_name = QtWidgets.QLabel(Dialog)
-        self.lbl_image_file_name.setGeometry(QtCore.QRect(640, 10, 241, 20))
-        self.lbl_image_file_name.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.lbl_image_file_name.setGeometry(QtCore.QRect(560, 10, 281, 20))
+        self.lbl_image_file_name.setAlignment(QtCore.Qt.AlignCenter)
         self.lbl_image_file_name.setObjectName("lbl_image_file_name")
         self.chb_gt_bb = QtWidgets.QCheckBox(Dialog)
         self.chb_gt_bb.setGeometry(QtCore.QRect(520, 380, 161, 22))
@@ -100,4 +102,3 @@ if __name__ == "__main__":
     ui.setupUi(Dialog)
     Dialog.show()
     sys.exit(app.exec_())
-
