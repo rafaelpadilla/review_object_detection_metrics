@@ -2,6 +2,7 @@ import os
 
 import src.utils.converter as converter
 import src.utils.general_utils as general_utils
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from src.evaluators.coco_evaluator import get_coco_summary
 from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics,
@@ -9,6 +10,7 @@ from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics,
 from src.ui.details import Details_Dialog
 from src.ui.main_ui import Ui_Dialog as Main_UI
 from src.ui.results import Results_Dialog
+from src.ui.splash import Splash_Dialog
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 
 
@@ -31,6 +33,15 @@ class Main_Dialog(QMainWindow, Main_UI):
         self.dir_dets = None
         self.filepath_classes_det = None
         self.dir_save_results = None
+
+        self.center_screen()
+
+    def center_screen(self):
+        size = self.size()
+        desktopSize = QtWidgets.QDesktopWidget().screenGeometry()
+        top = (desktopSize.height() / 2) - (size.height() / 2)
+        left = (desktopSize.width() / 2) - (size.width() / 2)
+        self.move(left, top)
 
     def closeEvent(self, event):
         conf = self.show_popup('Are you sure you want to close the program?',

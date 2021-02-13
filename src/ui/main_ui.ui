@@ -7,19 +7,19 @@
     <x>0</x>
     <y>0</y>
     <width>1067</width>
-    <height>955</height>
+    <height>850</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>1067</width>
-    <height>917</height>
+    <height>850</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>1067</width>
-    <height>955</height>
+    <height>850</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -514,7 +514,7 @@
      <x>10</x>
      <y>650</y>
      <width>1051</width>
-     <height>231</height>
+     <height>136</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -527,8 +527,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>15</y>
-      <width>221</width>
+      <y>10</y>
+      <width>281</width>
       <height>21</height>
      </rect>
     </property>
@@ -540,6 +540,9 @@
     </property>
     <property name="text">
      <string>COCO Average Precision (AP):</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QCheckBox" name="chb_metric_AP75_coco">
@@ -641,8 +644,8 @@
    <widget class="QCheckBox" name="chb_metric_APmedium_coco">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>165</y>
+      <x>180</x>
+      <y>75</y>
       <width>191</width>
       <height>22</height>
      </rect>
@@ -657,8 +660,8 @@
    <widget class="QCheckBox" name="chb_metric_APlarge_coco">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>195</y>
+      <x>180</x>
+      <y>105</y>
       <width>191</width>
       <height>22</height>
      </rect>
@@ -673,8 +676,8 @@
    <widget class="QCheckBox" name="chb_metric_APsmall_coco">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>135</y>
+      <x>180</x>
+      <y>45</y>
       <width>191</width>
       <height>22</height>
      </rect>
@@ -689,8 +692,8 @@
    <widget class="QCheckBox" name="chb_metric_AR_medium">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>165</y>
+      <x>570</x>
+      <y>75</y>
       <width>111</width>
       <height>22</height>
      </rect>
@@ -705,8 +708,8 @@
    <widget class="QCheckBox" name="chb_metric_AR_large">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>195</y>
+      <x>570</x>
+      <y>105</y>
       <width>111</width>
       <height>22</height>
      </rect>
@@ -721,8 +724,8 @@
    <widget class="QCheckBox" name="chb_metric_AR_small">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>135</y>
+      <x>570</x>
+      <y>45</y>
       <width>111</width>
       <height>22</height>
      </rect>
@@ -738,8 +741,8 @@
     <property name="geometry">
      <rect>
       <x>430</x>
-      <y>20</y>
-      <width>221</width>
+      <y>10</y>
+      <width>251</width>
       <height>21</height>
      </rect>
     </property>
@@ -752,13 +755,16 @@
     <property name="text">
      <string>COCO Average Recall (AR):</string>
     </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
    <widget class="QLabel" name="lbl_detections_dir_6">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>15</y>
-      <width>121</width>
+      <x>840</x>
+      <y>10</y>
+      <width>191</width>
       <height>21</height>
      </rect>
     </property>
@@ -772,15 +778,15 @@
      <string>PASCAL VOC:</string>
     </property>
     <property name="alignment">
-     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="dsb_IOU_pascal">
     <property name="geometry">
      <rect>
-      <x>900</x>
+      <x>950</x>
       <y>40</y>
-      <width>71</width>
+      <width>81</width>
       <height>27</height>
      </rect>
     </property>
@@ -797,9 +803,9 @@
    <widget class="QCheckBox" name="chb_metric_AP_pascal">
     <property name="geometry">
      <rect>
-      <x>790</x>
+      <x>840</x>
       <y>75</y>
-      <width>261</width>
+      <width>121</width>
       <height>22</height>
      </rect>
     </property>
@@ -813,9 +819,9 @@
    <widget class="QCheckBox" name="chb_metric_mAP_pascal">
     <property name="geometry">
      <rect>
-      <x>790</x>
-      <y>105</y>
-      <width>201</width>
+      <x>970</x>
+      <y>75</y>
+      <width>71</width>
       <height>22</height>
      </rect>
     </property>
@@ -829,7 +835,7 @@
    <widget class="QLabel" name="lbl_IOU_thresh">
     <property name="geometry">
      <rect>
-      <x>790</x>
+      <x>840</x>
       <y>45</y>
       <width>101</width>
       <height>17</height>
@@ -857,8 +863,8 @@
    <zorder>chb_metric_AP_pascal</zorder>
    <zorder>chb_metric_mAP_pascal</zorder>
    <zorder>lbl_IOU_thresh</zorder>
-   <zorder>btn_run</zorder>
    <zorder>chb_metric_AR_large</zorder>
+   <zorder>lbl_groundtruth_dir_22</zorder>
   </widget>
   <widget class="QLabel" name="lbl_groundtruth_dir_23">
    <property name="geometry">
@@ -903,7 +909,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>920</y>
+     <y>820</y>
      <width>1051</width>
      <height>27</height>
     </rect>
@@ -1461,7 +1467,7 @@
    <property name="geometry">
     <rect>
      <x>1030</x>
-     <y>890</y>
+     <y>790</y>
      <width>31</width>
      <height>27</height>
     </rect>
@@ -1474,7 +1480,7 @@
    <property name="geometry">
     <rect>
      <x>80</x>
-     <y>890</y>
+     <y>790</y>
      <width>941</width>
      <height>27</height>
     </rect>
@@ -1503,7 +1509,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>895</y>
+     <y>795</y>
      <width>101</width>
      <height>17</height>
     </rect>
