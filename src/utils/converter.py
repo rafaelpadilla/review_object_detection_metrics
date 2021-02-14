@@ -362,7 +362,7 @@ def yolo2bb(annotations_path, images_dir, file_obj_names, bb_type=BBType.GROUND_
                                  confidence=confidence,
                                  type_coordinates=CoordinatesType.RELATIVE,
                                  bb_type=bb_type,
-                                 format=BBFormat.XYWH)
+                                 format=BBFormat.YOLO)
                 ret.append(bb)
     return ret
 
