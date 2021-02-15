@@ -36,16 +36,6 @@ def replace_id_with_classes(bounding_boxes, filepath_classes_det):
     return bounding_boxes
 
 
-def get_files_recursively(directory, extension="*"):
-    if '.' not in extension:
-        extension = '*.' + extension
-    files = [
-        os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(directory)
-        for f in fnmatch.filter(files, extension)
-    ]
-    return files
-
-
 def convert_box_xywh2xyxy(box):
     arr = box.copy()
     arr[:, 2] += arr[:, 0]
@@ -176,7 +166,9 @@ def get_files_recursively(directory, extension="*"):
         os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(directory)
         for f in fnmatch.filter(files, extension)
     ]
-    return files
+    # Disconsider hidden files, such as .DS_Store in the MAC OS
+    ret = [f for f in files if not os.path.basename(f).startswith('.')]
+    return ret
 
 
 def is_str_int(s):
