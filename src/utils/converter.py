@@ -275,6 +275,8 @@ def text2bb(annotations_path,
                 resolution = general_utils.get_image_resolution(img_path)
                 img_size = (resolution['width'], resolution['height'])
             for line in f:
+                if line.replace(' ', '') == '\n':
+                    continue
                 splitted_line = line.split(' ')
                 class_id = splitted_line[0]
                 if bb_type == BBType.GROUND_TRUTH:
@@ -331,6 +333,8 @@ def yolo2bb(annotations_path, images_dir, file_obj_names, bb_type=BBType.GROUND_
         # Loop through lines
         with open(file_path, "r") as f:
             for line in f:
+                if line.replace(' ', '') == '\n':
+                    continue
                 splitted_line = line.split(' ')
                 class_id = splitted_line[0]
                 if not general_utils.is_str_int(class_id):
