@@ -8,7 +8,8 @@ from src.bounding_box import BoundingBox
 from src.ui.details_ui import Ui_Dialog as Details_UI
 from src.utils import general_utils
 from src.utils.enumerators import BBType
-from src.utils.general_utils import (add_bb_into_image, get_files_dir, remove_file_extension,
+from src.utils.general_utils import (add_bb_into_image, get_files_dir,
+                                     remove_file_extension,
                                      show_image_in_qt_component)
 
 

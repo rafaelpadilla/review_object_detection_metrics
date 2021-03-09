@@ -21,10 +21,10 @@ class Results_Dialog(QMainWindow, Results_UI):
             for metric, res in coco_results.items():
                 text += tag_value.replace('VALUE', f'{metric}: {res}')
         if len(pascal_results) != 0:
-            text += '<br />'
-            text += '<span style=" font-weight:600;">PASCAL METRIC (AP per class)</span>'
             for metric, res in pascal_results.items():
                 if metric == 'per_class':
+                    text += '<br />'
+                    text += '<span style=" font-weight:600;">PASCAL METRIC (AP per class)</span>'
                     for c, ap in res.items():
                         text += tag_value.replace('VALUE', f'{c}: {ap["AP"]}')
                 elif metric == 'mAP':

@@ -367,7 +367,7 @@ class Main_Dialog(QMainWindow, Main_UI):
                                                generate_table=True)
             if not self.chb_metric_AP_pascal.isChecked():
                 del pascal_res['per_class']
-            if not self.chb_metric_AR_large.isChecked():
+            if not self.chb_metric_mAP_pascal.isChecked():
                 del pascal_res['mAP']
 
             if 'per_class' in pascal_res:
