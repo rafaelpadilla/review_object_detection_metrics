@@ -70,4 +70,4 @@ voc_res = {}
 for iou in ious:
     dict_res = pascal_voc_evaluator.get_pascalvoc_metrics(gt_bbs, det_bbs, iou, generate_table=True, method=MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION)
     voc_res = dict_res['per_class']
-    pascal_voc_evaluator.plot_precision_recall_curve(voc_res, showInterpolatedPrecision=True, showAP=True)
+    pascal_voc_evaluator.plot_precision_recall_curves(voc_res, showInterpolatedPrecision=True, showAP=True)

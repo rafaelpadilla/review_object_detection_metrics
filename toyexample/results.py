@@ -66,4 +66,4 @@ ious = [0.5, 0.75]
 voc_res = {}
 for iou in ious:
     voc_res[iou], mAP = pascal_voc_evaluator.get_pascalvoc_metrics(gt_bbs, det_bbs, iou, generate_table=True, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION)
-    pascal_voc_evaluator.plot_precision_recall_curve(voc_res[iou], showInterpolatedPrecision=True, showAP=True)
+    pascal_voc_evaluator.plot_precision_recall_curves(voc_res[iou], showInterpolatedPrecision=True, showAP=True)

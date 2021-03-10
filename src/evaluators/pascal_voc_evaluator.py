@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from src.bounding_box import BoundingBox
-from src.utils.enumerators import (BBFormat, CoordinatesType, MethodAveragePrecision)
+from src.utils.enumerators import (BBFormat, CoordinatesType,
+                                   MethodAveragePrecision)
 
 
 def calculate_ap_every_point(rec, prec):
@@ -224,10 +225,61 @@ def get_pascalvoc_metrics(gt_boxes,
 
 
 def plot_precision_recall_curve(results,
-                                showAP=False,
+                                mAP=None,
                                 showInterpolatedPrecision=False,
                                 savePath=None,
                                 showGraphic=True):
+    result = None
+    plt.close()
+    # Each resut represents a class
+    for classId, result in results.items():
+        if result is None:
+            raise IOError(f'Error: Class {classId} could not be found.')
+
+        precision = result['precision']
+        recall = result['recall']
+        average_precision = result['AP']
+        mpre = result['interpolated precision']
+        mrec = result['interpolated recall']
+        method = result['method']
+        if showInterpolatedPrecision:
+            if method == MethodAveragePrecision.EVERY_POINT_INTERPOLATION:
+                plt.plot(mrec, mpre, '--r', label='Interpolated precision (every point)')
+            elif method == MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION:
+                # Remove duplicates, getting only the highest precision of each recall value
+                nrec = []
+                nprec = []
+                for idx in range(len(mrec)):
+                    r = mrec[idx]
+                    if r not in nrec:
+                        idxEq = np.argwhere(mrec == r)
+                        nrec.append(r)
+                        nprec.append(max([mpre[int(id)] for id in idxEq]))
+                plt.plot(nrec, nprec, 'or', label='11-point interpolated precision')
+        plt.plot(recall, precision, label=f'{classId}')
+    plt.xlabel('recall')
+    plt.ylabel('precision')
+    if mAP:
+        map_str = "{0:.2f}%".format(mAP * 100)
+        plt.title(f'Precision x Recall curve, mAP={map_str}')
+    else:
+        plt.title('Precision x Recall curve')
+    plt.legend(shadow=True)
+    plt.grid()
+    if savePath is not None:
+        plt.savefig(os.path.join(savePath, 'all_classes.png'))
+    if showGraphic is True:
+        plt.show()
+        # plt.waitforbuttonpress()
+        plt.pause(0.05)
+    return results
+
+
+def plot_precision_recall_curves(results,
+                                 showAP=False,
+                                 showInterpolatedPrecision=False,
+                                 savePath=None,
+                                 showGraphic=True):
     result = None
     # Each resut represents a class
     for classId, result in results.items():

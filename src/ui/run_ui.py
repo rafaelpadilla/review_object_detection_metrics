@@ -5,7 +5,8 @@ import src.utils.general_utils as general_utils
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from src.evaluators.coco_evaluator import get_coco_summary
-from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics, plot_precision_recall_curve)
+from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics, plot_precision_recall_curve,
+                                                 plot_precision_recall_curves)
 from src.ui.details import Details_Dialog
 from src.ui.main_ui import Ui_Dialog as Main_UI
 from src.ui.results import Results_Dialog
@@ -365,17 +366,24 @@ class Main_Dialog(QMainWindow, Main_UI):
                                                det_annotations,
                                                iou_threshold=iou_threshold,
                                                generate_table=True)
+            mAP = pascal_res['mAP']
+
             if not self.chb_metric_AP_pascal.isChecked():
                 del pascal_res['per_class']
             if not self.chb_metric_mAP_pascal.isChecked():
                 del pascal_res['mAP']
 
             if 'per_class' in pascal_res:
-                # Save plots
+                # Save a single plot with all classes
                 plot_precision_recall_curve(pascal_res['per_class'],
-                                            showAP=True,
+                                            mAP=mAP,
                                             savePath=self.dir_save_results,
                                             showGraphic=False)
+                # Save plots for each class
+                plot_precision_recall_curves(pascal_res['per_class'],
+                                             showAP=True,
+                                             savePath=self.dir_save_results,
+                                             showGraphic=False)
 
         if len(coco_res) + len(pascal_res) == 0:
             self.show_popup('No results to show',
