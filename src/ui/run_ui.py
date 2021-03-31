@@ -2,13 +2,15 @@ import os
 
 import src.utils.converter as converter
 import src.utils.general_utils as general_utils
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
 from src.evaluators.coco_evaluator import get_coco_summary
-from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics,
-                                                 plot_precision_recall_curve)
+from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics, plot_precision_recall_curve,
+                                                 plot_precision_recall_curves)
 from src.ui.details import Details_Dialog
 from src.ui.main_ui import Ui_Dialog as Main_UI
 from src.ui.results import Results_Dialog
+from src.ui.splash import Splash_Dialog
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 
 
@@ -31,6 +33,15 @@ class Main_Dialog(QMainWindow, Main_UI):
         self.dir_dets = None
         self.filepath_classes_det = None
         self.dir_save_results = None
+
+        self.center_screen()
+
+    def center_screen(self):
+        size = self.size()
+        desktopSize = QtWidgets.QDesktopWidget().screenGeometry()
+        top = (desktopSize.height() / 2) - (size.height() / 2)
+        left = (desktopSize.width() / 2) - (size.width() / 2)
+        self.move(left, top)
 
     def closeEvent(self, event):
         conf = self.show_popup('Are you sure you want to close the program?',
@@ -71,44 +82,18 @@ class Main_Dialog(QMainWindow, Main_UI):
         elif self.rad_gt_format_abs_values_text.isChecked():
             ret = converter.text2bb(self.dir_annotations_gt, bb_type=BBType.GROUND_TRUTH)
         elif self.rad_gt_format_yolo_text.isChecked():
-            ret = self.yolo2bb(self.dir_annotations_gt,
-                               self.dir_images_gt,
-                               self.filepath_classes_gt,
-                               bb_type=BBType.GROUND_TRUTH)
+            ret = converter.yolo2bb(self.dir_annotations_gt,
+                                    self.dir_images_gt,
+                                    self.filepath_classes_gt,
+                                    bb_type=BBType.GROUND_TRUTH)
         # Make all types as GT
         [bb.set_bb_type(BBType.GROUND_TRUTH) for bb in ret]
         return ret
 
-    def get_classes_from_txt_file(self, filepath_classes_det):
-        classes = {}
-        f = open(self.filepath_classes_det, 'r')
-        id_class = 0
-        for line in f.readlines():
-            classes[id_class] = line.replace('\n', '')
-        f.close()
-        return classes
-
-    def replace_id_with_classes(self, bounding_boxes, filepath_classes_det):
-        classes = self.get_classes_from_txt_file(filepath_classes_det)
-        for bb in bounding_boxes:
-            if not general_utils.is_str_int(bb.get_class_id()):
-                print(
-                    f'Warning: Class id represented in the {filepath_classes_det} is not a valid integer.'
-                )
-                return bounding_boxes
-            class_id = int(bb.get_class_id())
-            if class_id not in range(len(classes)):
-                print(
-                    f'Warning: Class id represented in the {filepath_classes_det} is not in the range of classes specified in the file {file_obj_names}.'
-                )
-                return bounding_boxes
-            bb._class_id = classes[class_id]
-        return bounding_boxes
-
     def validate_det_choices(self):
         # If relative format was required, directory with images have to be valid
-        if self.rad_det_ci_format_text_xywh_rel.isChecked(
-        ) or self.rad_det_cn_format_text_xywh_rel.isChecked():
+        if self.rad_det_ci_format_text_yolo_rel.isChecked(
+        ) or self.rad_det_cn_format_text_yolo_rel.isChecked():
             # Verify if directory with images was provided
             valid_image_dir = False
             if self.dir_images_gt is not None and os.path.isdir(self.dir_images_gt):
@@ -124,13 +109,13 @@ class Main_Dialog(QMainWindow, Main_UI):
                     icon=QMessageBox.Information)
                 return False
         # if its detection format requires class_id, text file containing the classes of objects must be informed
-        if self.rad_det_ci_format_text_xywh_rel.isChecked(
+        if self.rad_det_ci_format_text_yolo_rel.isChecked(
         ) or self.rad_det_ci_format_text_xyx2y2_abs.isChecked(
         ) or self.rad_det_ci_format_text_xywh_abs.isChecked():
             # Verify if text file with classes was provided
             valid_txt_file = False
             if self.filepath_classes_det is not None and os.path.isfile(self.filepath_classes_det):
-                classes = self.get_classes_from_txt_file(self.filepath_classes_det)
+                classes = general_utils.get_classes_from_txt_file(self.filepath_classes_det)
                 if len(classes) != 0:
                     valid_txt_file = True
             if valid_txt_file is False:
@@ -149,11 +134,11 @@ class Main_Dialog(QMainWindow, Main_UI):
 
         if self.rad_det_format_coco_json.isChecked():
             ret = converter.coco2bb(self.dir_dets, bb_type=BBType.DETECTED)
-        elif self.rad_det_ci_format_text_xywh_rel.isChecked(
-        ) or self.rad_det_cn_format_text_xywh_rel.isChecked():
+        elif self.rad_det_ci_format_text_yolo_rel.isChecked(
+        ) or self.rad_det_cn_format_text_yolo_rel.isChecked():
             ret = converter.text2bb(self.dir_dets,
                                     bb_type=BBType.DETECTED,
-                                    bb_format=BBFormat.XYWH,
+                                    bb_format=BBFormat.YOLO,
                                     type_coordinates=CoordinatesType.RELATIVE,
                                     img_dir=self.dir_images_gt)
         elif self.rad_det_ci_format_text_xyx2y2_abs.isChecked(
@@ -170,11 +155,20 @@ class Main_Dialog(QMainWindow, Main_UI):
                                     bb_format=BBFormat.XYWH,
                                     type_coordinates=CoordinatesType.ABSOLUTE,
                                     img_dir=self.dir_images_gt)
+        # Verify if for the selected format, detections were found
+        if len(ret) == 0:
+            self.show_popup(
+                'No file was found for the selected detection format in the annotations directory.',
+                'No file was found',
+                buttons=QMessageBox.Ok,
+                icon=QMessageBox.Information)
+            return ret, False
+
         # If detection requires class_id, replace the detection names (integers) by a class from the txt file
-        if self.rad_det_ci_format_text_xywh_rel.isChecked(
+        if self.rad_det_ci_format_text_yolo_rel.isChecked(
         ) or self.rad_det_ci_format_text_xyx2y2_abs.isChecked(
         ) or self.rad_det_ci_format_text_xywh_abs.isChecked():
-            ret = self.replace_id_with_classes(ret, self.filepath_classes_det)
+            ret = general_utils.replace_id_with_classes(ret, self.filepath_classes_det)
         return ret, True
 
     def btn_gt_statistics_clicked(self):
@@ -372,17 +366,24 @@ class Main_Dialog(QMainWindow, Main_UI):
                                                det_annotations,
                                                iou_threshold=iou_threshold,
                                                generate_table=True)
+            mAP = pascal_res['mAP']
+
             if not self.chb_metric_AP_pascal.isChecked():
                 del pascal_res['per_class']
-            if not self.chb_metric_AR_large.isChecked():
+            if not self.chb_metric_mAP_pascal.isChecked():
                 del pascal_res['mAP']
 
             if 'per_class' in pascal_res:
-                # Save plots
+                # Save a single plot with all classes
                 plot_precision_recall_curve(pascal_res['per_class'],
-                                            showAP=True,
+                                            mAP=mAP,
                                             savePath=self.dir_save_results,
                                             showGraphic=False)
+                # Save plots for each class
+                plot_precision_recall_curves(pascal_res['per_class'],
+                                             showAP=True,
+                                             savePath=self.dir_save_results,
+                                             showGraphic=False)
 
         if len(coco_res) + len(pascal_res) == 0:
             self.show_popup('No results to show',

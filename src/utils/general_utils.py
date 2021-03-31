@@ -8,14 +8,32 @@ from PyQt5 import QtCore, QtGui
 from src.utils.enumerators import BBFormat
 
 
-def get_files_recursively(directory, extension="*"):
-    if '.' not in extension:
-        extension = '*.' + extension
-    files = [
-        os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(directory)
-        for f in fnmatch.filter(files, extension)
-    ]
-    return files
+def get_classes_from_txt_file(filepath_classes_det):
+    classes = {}
+    f = open(filepath_classes_det, 'r')
+    id_class = 0
+    for id_class, line in enumerate(f.readlines()):
+        classes[id_class] = line.replace('\n', '')
+    f.close()
+    return classes
+
+
+def replace_id_with_classes(bounding_boxes, filepath_classes_det):
+    classes = get_classes_from_txt_file(filepath_classes_det)
+    for bb in bounding_boxes:
+        if not is_str_int(bb.get_class_id()):
+            print(
+                f'Warning: Class id represented in the {filepath_classes_det} is not a valid integer.'
+            )
+            return bounding_boxes
+        class_id = int(bb.get_class_id())
+        if class_id not in range(len(classes)):
+            print(
+                f'Warning: Class id {class_id} is not in the range of classes specified in the file {filepath_classes_det}.'
+            )
+            return bounding_boxes
+        bb._class_id = classes[class_id]
+    return bounding_boxes
 
 
 def convert_box_xywh2xyxy(box):
@@ -148,7 +166,9 @@ def get_files_recursively(directory, extension="*"):
         os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(directory)
         for f in fnmatch.filter(files, extension)
     ]
-    return files
+    # Disconsider hidden files, such as .DS_Store in the MAC OS
+    ret = [f for f in files if not os.path.basename(f).startswith('.')]
+    return ret
 
 
 def is_str_int(s):

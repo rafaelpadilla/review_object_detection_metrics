@@ -1,7 +1,6 @@
 from math import isclose
 
-from src.utils.general_utils import (convert_to_absolute_values,
-                                     convert_to_relative_values)
+from src.utils.general_utils import (convert_to_absolute_values, convert_to_relative_values)
 
 from .utils.enumerators import BBFormat, BBType, CoordinatesType
 
@@ -67,6 +66,12 @@ class BoundingBox:
         else:
             self._width_img = img_size[0]
             self._height_img = img_size[1]
+
+        # If YOLO format (rel_x_center, rel_y_center, rel_width, rel_height), change it to absolute format (x,y,w,h)
+        if format == BBFormat.YOLO:
+            assert self._width_img is not None and self._height_img is not None
+            self._format = BBFormat.XYWH
+            self._type_coordinates = CoordinatesType.RELATIVE
 
         self.set_coordinates(coordinates,
                              img_size=img_size,
@@ -262,7 +267,7 @@ class BoundingBox:
         abs_bb_xywh = self.get_absolute_bounding_box(format=BBFormat.XYWH)
         abs_bb_xyx2y2 = self.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
         area = self.get_area()
-        return f'image name: {self._image_name}\nimage size: {self.get_image_size()}\nclass: {self._class_id}\nbb (XYWH): {abs_bb_xywh}\nbb (X1Y1X2Y2): {abs_bb_xyx2y2}\narea: {area}\nbb_type: {self._bb_type}'
+        return f'image name: {self._image_name}\nclass: {self._class_id}\nbb (XYWH): {abs_bb_xywh}\nbb (X1Y1X2Y2): {abs_bb_xyx2y2}\narea: {area}\nbb_type: {self._bb_type}'
 
     def __eq__(self, other):
         if not isinstance(other, BoundingBox):
