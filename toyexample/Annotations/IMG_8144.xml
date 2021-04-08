@@ -1,0 +1,63 @@
+<annotation>
+    <folder>VOC_lemons_annotated</folder>
+    <filename>IMG_8144.jpg</filename>
+    <source>
+        <database>Supervisely Project ID:2496</database>
+        <annotation>PASCAL VOC</annotation>
+        <image>Supervisely Image ID:791883</image>
+    </source>
+    <size>
+        <width>1067</width>
+        <height>800</height>
+        <depth>3</depth>
+    </size>
+    <segmented>1</segmented>
+    <object>
+        <name>lemon</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>589</xmin>
+            <ymin>372</ymin>
+            <xmax>899</xmax>
+            <ymax>537</ymax>
+        </bndbox>
+    </object>
+    <object>
+        <name>kiwi</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>612</xmin>
+            <ymin>110</ymin>
+            <xmax>765</xmax>
+            <ymax>282</ymax>
+        </bndbox>
+    </object>
+    <object>
+        <name>kiwi</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>196</xmin>
+            <ymin>212</ymin>
+            <xmax>352</xmax>
+            <ymax>380</ymax>
+        </bndbox>
+    </object>
+    <object>
+        <name>kiwi</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>425</xmin>
+            <ymin>561</ymin>
+            <xmax>576</xmax>
+            <ymax>705</ymax>
+        </bndbox>
+    </object>
+</annotation>
