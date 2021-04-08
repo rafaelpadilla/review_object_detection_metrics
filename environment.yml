@@ -1,4 +1,13 @@
 # conda env create -n <env_name> --file <this_file>.yml
+# sudo conda-env create -n new_od_env --file environment.yml
+# To activate this environment, use
+#
+#     $ conda activate new_od_env
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
 channels:
   - conda-forge
   - defaults
