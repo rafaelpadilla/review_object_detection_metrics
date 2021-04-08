@@ -237,9 +237,16 @@ def text2bb(annotations_path,
             bb_type=BBType.GROUND_TRUTH,
             bb_format=BBFormat.XYWH,
             type_coordinates=CoordinatesType.ABSOLUTE,
-            img_dir=None):
+            img_dir=None,
+            file_obj_names = None):
     ret = []
-
+    
+    # Load classes
+    if file_obj_names is not None:
+        all_classes = []
+        with open(file_obj_names, "r") as f:
+            all_classes = [line.replace('\n', '') for line in f]
+            
     # Get annotation files in the path
     annotation_files = _get_annotation_files(annotations_path)
     for file_path in annotation_files:
@@ -279,6 +286,12 @@ def text2bb(annotations_path,
                     continue
                 splitted_line = line.split(' ')
                 class_id = splitted_line[0]
+                if file_obj_names is not None:
+                    try:
+                        class_id = all_classes[int(class_id)]
+                    except:
+                        pass
+                    
                 if bb_type == BBType.GROUND_TRUTH:
                     confidence = None
                     x1 = float(splitted_line[1])
