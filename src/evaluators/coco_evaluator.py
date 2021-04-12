@@ -24,8 +24,10 @@ from collections import defaultdict
 import numpy as np
 from src.bounding_box import BBFormat
 
+DEFAULT_SIZES = (('small', 0), ('medium', 32), ('large', 96))
 
-def get_coco_summary(groundtruth_bbs, detected_bbs):
+
+def get_coco_summary(groundtruth_bbs, detected_bbs, sizes=DEFAULT_SIZES):
     """Calculate the 12 standard metrics used in COCOEval,
         AP, AP50, AP75,
         AR1, AR10, AR100,
@@ -102,38 +104,24 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
     AR100 = np.mean(
         [x['TP'] / x['total positives'] for k in full for x in full[k] if x['TP'] is not None])
 
-    small = {
-        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(0, 32**2))
-        for i in iou_thresholds
-    }
-    APsmall = [x['AP'] for k in small for x in small[k] if x['AP'] is not None]
-    APsmall = np.nan if APsmall == [] else np.mean(APsmall)
-    ARsmall = [
-        x['TP'] / x['total positives'] for k in small for x in small[k] if x['TP'] is not None
-    ]
-    ARsmall = np.nan if ARsmall == [] else np.mean(ARsmall)
-
-    medium = {
-        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(32**2, 96**2))
-        for i in iou_thresholds
-    }
-    APmedium = [x['AP'] for k in medium for x in medium[k] if x['AP'] is not None]
-    APmedium = np.nan if APmedium == [] else np.mean(APmedium)
-    ARmedium = [
-        x['TP'] / x['total positives'] for k in medium for x in medium[k] if x['TP'] is not None
-    ]
-    ARmedium = np.nan if ARmedium == [] else np.mean(ARmedium)
-
-    large = {
-        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(96**2, np.inf))
-        for i in iou_thresholds
-    }
-    APlarge = [x['AP'] for k in large for x in large[k] if x['AP'] is not None]
-    APlarge = np.nan if APlarge == [] else np.mean(APlarge)
-    ARlarge = [
-        x['TP'] / x['total positives'] for k in large for x in large[k] if x['TP'] is not None
-    ]
-    ARlarge = np.nan if ARlarge == [] else np.mean(ARlarge)
+    sizes = list(zip(*sizes))
+    names = sizes[0]
+    lower_limits = sizes[1]
+    upper_limits = lower_limits[1:] + (np.iinfo(np.int32).max,)
+    metrics_map = {}
+    for name, lb, ub in zip(names, lower_limits, upper_limits):
+        metrics = {
+            i: _evaluate(iou_threshold=i, max_dets=100, area_range=(lb**2, ub**2))
+            for i in iou_thresholds
+        }
+        ap = [x['AP'] for k in metrics for x in metrics[k] if x['AP'] is not None]
+        ap = np.nan if ap == [] else np.mean(ap)
+        ar = [
+            x['TP'] / x['total positives'] for k in metrics for x in metrics[k] if x['TP'] is not None
+        ]
+        ar = np.nan if ar == [] else np.mean(ar)
+        metrics_map[f'AP{name}'] = ap
+        metrics_map[f'AR{name}'] = ar
 
     max_det1 = {
         i: _evaluate(iou_threshold=i, max_dets=1, area_range=(0, np.inf))
@@ -156,15 +144,10 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
         "AP": AP,
         "AP50": AP50,
         "AP75": AP75,
-        "APsmall": APsmall,
-        "APmedium": APmedium,
-        "APlarge": APlarge,
         "AR1": AR1,
         "AR10": AR10,
         "AR100": AR100,
-        "ARsmall": ARsmall,
-        "ARmedium": ARmedium,
-        "ARlarge": ARlarge
+        **metrics_map
     }
 
 

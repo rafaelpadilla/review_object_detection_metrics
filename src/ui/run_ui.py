@@ -4,7 +4,7 @@ import src.utils.converter as converter
 import src.utils.general_utils as general_utils
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QMainWindow, QMessageBox
-from src.evaluators.coco_evaluator import get_coco_summary
+from src.evaluators.coco_evaluator import get_coco_summary, DEFAULT_SIZES
 from src.evaluators.pascal_voc_evaluator import (get_pascalvoc_metrics, plot_precision_recall_curve,
                                                  plot_precision_recall_curves)
 from src.ui.details import Details_Dialog
@@ -15,7 +15,7 @@ from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 
 
 class Main_Dialog(QMainWindow, Main_UI):
-    def __init__(self):
+    def __init__(self, coco_sizes):
         QMainWindow.__init__(self)
         self.setupUi(self)
         self.current_directory = os.path.dirname(os.path.realpath(__file__))
@@ -33,8 +33,18 @@ class Main_Dialog(QMainWindow, Main_UI):
         self.dir_dets = None
         self.filepath_classes_det = None
         self.dir_save_results = None
+        self.set_coco_sizes(coco_sizes)
 
         self.center_screen()
+
+    def set_coco_sizes(self, coco_sizes):
+        complete_sizes = tuple(DEFAULT_SIZES[i] if coco_sizes[i][1] is None else coco_sizes[i]
+                          for i in range(len(coco_sizes)))
+        for i in range(len(complete_sizes)-1):
+            if not complete_sizes[i][1] < complete_sizes[i+1][1]:
+                raise ValueError((f'Invalid bounding box sizes given, {complete_sizes[i]}'
+                                  f' not smaller than {complete_sizes[i+1]}.'))
+        self.coco_sizes = complete_sizes
 
     def center_screen(self):
         size = self.size()
@@ -333,7 +343,7 @@ class Main_Dialog(QMainWindow, Main_UI):
         ) or self.chb_metric_AR_max1.isChecked() or self.chb_metric_AR_max10.isChecked(
         ) or self.chb_metric_AR_max100.isChecked() or self.chb_metric_AR_small.isChecked(
         ) or self.chb_metric_AR_medium.isChecked() or self.chb_metric_AR_large.isChecked():
-            coco_res = get_coco_summary(gt_annotations, det_annotations)
+            coco_res = get_coco_summary(gt_annotations, det_annotations, sizes=self.coco_sizes)
             # Remove not checked metrics
             if not self.chb_metric_AP_coco.isChecked():
                 del coco_res['AP']

@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 from PyQt5.QtWidgets import QFileDialog, QMainWindow
 from src.bounding_box import BoundingBox
 from src.ui.details_ui import Ui_Dialog as Details_UI
-from src.utils import general_utils
+from src.ui.ui_utils import show_image_in_qt_component
 from src.utils.enumerators import BBType
-from src.utils.general_utils import (add_bb_into_image, get_files_dir,
+from src.utils.general_utils import (add_bb_into_image, plot_bb_per_classes,
+                                     get_files_dir,
                                      remove_file_extension,
-                                     show_image_in_qt_component)
+                                     get_file_name_only)
 
 
 class Details_Dialog(QMainWindow, Details_UI):
@@ -110,7 +111,7 @@ class Details_Dialog(QMainWindow, Details_UI):
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # Get bounding boxes of the loaded image
         img_name = self.image_files[self.selected_image_index]
-        img_name = general_utils.get_file_name_only(img_name)
+        img_name = get_file_name_only(img_name)
         # Add bounding boxes depending if the item is checked
         if self.chb_gt_bb.isChecked() and self.gt_annotations is not None:
             bboxes = BoundingBox.get_bounding_boxes_by_image_name(self.gt_annotations, img_name)
@@ -139,10 +140,10 @@ class Details_Dialog(QMainWindow, Details_UI):
 
     def btn_plot_bb_per_classes_clicked(self):
         # dict_bbs_per_class = BoundingBox.get_amount_bounding_box_all_classes(gt_bbs, reverse=True)
-        general_utils.plot_bb_per_classes(self.bb_per_class,
-                                          horizontally=False,
-                                          rotation=90,
-                                          show=True)
+        plot_bb_per_classes(self.bb_per_class,
+                            horizontally=False,
+                            rotation=90,
+                            show=True)
         # plt.close()
         # plt.bar(self.bb_per_class.keys(), self.bb_per_class.values())
         # plt.xlabel('classes')

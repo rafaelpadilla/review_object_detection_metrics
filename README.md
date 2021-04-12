@@ -190,6 +190,10 @@ These three metrics, also referred to as AP Across Scales, apply the AP@[.5,.05:
 
 When evaluating objects of a given size, objects of the other sizes (both ground-truth and predicted) are not considered in the evaluation. This metric is also part of the COCO evaluation dataset.
 
+When the evaluation is done in other settings, it is possible to use other values for small, medium and large bounding boxes. The lower bounds for the size categories can be given as command line parameters:
+
+`python run.py --small <lower bound, default 0> --medium <lower bound, default 32> --large <lower bound, default 96> `
+
 
 ## **Spatio-Temporal Tube Average Precision (STT-AP)**
 When dealing with videos, one may be interested in evaluating the model performance at  video level, i.e., whether the object was detected in the video as a whole. This metric is an extension of the AP metric that integrates spatial and temporal localizations; it is concise, yet expressive.
