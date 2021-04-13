@@ -8,6 +8,9 @@
 #
 #     $ conda deactivate
 
+#pip install asyncio --upgrade
+#pip install ipykernel --upgrade
+
 channels:
   - conda-forge
   - defaults
@@ -23,6 +26,7 @@ dependencies:
   - pyqt=5.12
   - pytest=6.1
   - python=3.9
+  - supervisely=6.1.59
   - pip:
     - awscli==1.18.180
     - chardet==3.0.4
