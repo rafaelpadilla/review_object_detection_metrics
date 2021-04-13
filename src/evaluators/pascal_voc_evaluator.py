@@ -41,7 +41,9 @@ def calculate_ap_11_point_interp(rec, prec, recall_vals=11):
     [mpre.append(e) for e in prec]
     # mpre.append(0)
     recallValues = np.linspace(0, 1, recall_vals)
+    # array([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ])
     recallValues = list(recallValues[::-1])
+    # [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]
     rhoInterp = []
     recallValid = []
     # For each recallValues (0, 0.1, 0.2, ... , 1)

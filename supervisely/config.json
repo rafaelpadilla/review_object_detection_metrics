@@ -1,0 +1,15 @@
+{
+  "name": "App Template (No GUI)",
+  "type": "app",
+  "categories": [
+    "development"
+  ],
+  "description": "headless app for mAP Calc",
+  "docker_image": "supervisely/base-py-sdk:6",
+  "main_script": "src/sly_mAP_calc.py",
+  "task_location": "workspace_tasks",
+  "isolate": true,
+  "icon": "https://img.icons8.com/color/96/000000/console.png",
+  "icon_background": "#FFFFFF",
+  "headless": true
+}
