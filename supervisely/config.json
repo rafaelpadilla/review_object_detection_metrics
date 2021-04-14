@@ -1,15 +1,21 @@
 {
-  "name": "App Template (No GUI)",
+  "name": "Classes co-occurrence matrix",
   "type": "app",
   "categories": [
-    "development"
+    "report"
   ],
-  "description": "headless app for mAP Calc",
+  "description": "Explore images for every combination of classes pairs in co-occurrence table",
   "docker_image": "supervisely/base-py-sdk:6",
-  "main_script": "src/sly_mAP_calc.py",
+  "main_script": "src/sly_main_mAP_Calc.py",
+  "modal_template": "src/modal.html",
+  "modal_template_state": {},
+  "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
   "isolate": true,
-  "icon": "https://img.icons8.com/color/96/000000/console.png",
+  "icon": "https://img.icons8.com/color/96/000000/attract-customers.png",
   "icon_background": "#FFFFFF",
-  "headless": true
+  "context_menu": {
+    "target": ["images_project", "images_dataset"],
+    "context_root": "Report"
+  }
 }
