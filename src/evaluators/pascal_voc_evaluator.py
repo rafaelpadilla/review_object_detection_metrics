@@ -107,6 +107,9 @@ def get_pascalvoc_metrics(gt_boxes,
     # Get classes of all bounding boxes separating them by classes
     gt_classes_only = []
     classes_bbs = {}
+    if len(gt_boxes) == 0:
+        return
+
     for bb in gt_boxes:
         c = bb.get_class_id()
         gt_classes_only.append(c)
@@ -222,6 +225,7 @@ def get_pascalvoc_metrics(gt_boxes,
             'table': table
         }
     # For mAP, only the classes in the gt set should be considered
+    # print('gt_classes_only = ', gt_classes_only)
     mAP = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only)
     return {'per_class': ret, 'mAP': mAP}
 
