@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import supervisely_lib as sly
-from algorithm import process, get_data, get_data_v1, dict2tuple, calculate_mAP
+from algorithm import process, get_data_v1, dict2tuple, calculate_image_mAP, calculate_dataset_mAP, calculate_project_mAP, line_chart_builder
 from src.utils.enumerators import MethodAveragePrecision
 from random import randrange
 from collections import defaultdict
@@ -23,18 +23,17 @@ if dst_project is None:
     raise RuntimeError(f"Project id={dst_project_id} not found")
 
 meta = app.public_api.project.get_meta(dst_project_id)
-
+round_level = 4
+iou = 0.5
+method = MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION
+# method = MethodAveragePrecision.EVERY_POINT_INTERPOLATION
 
 @app.callback("app-gui-template")
 @sly.timeit
 def app_gui_template(api: sly.Api, task_id, context, state, app_logger):
     # Table Data
-    iou         = 0.5
-    round_level = 4
-    # method = MethodAveragePrecision.EVERY_POINT_INTERPOLATION
-    method = MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION
-    image_columns   = ['SRC_ID', 'DST_ID', "name", "TP", "FP", "Precision", "Recall", "AP"]
-    dataset_columns = ["name", "TP", "FP", "Precision", "Recall", "AP"]
+    image_columns   = ['SRC_ID', 'DST_ID', "name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
+    dataset_columns = ["name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
 
     source_list = get_data_v1(src_project, dst_project)
     source_list_np = np.array(source_list, dtype=object)
@@ -45,116 +44,47 @@ def app_gui_template(api: sly.Api, task_id, context, state, app_logger):
     dst_list_np = source_list_np[dst_ids]
     del source_list_np
 
-    # print(src_list_np[0])
-    # print(dst_list_np[0])
-
-    images_pd_data = list()
-    for src_image_info, dst_image_info in zip(src_list_np, dst_list_np):
-        rez = calculate_mAP(src_image_info[-1], dst_image_info[-1], 0.5, method)
-        rez_d = dict2tuple(rez)
-        # src_image_prj_type     = src_image_info[0]
-        # dst_image_prj_type     = dst_image_info[0]
-        # src_image_dataset_id   = src_image_info[1]
-        # dst_image_dataset_id   = dst_image_info[1]
-        # src_image_dataset_name = src_image_info[2]
-        # dst_image_dataset_name = dst_image_info[2]
-        src_image_image_id     = src_image_info[3]
-        dst_image_image_id     = dst_image_info[3]
-        src_image_image_name   = src_image_info[4]
-        # dst_image_image_name   = dst_image_info[4]
-        src_image_link         = src_image_info[5]
-        # dst_image_link         = dst_image_info[5]
-
-        per_image_data = [
-            src_image_image_id, dst_image_image_id,
-            '<a href="{0}" rel="noopener noreferrer" target="_blank">{1}</a>'.format(src_image_link, src_image_image_name)]
-        per_image_data.extend(rez_d)
-        images_pd_data.append(per_image_data)
-
-    datasets_pd_data = list()
-    dataset_results = []
-    for ds_name in set(dst_list_np[:, 2]):
-        src_dataset_ = src_list_np[np.where(src_list_np[:, 2] == ds_name)]
-        dst_dataset_ = dst_list_np[np.where(dst_list_np[:, 2] == ds_name)]
-        src_set_list = list()
-        dst_set_list = list()
-        for l in src_dataset_[:, -1]:
-            src_set_list.extend(l)
-        for l in dst_dataset_[:, -1]:
-            dst_set_list.extend(l)
-        # print('Dataset Stage')
-        rez = calculate_mAP(src_set_list, dst_set_list, 0.5, method)
-        rez_d = dict2tuple(rez)
-        current_data = [ds_name]
-        current_data.extend(rez_d)
-
-        dataset_results.append(rez['per_class'])
-        datasets_pd_data.append(current_data)
-    # print('datasets_pd_data =', datasets_pd_data)
-
-    projects_pd_data = list()
-    src_set_list = list()
-    dst_set_list = list()
-    for l in src_list_np[:, -1]:
-        src_set_list.extend(l)
-    for l in dst_list_np[:, -1]:
-        dst_set_list.extend(l)
-    # print('Project Stage!')
-    prj_rez = calculate_mAP(src_set_list, dst_set_list, 0.5, method)
-    rez_d = dict2tuple(prj_rez)
-    current_data = [dst_project.name]
-    current_data.extend(rez_d)
-    projects_pd_data.append(current_data)
+    images_pd_data = calculate_image_mAP(src_list_np, dst_list_np, method)
+    datasets_pd_data = calculate_dataset_mAP(src_list_np, dst_list_np, method)
+    projects_pd_data, prj_rez = calculate_project_mAP(src_list_np, dst_list_np, method, dst_project)
     # -------------------------------------------
-    line_chart_series = []
-    tableClasses = []
+    # Statistic + lineCharts by classes
+    prj_viz_data = prj_rez['per_class']
+    line_chart_series, table_classes = line_chart_builder(prj_viz_data)
     line_chart_options = {
         "title": "Line chart",
         "showLegend": True
     }
-    showInterpolatedPrecision = True,
-    prj_viz_data = prj_rez['per_class']
-    for classId, result in prj_viz_data.items():
-        if result is None:
-            raise IOError(f'Error: Class {classId} could not be found.')
-        precision = result['precision']
-        recall = result['recall']
-        average_precision = result['AP']
-        mpre = result['interpolated precision']
-        mrec = result['interpolated recall']
-        method = result['method']
-        if showInterpolatedPrecision:
-            nrec  = []
-            nprec = []
-            if method == MethodAveragePrecision.EVERY_POINT_INTERPOLATION:
-                nrec, nprec = mrec, mpre
-            elif method == MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION:
-                # Remove duplicates, getting only the highest precision of each recall value
-                for idx in range(len(mrec)):
-                    r = mrec[idx]
-                    if r not in nrec:
-                        idxEq = np.argwhere(mrec == r)
-                        nrec.append(r)
-                        nprec.append(max([mpre[int(id)] for id in idxEq]))
-
-        line_chart_series.append(dict(name=classId, data=[[i, j] for i, j in zip(recall, precision)]))
-        # line_chart_series.append(dict(name=classId+' interpolated', data=[[i, j] for i, j in zip(nrec, nprec)]))
-        FP   = result['total FP']
-        TP   = result['total TP']
-        npos = result['total positives']
-        AP = round(result['AP'], round_level)
-        Recall = round(TP / npos, round_level)
-        Precision = round(np.divide(TP, (FP + TP)), round_level)
-        tableClasses.append([classId, TP, FP, npos, Recall, Precision, AP])
-
-    tableClasses_columns = ['classId', 'TP', 'FP', 'npos', 'Recall', 'Precision', 'AP']
+    table_classes_columns = ['className', 'TP', 'FP', 'npos', 'Recall', 'Precision', 'AP']
+    print('table_classes =', table_classes)
     fields = [
-        {"field": "data.tableClasses", "payload": {"columns": tableClasses_columns, "data": tableClasses}},
+        {"field": "data.tableClasses", "payload": {"columns": table_classes_columns, "data": table_classes}},
         {"field": "data.lineChartOptions", "payload": line_chart_options},
         {"field": "data.lineChartSeries", "payload": line_chart_series},
     ]
-
     api.app.set_fields(task_id, fields)
+    # --------------------------------------------
+    # Google-like table
+    ALL_line = ['ALL']
+    [ALL_line.append(value) for value in projects_pd_data[0][1:]]
+    table_classes.append(ALL_line)
+    tableData = list()
+    for tuple_ in table_classes:
+        tableData.append(
+            dict(className=tuple_[0],
+                TP=tuple_[1],
+                FP=tuple_[2],
+                npos=tuple_[3],
+                Recall=tuple_[4],
+                Precision=tuple_[5],
+                AP=tuple_[6],
+                tag='null'))
+    fields = [
+        {"field": "data.tableClassesExtended", "payload": tableData},
+        {"field": "data.sliderValue", "payload": 1}
+    ]
+    api.app.set_fields(task_id, fields)
+
     # --------------------------------------------
     # save report to file *.lnk (link to report)
     report_name = f"app-gui-template.lnk"
@@ -178,8 +108,61 @@ def app_gui_template(api: sly.Api, task_id, context, state, app_logger):
         {"field": "data.reportName", "payload": report_name},
         {"field": "data.reportUrl", "payload": report_url},
     ]
-
     api.app.set_fields(task_id, fields)
+
+
+@app.callback("test")
+@sly.timeit
+def test(api: sly.Api, task_id, context, state, app_logger):
+    percent = state["selection"]["sliderValue"]
+    # recalculate table
+    if percent == 0:
+        return
+    fields = [
+        {"field": "data.sliderValue", "payload": percent}
+    ]
+    # api.app.set_fields(task_id, fields)
+
+
+@app.callback("recalculate")
+@sly.timeit
+def recalculate(api: sly.Api, task_id, context, state, app_logger):
+    print('sliderValue =', state["selection"]["sliderValue"])
+    sliderValue = state["selection"]["sliderValue"] # data['sliderValue']
+    fraction_source_list = get_data_v1(src_project, dst_project, num_batches=sliderValue)
+    fraction_source_list_np = np.array(fraction_source_list, dtype=object)
+    del fraction_source_list
+    src_ids = np.where(fraction_source_list_np[:, 0] == 'src')
+    dst_ids = np.where(fraction_source_list_np[:, 0] == 'dst')
+    fraction_src_list_np = fraction_source_list_np[src_ids]
+    fraction_dst_list_np = fraction_source_list_np[dst_ids]
+    del fraction_source_list_np
+
+    projects_pd_data, prj_rez = calculate_project_mAP(fraction_src_list_np, fraction_dst_list_np, method, dst_project)
+    prj_viz_data = prj_rez['per_class']
+    _, table_classes = line_chart_builder(prj_viz_data)
+    # Google-like table
+    ALL_line = ['ALL']
+    [ALL_line.append(value) for value in projects_pd_data[0][1:]]
+    table_classes.append(ALL_line)
+    tableData = list()
+    for tuple_ in table_classes:
+        tableData.append(
+            dict(className=tuple_[0],
+                TP=tuple_[1],
+                FP=tuple_[2],
+                npos=tuple_[3],
+                Recall=tuple_[4],
+                Precision=tuple_[5],
+                AP=tuple_[6],
+                tag='null'))
+    fields = [
+        {"field": "data.tableClassesExtended", "payload": tableData},
+        {"field": "data.sliderValue", "payload": sliderValue}
+    ]
+    api.app.set_fields(task_id, fields)
+    for element in tableData:
+        print(element['AP'])
 
 
 @app.callback("show_images")
@@ -257,7 +240,6 @@ def main():
     }
     state = {
         "selection": {},
-        "IoUmarker": {}
     }
     app.run(data=data, state=state, initial_events=[{"command": "app-gui-template"}])
 
