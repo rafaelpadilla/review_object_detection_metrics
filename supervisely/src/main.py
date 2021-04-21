@@ -112,6 +112,13 @@ def app_gui_template(api: sly.Api, task_id, context, state, app_logger):
     api.app.set_fields(task_id, fields)
 
 
+@app.callback("view_class")
+@sly.timeit
+def view_class(api: sly.Api, task_id, context, state, app_logger):
+    print("!!! ", state["selectedClassName"])
+    pass
+
+
 @app.callback("test")
 @sly.timeit
 def test(api: sly.Api, task_id, context, state, app_logger):
@@ -241,6 +248,7 @@ def main():
     }
     state = {
         "selection": {},
+        "selectedClassName": ""
     }
     app.run(data=data, state=state, initial_events=[{"command": "app-gui-template"}])
 
