@@ -28,6 +28,7 @@ iou = 0.5
 method = MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION
 # method = MethodAveragePrecision.EVERY_POINT_INTERPOLATION
 
+
 @app.callback("app-gui-template")
 @sly.timeit
 def app_gui_template(api: sly.Api, task_id, context, state, app_logger):
@@ -87,16 +88,16 @@ def app_gui_template(api: sly.Api, task_id, context, state, app_logger):
 
     # --------------------------------------------
     # save report to file *.lnk (link to report)
-    report_name = f"app-gui-template.lnk"
-    local_path = os.path.join(app.data_dir, report_name)
-    sly.fs.ensure_base_path(local_path)
-    with open(local_path, "w") as text_file:
-        print(app.app_url, file=text_file)
-    remote_path = api.file.get_free_name(TEAM_ID, f"/reports/app-gui-template/{report_name}")
-    report_name = sly.fs.get_file_name_with_ext(remote_path)
-    file_info = api.file.upload(TEAM_ID, local_path, remote_path)
-    report_url = api.file.get_url(file_info.id)
-    api.task.set_output_report(task_id, file_info.id, file_info.name)
+    # report_name = f"app-gui-template.lnk"
+    # local_path = os.path.join(app.data_dir, report_name)
+    # sly.fs.ensure_base_path(local_path)
+    # with open(local_path, "w") as text_file:
+    #     print(app.app_url, file=text_file)
+    # remote_path = api.file.get_free_name(TEAM_ID, f"/reports/app-gui-template/{report_name}")
+    # report_name = sly.fs.get_file_name_with_ext(remote_path)
+    # file_info = api.file.upload(TEAM_ID, local_path, remote_path)
+    # report_url = api.file.get_url(file_info.id)
+    # api.task.set_output_report(task_id, file_info.id, file_info.name)
 
     fields = [
         {"field": "data.started", "payload": False},
@@ -104,9 +105,9 @@ def app_gui_template(api: sly.Api, task_id, context, state, app_logger):
         {"field": "data.tableProjects", "payload": {"columns": dataset_columns, "data": projects_pd_data}},
         {"field": "data.tableDatasets", "payload": {"columns": dataset_columns, "data": datasets_pd_data}},
         {"field": "data.tableImages", "payload": {"columns": image_columns, "data": images_pd_data}},
-        {"field": "data.savePath", "payload": remote_path},
-        {"field": "data.reportName", "payload": report_name},
-        {"field": "data.reportUrl", "payload": report_url},
+        # {"field": "data.savePath", "payload": remote_path},
+        # {"field": "data.reportName", "payload": report_name},
+        # {"field": "data.reportUrl", "payload": report_url},
     ]
     api.app.set_fields(task_id, fields)
 

@@ -5,7 +5,6 @@
               style="min-height: 200px; min-width: 400px; max-width: 500px; align-self: flex-start;"
     >
         <sly-table v-loading="data.loading"
-                   element-loading-text="Building Table..."
                    :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
                    :content="data.tableProjects"
         ></sly-table>
@@ -16,21 +15,19 @@
               style="min-height: 200px; min-width: 400px; max-width: 500px; align-self: flex-start;"
     >
         <sly-table v-loading="data.loading"
-                   element-loading-text="Building Table..."
                    :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
                    :content="data.tableDatasets"
         ></sly-table>
     </sly-card>
     <sly-card class="mt15"
-          title="Image_mAP"
-          subtitle="Image Statistic Table"
-          style="width: 100%;"
+              title="Image_mAP"
+              subtitle="Image Statistic Table"
+              style="width: 100%;"
     >
         <sly-table v-loading="data.loading"
-               element-loading-text="Building Table..."
-               :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
-               :content="data.tableImages"
-               @input="state.selection = $event; command('show_images')"
+                   :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
+                   :content="data.tableImages"
+                   @input="state.selection = $event; command('show_images')"
         ></sly-table>
     </sly-card>
     <sly-card class="mt15"
@@ -55,28 +52,24 @@
         </sly-line-chart>
         <sly-table :content="data.tableClassesExtended"></sly-table>
     </sly-card>
-    <template>
-        <div class="fflex">
-            <div class="block">
-                <span class="demonstration">Fraction in percents(%) of dataset to be calculated</span>
-                <el-slider v-model="data.sliderValue" show-input
-                           @change="state.selection.sliderValue = $event; command('test')">
-                </el-slider>
-            </div>
-            <el-button @click="$event; command('recalculate')">Mini Button</el-button>
-        </div>
-    </template>
-    <template>
-        <el-table
+    <!--        <div class="fflex">-->
+    <!--            <div class="block">-->
+    <!--                <span class="demonstration">Fraction in percents(%) of dataset to be calculated</span>-->
+    <!--                <el-slider v-model="data.sliderValue" show-input-->
+    <!--                           @change="state.selection.sliderValue = $event; command('test')">-->
+    <!--                </el-slider>-->
+    <!--            </div>-->
+    <!--            <el-button @click="$event; command('recalculate')">Mini Button</el-button>-->
+    <!--        </div>-->
+    <el-table
             :data="data.tableClassesExtended" border style="width: 100%">
-            <el-table-column prop="className" label="name" sortable width="180"></el-table-column>
-            <el-table-column prop="TP" label="TruePositive" sortable width="180"></el-table-column>
-            <el-table-column prop="FP" label="FalsePositive" sortable width="180"></el-table-column>
-            <el-table-column prop="npos" label="NumPositives" sortable width="180"></el-table-column>
-            <el-table-column prop="Recall" label="Recall" sortable width="180"></el-table-column>
-            <el-table-column prop="Precision" label="Precision" sortable width="180"></el-table-column>
-            <el-table-column prop="AP" label="AveragePrecision" sortable width="180"></el-table-column>
-            <el-table-column prop="tag" label="Tag" sortable width="180"></el-table-column>
-        </el-table>
-    </template>
+        <el-table-column prop="className" label="name" sortable width="180"></el-table-column>
+        <el-table-column prop="TP" label="TruePositive" sortable width="180"></el-table-column>
+        <el-table-column prop="FP" label="FalsePositive" sortable width="180"></el-table-column>
+        <el-table-column prop="npos" label="NumPositives" sortable width="180"></el-table-column>
+        <el-table-column prop="Recall" label="Recall" sortable width="180"></el-table-column>
+        <el-table-column prop="Precision" label="Precision" sortable width="180"></el-table-column>
+        <el-table-column prop="AP" label="AveragePrecision" sortable width="180"></el-table-column>
+        <el-table-column prop="tag" label="Tag" sortable width="180"></el-table-column>
+    </el-table>
 </div>
