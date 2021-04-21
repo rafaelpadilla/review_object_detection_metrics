@@ -87,3 +87,4 @@ target/
 
 # Mypy cache
 .mypy_cache/
+venv
