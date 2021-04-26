@@ -2,7 +2,7 @@
     <sly-card class="mt15"
               title="Project_mAP"
               subtitle="Project Statistic Table"
-              style="min-height: 200px; min-width: 400px; max-width: 500px; align-self: flex-start;"
+              style="min-height: 200px; min-width: 400px; align-self: flex-start;"
     >
         <sly-table v-loading="data.loading"
                    :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
@@ -12,7 +12,7 @@
     <sly-card class="mt15"
               title="Datasets_mAP"
               subtitle="Dataset Statistic Table"
-              style="min-height: 200px; min-width: 400px; max-width: 500px; align-self: flex-start;"
+              style="min-height: 200px; min-width: 400px; align-self: flex-start;"
     >
         <sly-table v-loading="data.loading"
                    :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
@@ -45,22 +45,50 @@
               subtitle="Precision/Recall Curves for corresponding classes"
               style="min-height: 200px; min-width: 400px; align-self: flex-start;"
     >
-        <sly-table :content="data.tableClasses"></sly-table>
-        <sly-line-chart style="flex: 1; min-height: 500px; min-width: 500px; align-right: flex-start;"
-                        :options.sync="data.lineChartOptions"
-                        :content="data.lineChartSeries">
-        </sly-line-chart>
-        <sly-table :content="data.tableClassesExtended"></sly-table>
+        <div class="fflex">
+            <sly-table :content="data.tableClasses"></sly-table>
+            <sly-line-chart style="flex: 1; align-right: flex-start;"
+                            :options.sync="data.lineChartOptions"
+                            :content="data.lineChartSeries">
+            </sly-line-chart>
+        </div>
+<!--        <sly-table :content="data.tableClassesExtended"></sly-table>-->
     </sly-card>
-    <!--        <div class="fflex">-->
-    <!--            <div class="block">-->
-    <!--                <span class="demonstration">Fraction in percents(%) of dataset to be calculated</span>-->
-    <!--                <el-slider v-model="data.sliderValue" show-input-->
-    <!--                           @change="state.selection.sliderValue = $event; command('test')">-->
-    <!--                </el-slider>-->
-    <!--            </div>-->
-    <!--            <el-button @click="$event; command('recalculate')">Mini Button</el-button>-->
-    <!--        </div>-->
+    <sly-field title="Sample percent" description="how many imaes should be randomply sampled for eveluation">
+        <div class="fflex">
+            <el-slider class="ml10 mr10"
+                       v-model="state.samplePercent"
+                       :min="1"
+                       :max="100"
+                       @change="state.samplePercent = $event; command('evaluate')"
+                       style="flex: 1">
+            </el-slider>
+            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 * state.samplePercent)}} images</div>
+            <el-button class="regular" type="primary" @click="command('evaluate')">Evaluate</el-button>
+        </div>
+        <div class="fflex">
+            <sly-field title="IoU threshold" description="intersection over union threshold values object to be positive selected">
+                <el-slider class="ml10 mr10"
+                           v-model="state.IoUThreshold"
+                           :min="1"
+                           :max="100"
+                           @change="state.IoUThreshold = $event; command('evaluate')"
+                           style="flex: 1">
+                </el-slider>
+                <div class="mr10">{{state.IoUThreshold}}%</div>
+            </sly-field>
+            <sly-field title="Score threshold" description="score threshold values object to be positive selected">
+                <el-slider class="ml10 mr10"
+                           v-model="state.ScoreThreshold"
+                           :min="1"
+                           :max="100"
+                           @change="state.ScoreThreshold = $event; command('evaluate')"
+                           style="flex: 1">
+                </el-slider>
+            </sly-field>
+            <div class="mr10">{{state.ScoreThreshold}}%</div>
+        </div>
+    </sly-field>
     <el-table
             :data="data.tableClassesExtended" border>
         <el-table-column prop="className" label="name" sortable></el-table-column>
@@ -80,4 +108,38 @@
             </template>
         </el-table-column>
     </el-table>
+    <sly-card class="mt15"
+              title="Extra Class Info"
+              subtitle="Extra Class Info"
+              style="min-height: 200px; min-width: 400px;"
+    >
+        <sly-table :content="data.classExtraStats"></sly-table>
+        <div class="fflex">
+            <sly-table v-loading="data.loading"
+                       :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
+                       :content="data.tableSingleClassImages"
+                       @input="state.selection = $event; command('show_images')"
+            ></sly-table>
+            <sly-line-chart style="flex: 1; align-right: flex-start;"
+                            :options.sync="data.lineChartOptions"
+                            :content="data.classExtraChartSeries">
+            </sly-line-chart>
+        </div>
+
+    </sly-card>
+    <sly-card class="mt15"
+              title="Original annotation vs Detections"
+              subtitle="Select image row in Image_mAP table"
+              style="width: 100%;"
+    >
+        <sly-grid-gallery v-if="state.selection.selectedColumnName"
+                          :content="data.previewContent"
+                          :options="data.previewOptions">
+            <template v-slot:card-footer="{ annotation }">
+                <div class="mt5" style="text-align: center">
+                    <el-tag type="primary">{{annotation.info.title}}</el-tag>
+                </div>
+            </template>
+        </sly-grid-gallery>
+    </sly-card>
 </div>
