@@ -259,6 +259,8 @@ def plot_precision_recall_curve(results,
         plt.plot(recall, precision, label=f'{classId}')
     plt.xlabel('recall')
     plt.ylabel('precision')
+    plt.xlim([-0.1, 1.1])
+    plt.ylim([-0.1, 1.1])
     if mAP:
         map_str = "{0:.2f}%".format(mAP * 100)
         plt.title(f'Precision x Recall curve, mAP={map_str}')
@@ -369,6 +371,8 @@ def plot_precision_recall_curves(results,
         #                 xytext=vecPositions[idx], textcoords='offset points',
         #                 arrowprops=dict(arrowstyle="->", connectionstyle="arc3"),
         #                 bbox=box)
+        plt.xlim([-0.1, 1.1])
+        plt.ylim([-0.1, 1.1])
         if savePath is not None:
             plt.savefig(os.path.join(savePath, classId + '.png'))
         if showGraphic is True:
