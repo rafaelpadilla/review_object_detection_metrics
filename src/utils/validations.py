@@ -440,7 +440,7 @@ def all_lines_have_blocks(file_path, num_blocks=[]):
     """
     with open(file_path, 'r+') as f:
         for line in f:
-            line = line.replace('\n', '')
+            line = line.replace('\n', '').strip()
             if line == '':
                 continue
             passed = False
@@ -470,7 +470,7 @@ def all_blocks_have_absolute_values(file_path, blocks_abs_values=[]):
     """
     with open(file_path, 'r+') as f:
         for line in f:
-            line = line.replace('\n', '')
+            line = line.replace('\n', '').strip()
             if line == '':
                 continue
             passed = False
@@ -506,7 +506,7 @@ def all_blocks_have_relative_values(file_path, blocks_rel_values=[]):
     """
     with open(file_path, 'r+') as f:
         for line in f:
-            line = line.replace('\n', '')
+            line = line.replace('\n', '').strip()
             if line == '':
                 continue
             passed = False
