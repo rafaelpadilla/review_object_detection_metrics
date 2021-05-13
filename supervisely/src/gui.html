@@ -8,7 +8,7 @@
                    :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
                    :content="data.tableProjects"
         ></sly-table>
-    </sly-card>
+    </sly-card><!--Project_mAP-->
     <sly-card class="mt15"
               title="Datasets_mAP"
               subtitle="Dataset Statistic Table"
@@ -18,7 +18,7 @@
                    :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
                    :content="data.tableDatasets"
         ></sly-table>
-    </sly-card>
+    </sly-card><!--Dataset_mAP-->
     <sly-card class="mt15"
               title="Image_mAP"
               subtitle="Image Statistic Table"
@@ -29,7 +29,7 @@
                    :content="data.tableImages"
                    @input="state.selection = $event; command('show_images')"
         ></sly-table>
-    </sly-card>
+    </sly-card><!--Image_mAP-->
     <sly-card class="mt15"
               title="Original annotation vs Detections"
               subtitle="Select image row in Image_mAP table"
@@ -39,7 +39,7 @@
                           :content="data.previewContent"
                           :options="data.previewOptions">
         </sly-grid-gallery>
-    </sly-card>
+    </sly-card><!--Original annotation vs Detections-->
     <sly-card class="mt15"
               title="Precision/Recall Curve"
               subtitle="Precision/Recall Curves for corresponding classes"
@@ -52,9 +52,9 @@
                             :content="data.lineChartSeries">
             </sly-line-chart>
         </div>
-<!--        <sly-table :content="data.tableClassesExtended"></sly-table>-->
-    </sly-card>
-    <sly-field title="Sample percent" description="how many imaes should be randomply sampled for eveluation">
+    </sly-card><!--Precision/Recall Curve-->
+    <sly-field title="Sample percent"
+               description="how many images should be randomly sampled for evaluation">
         <div class="fflex">
             <el-slider class="ml10 mr10"
                        v-model="state.samplePercent"
@@ -65,7 +65,7 @@
             </el-slider>
             <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 * state.samplePercent)}} images</div>
             <el-button class="regular" type="primary" @click="command('evaluate')">Evaluate</el-button>
-        </div>
+        </div><!--slider-->
         <div class="fflex">
             <sly-field title="IoU threshold" description="intersection over union threshold values object to be positive selected">
                 <el-slider class="ml10 mr10"
@@ -87,10 +87,9 @@
                 </el-slider>
             </sly-field>
             <div class="mr10">{{state.ScoreThreshold}}%</div>
-        </div>
-    </sly-field>
-    <el-table
-            :data="data.tableClassesExtended" border>
+        </div><!--sliders: IOU,Score-->
+    </sly-field><!--slider block-->
+    <el-table :data="data.tableClassesExtended" border>
         <el-table-column prop="className" label="name" sortable></el-table-column>
         <el-table-column prop="TP" label="TP" sortable></el-table-column>
         <el-table-column prop="FP" label="FP" sortable></el-table-column>
@@ -107,7 +106,7 @@
                 </el-button>
             </template>
         </el-table-column>
-    </el-table>
+    </el-table><!--class Table with Evaluate buttons-->
     <sly-card class="mt15"
               title="Extra Class Info"
               subtitle="Extra Class Info"
@@ -126,7 +125,7 @@
             </sly-line-chart>
         </div>
 
-    </sly-card>
+    </sly-card><!--selected class info-->
     <sly-card class="mt15"
               title="Original annotation vs Detections"
               subtitle="Select image row in Image_mAP table"
@@ -141,5 +140,68 @@
                 </div>
             </template>
         </sly-grid-gallery>
-    </sly-card>
+    </sly-card><!--image grid for selected class-->
+    <sly-card class="mt15"
+              title="Confusion Matrix"
+              subtitle="Select row in Confusion Matrix table"
+              style="width: 100%;">
+        <sly-table v-loading="data.loading"
+                   :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
+                   :content="data.slyTableConfusionMatrix"
+                   @input="state.selection = $event; command('show_conf_mtrx_details')"
+        ></sly-table>
+        Selected cell: {{ state.selected }}
+        <sly-confusion-matrix :data="data.slyConfusionMatrix.data"
+                              :options="{ selectable: true }"
+                              v-model="state.selected">
+        </sly-confusion-matrix>
+<!--        <el-table :data="data.confusionMatrix.tableData" border style="width: 100%">-->
+<!--            <el-table-column prop="class_names" label="class_names" fixed></el-table-column>-->
+<!--            <el-table-column v-for="item in data.confusionMatrix.columns"-->
+<!--                            :key="item.label"-->
+<!--                            :prop="item.prop"-->
+<!--                            :label="item.label"-->
+<!--                            @cell-click>-->
+<!--            </el-table-column>-->
+<!--        </el-table>-->
+<!--        cell-click	triggers when clicking a cell	row, column, cell, event-->
+<!--        <el-table :data="data.confusionMatrix" border>-->
+<!--            <el-table-column prop="tag" label="Action">-->
+<!--                <template slot-scope="{ row }">-->
+<!--                    <el-button-->
+<!--                            class="regular" type="primary" size="mini"-->
+<!--                            @click="state.selectedClassName = row.className; command('view_class')">-->
+<!--                        Evaluate-->
+<!--                    </el-button>-->
+<!--                </template>-->
+<!--            </el-table-column>-->
+<!--        </el-table>-->
+
+    </sly-card><!--confusion matrix-->
+    <sly-card class="mt15"
+              title="Image_mAP"
+              subtitle="Image Statistic Table"
+              style="width: 100%;"
+    >
+        <sly-table v-loading="data.loading"
+                   :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
+                   :content="data.confusionMatrixImageTable"
+                   @input="state.selection = $event; command('show_images')"
+        ></sly-table>
+    </sly-card><!--Image_mAP-->
+    <sly-card class="mt15"
+              title="Original annotation vs Detections"
+              subtitle="Select image row in Image_mAP table"
+              style="width: 100%;"
+    >
+        <sly-grid-gallery v-if="state.selection.selectedColumnName"
+                          :content="data.previewContent"
+                          :options="data.previewOptions">
+            <template v-slot:card-footer="{ annotation }">
+                <div class="mt5" style="text-align: center">
+                    <el-tag type="primary">{{annotation.info.title}}</el-tag>
+                </div>
+            </template>
+        </sly-grid-gallery>
+    </sly-card><!--image grid for selected class-->
 </div>

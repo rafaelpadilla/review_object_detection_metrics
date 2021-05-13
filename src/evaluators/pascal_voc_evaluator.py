@@ -160,10 +160,6 @@ def get_pascalvoc_metrics(gt_boxes,
             iouMax = sys.float_info.min
             # Given the detection det, find ground-truth with the highest iou
             for j, g in enumerate(gt):
-                # print('Ground truth gt => %s' %
-                #       str(g.get_absolute_bounding_box(format=BBFormat.XYX2Y2)))
-                # print('dt_box = ', det.get_absolute_bounding_box(format=BBFormat.XYX2Y2))
-                # print('GT_box = ', g.get_absolute_bounding_box(format=BBFormat.XYX2Y2))
                 iou = BoundingBox.iou(det, g)
                 if iou > iouMax:
                     iouMax = iou

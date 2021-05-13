@@ -23,8 +23,8 @@ from src.utils.enumerators import MethodAveragePrecision
 result = namedtuple('Result', ['TP', 'FP', 'NPOS', 'Precision', 'Recall', 'AP'])
 image_bbs = namedtuple('image_bbs', ['image', 'bbs'])
 
-api: sly.Api = sly.Api.from_env()
-app: sly.AppService = sly.AppService()
+# api: sly.Api = sly.Api.from_env()
+# app: sly.AppService = sly.AppService()
 
 global TEAM_ID
 TEAM_ID = int(os.environ['context.teamId'])
@@ -93,7 +93,8 @@ def get_data_v1(existing_array, src_project: sly.project, dst_project: sly.proje
                                             batch[idx].id, batch[idx].name,
                                             batch[idx].full_storage_url, img_bbs])
 
-    result_list = np.vstack([existing_array, np.array(result_list, dtype=object)]) if len(existing_array) != 0 else np.array(result_list, dtype=object)
+    result_list = np.vstack([existing_array, np.array(result_list, dtype=object)]) \
+        if len(existing_array) != 0 else np.array(result_list, dtype=object)
     return result_list, image_list
 
 
@@ -218,11 +219,6 @@ def plt2bb(batch_element, type_coordinates=CoordinatesType.ABSOLUTE, bb_type=BBT
     return ret
 
 
-def calculate_mAP(img_gts_bbs, img_det_bbs, iou, score, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION) -> list:
-    score_filtered_detections = [bbox for bbox in img_det_bbs if bbox.get_confidence() >= score]
-    return get_pascalvoc_metrics(img_gts_bbs, score_filtered_detections, iou, generate_table=True, method=method)
-
-
 def dict2tuple(dictionary, target_class, round_level=4):
     false_positive, true__positive, num__positives = 0, 0, 0
     if target_class and target_class !='ALL':
@@ -251,6 +247,46 @@ def dict2tuple(dictionary, target_class, round_level=4):
     return result(true__positive, false_positive, num__positives, precision, recall, average_precision)
 
 
+def encoder(encoder, batch_element, type_coordinates=CoordinatesType.ABSOLUTE,
+           bb_type=BBType.GROUND_TRUTH, _format=BBFormat.XYX2Y2):
+    ret = []
+    # print('batch_element = ', batch_element)
+    annotations = batch_element.annotation['objects']
+    for ann in annotations:
+        class_title = ann['classTitle']
+        points = ann['points']['exterior']
+        x1, y1 = points[0]
+        x2, y2 = points[1]
+
+        if x1 >= x2 or y1 >= y2:
+            continue
+
+        width = batch_element.annotation['size']['width']
+        height = batch_element.annotation['size']['height']
+        confidence = None if bb_type == BBType.GROUND_TRUTH else ann['tags'][0]['value']
+
+        bb = encoder(image_name=batch_element.image_name, class_id=class_title,
+                         coordinates=(x1, y1, x2, y2), type_coordinates=type_coordinates,
+                         img_size=(width, height), confidence=confidence, bb_type=bb_type, format=_format)
+        ret.append(bb)
+    return ret
+
+
+def calculate_mAP(img_gts_bbs, img_det_bbs, iou, score, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION) -> list:
+    score_filtered_detections = []
+    # [bbox for bbox in img_det_bbs if bbox.get_confidence() >= score]
+    # print('img_det_bbs =', img_det_bbs)
+    for bbox in img_det_bbs:
+        try:
+            if bbox.get_confidence() >= score:
+                score_filtered_detections.append(bbox)
+        except:
+            print(bbox)
+            if bbox.get_confidence() >= score:
+                score_filtered_detections.append(bbox)
+    return get_pascalvoc_metrics(img_gts_bbs, score_filtered_detections, iou, generate_table=True, method=method)
+
+
 def calculate_image_mAP(src_list_np, dst_list_np, method, target_class=None, iou=0.5, score=0.01, need_rez=False):
     images_pd_data = list()
     full_logs = list()
@@ -259,7 +295,6 @@ def calculate_image_mAP(src_list_np, dst_list_np, method, target_class=None, iou
 
         rez = calculate_mAP(src_image_info[-1], dst_image_info[-1], iou, score, method)
         # print('Rez =', rez)
-
         rez_d = dict2tuple(rez, target_class)
         src_image_image_id     = src_image_info[4]
         dst_image_image_id     = dst_image_info[4]
@@ -282,13 +317,14 @@ def calculate_dataset_mAP(src_list_np, dst_list_np, method, target_class=None, i
     for ds_name in set(dst_list_np[:, 3]):
         src_dataset_ = src_list_np[np.where(src_list_np[:, 3] == ds_name)]
         dst_dataset_ = dst_list_np[np.where(dst_list_np[:, 3] == ds_name)]
-        src_set_list = list()
-        dst_set_list = list()
-        for l in src_dataset_[:, -1]:
-            src_set_list.extend(l)
-        for l in dst_dataset_[:, -1]:
-            dst_set_list.extend(l)
         # print('Dataset Stage')
+        # src_set_list = src_dataset_[:, -1].tolist()
+        # dst_set_list = dst_dataset_[:, -1].tolist()
+        src_set_list = []
+        [src_set_list.extend(el) for el in src_dataset_[:, -1]]
+        dst_set_list = []
+        [dst_set_list.extend(el) for el in dst_dataset_[:, -1]]
+
         rez = calculate_mAP(src_set_list, dst_set_list, iou, score, method)
         rez_d = dict2tuple(rez, target_class)
         current_data = [ds_name]
@@ -301,12 +337,14 @@ def calculate_dataset_mAP(src_list_np, dst_list_np, method, target_class=None, i
 
 def calculate_project_mAP(src_list_np, dst_list_np, method, dst_project, target_class=None, iou=0.5, score=0.01):
     projects_pd_data = list()
-    src_set_list = list()
-    dst_set_list = list()
-    for l in src_list_np[:, -1]:
-        src_set_list.extend(l)
-    for l in dst_list_np[:, -1]:
-        dst_set_list.extend(l)
+    # print('src_list_np =', src_list_np)
+    # src_set_list = src_list_np[:, -1].tolist()
+    # dst_set_list = dst_list_np[:, -1].tolist()
+    src_set_list = []
+    [src_set_list.extend(el) for el in src_list_np[:, -1]]
+    dst_set_list = []
+    [dst_set_list.extend(el) for el in dst_list_np[:, -1]]
+
     prj_rez = calculate_mAP(src_set_list, dst_set_list, iou, score, method)
     rez_d = dict2tuple(prj_rez, target_class)
     current_data = [dst_project.name]

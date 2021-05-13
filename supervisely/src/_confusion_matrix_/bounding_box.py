@@ -1,12 +1,73 @@
 from math import isclose
+from enum import Enum
 
-from src.utils.general_utils import (convert_to_absolute_values, convert_to_relative_values)
 
-from .utils.enumerators import BBFormat, BBType, CoordinatesType
+class CoordinatesType(Enum):
+    """
+    Class representing if the coordinates are relative to the
+    image size or are absolute values.
+
+        Developed by: Rafael Padilla
+        Last modification: Apr 28 2018
+    """
+    RELATIVE = 1
+    ABSOLUTE = 2
+
+
+class BBType(Enum):
+    """
+    Class representing if the bounding box is groundtruth or not.
+    """
+    GROUND_TRUTH = 1
+    DETECTED = 2
+
+
+class BBFormat(Enum):
+    """
+    Class representing the format of a bounding box.
+    """
+    XYWH = 1
+    XYX2Y2 = 2
+    PASCAL_XML = 3
+    YOLO = 4
+
+
+# size => (width, height) of the image
+# box => (X1, X2, Y1, Y2) of the bounding box
+def convert_to_relative_values(size, box):
+    dw = 1. / (size[0])
+    dh = 1. / (size[1])
+    cx = (box[1] + box[0]) / 2.0
+    cy = (box[3] + box[2]) / 2.0
+    w = box[1] - box[0]
+    h = box[3] - box[2]
+    x = cx * dw
+    y = cy * dh
+    w = w * dw
+    h = h * dh
+    # YOLO's format
+    # x,y => (bounding_box_center)/width_of_the_image
+    # w => bounding_box_width / width_of_the_image
+    # h => bounding_box_height / height_of_the_image
+    return (x, y, w, h)
+
+
+# size => (width, height) of the image
+# box => (centerX, centerY, w, h) of the bounding box relative to the image
+def convert_to_absolute_values(size, box):
+    w_box = size[0] * box[2]
+    h_box = size[1] * box[3]
+
+    x1 = (float(box[0]) * float(size[0])) - (w_box / 2)
+    y1 = (float(box[1]) * float(size[1])) - (h_box / 2)
+    x2 = x1 + w_box
+    y2 = y1 + h_box
+    return (round(x1), round(y1), round(x2), round(y2))
 
 
 class BoundingBox:
     """ Class representing a bounding box. """
+
     def __init__(self,
                  image_name,
                  class_id=None,
@@ -67,7 +128,8 @@ class BoundingBox:
             self._width_img = img_size[0]
             self._height_img = img_size[1]
 
-        # If YOLO format (rel_x_center, rel_y_center, rel_width, rel_height), change it to absolute format (x,y,w,h)
+        # If YOLO format (rel_x_center, rel_y_center, rel_width, rel_height), change it to absolute format
+        # (x,y,w,h)
         if format == BBFormat.YOLO:
             assert self._width_img is not None and self._height_img is not None
             self._format = BBFormat.XYWH
@@ -267,7 +329,7 @@ class BoundingBox:
         abs_bb_xywh = self.get_absolute_bounding_box(format=BBFormat.XYWH)
         abs_bb_xyx2y2 = self.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
         area = self.get_area()
-        return f'image name: {self._image_name}\nclass: {self._class_id}\nbb (XYWH): {abs_bb_xywh}\nbb (X1Y1X2Y2): {abs_bb_xyx2y2}\narea: {area}\nbb_type: {self._bb_type}'
+        return f'''image name: {self._image_name}\nclass: {self._class_id}\nbb (XYWH): {abs_bb_xywh}\nbb (X1Y1X2Y2): {abs_bb_xyx2y2}\narea: {area}\nbb_type: {self._bb_type}'''
 
     def __eq__(self, other):
         if not isinstance(other, BoundingBox):
@@ -298,13 +360,13 @@ class BoundingBox:
         det2img_size = det2.getImageSize()
 
         if det1.get_class_id() == det2.get_class_id() and \
-           det1.get_confidence() == det2.get_confidence() and \
-           det1BB[0] == det2BB[0] and \
-           det1BB[1] == det2BB[1] and \
-           det1BB[2] == det2BB[2] and \
-           det1BB[3] == det2BB[3] and \
-           det1img_size[0] == det1img_size[0] and \
-           det2img_size[1] == det2img_size[1]:
+                det1.get_confidence() == det2.get_confidence() and \
+                det1BB[0] == det2BB[0] and \
+                det1BB[1] == det2BB[1] and \
+                det1BB[2] == det2BB[2] and \
+                det1BB[3] == det2BB[3] and \
+                det1img_size[0] == det1img_size[0] and \
+                det2img_size[1] == det2img_size[1]:
             return True
         return False
 
@@ -339,13 +401,8 @@ class BoundingBox:
 
     @staticmethod
     def iou(boxA, boxB):
-        # print('A = ', boxA)
-        # print('B = ', boxB)
         coords_A = boxA.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
         coords_B = boxB.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
-        # print('coords_A =', coords_A)
-        # print('coords_B =', coords_B)
-
         # if boxes do not intersect
         if BoundingBox.have_intersection(coords_A, coords_B) is False:
             return 0
@@ -353,11 +410,7 @@ class BoundingBox:
         try:
             union = BoundingBox.get_union_areas(boxA, boxB, interArea=interArea)
         except:
-            # print('A = ', boxA)
-            # print('B = ', boxB)
             union = BoundingBox.get_union_areas(boxA, boxB, interArea=interArea)
-            # print('union =', union)
-
         # intersection over union
         iou = interArea / union
         assert iou >= 0
@@ -371,9 +424,6 @@ class BoundingBox:
             boxA = boxA.get_absolute_bounding_box(BBFormat.XYX2Y2)
         if isinstance(boxB, BoundingBox):
             boxB = boxB.get_absolute_bounding_box(BBFormat.XYX2Y2)
-        # print('have_intersection: boxA =', boxA)
-        # print('have_intersection: boxB =', boxB)
-
         if boxA[0] > boxB[2]:
             return False  # boxA is right of boxB
         if boxB[0] > boxA[2]:
