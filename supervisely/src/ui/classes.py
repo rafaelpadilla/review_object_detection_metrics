@@ -79,3 +79,4 @@ def _process_items(collection1, collection2, diff_msg="Shape conflict"):
 def init(data, state):
     classes_table  = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
     data["classesTable"] = classes_table
+    state["selectedClasses"] = []

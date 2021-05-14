@@ -1,5 +1,14 @@
 <sly-card class="mt15" title="Classes" subtitle="Choose classes that will be used for performance analysis">
-    <el-table class="ultra-table" :data="data.classesTable">
+    <el-table
+            class="ultra-table"
+            :data="data.classesTable"
+            @selection-change="
+                (val) => {
+                    state.selectedClasses = val.map(x => x.name1);
+                }
+                "
+    >
+        <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column sortable prop="name1" label="Classes in GT project">
             <template scope="scope">
                 <div v-if="scope.row.name1">
