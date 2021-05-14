@@ -60,11 +60,11 @@ def _process_items(collection1, collection2, diff_msg="Shape conflict"):
                 match.append(compare)
         else:
             if name in diff1:
-                compare["infoMessage"] = "Not found in Project #2"
+                compare["infoMessage"] = "Not found in PRED Project"
                 compare["infoIcon"] = ["zmdi zmdi-alert-circle-o", "zmdi zmdi-long-arrow-right"]
                 compare["iconPosition"] = "right"
             else:
-                compare["infoMessage"] = "Not found in Project #1"
+                compare["infoMessage"] = "Not found in GT Project"
                 compare["infoIcon"] = ["zmdi zmdi-long-arrow-left", "zmdi zmdi-alert-circle-o"]
             compare["infoColor"] = "#FFBF00"
             missed.append(compare)
@@ -77,6 +77,6 @@ def _process_items(collection1, collection2, diff_msg="Shape conflict"):
 
 
 def init(data, state):
-    classes_table  = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
+    classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
     data["classesTable"] = classes_table
     state["selectedClasses"] = []
