@@ -23,5 +23,6 @@ def main():
 
 
 #@TODO: check requirements - two files instead of one
+#@TODO: disable class selection for conflicts
 if __name__ == "__main__":
     sly.main_wrapper("main", main)

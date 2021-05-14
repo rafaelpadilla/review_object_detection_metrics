@@ -1,3 +1,14 @@
 <sly-card class="mt15" title="Settings" subtitle="sdfknskjfdbkjs adas ">
-  todo settings
+    <sly-field
+            title="Sample percent"
+            description="Percent of images that will be sampled randomly for metrics evaluation">
+        <div class="fflex">
+            <el-slider
+                    class="mr10"
+                    style="flex: 1"
+                    v-model="state.samplePercent">
+            </el-slider>
+            <div>{{123}} ({{state.samplePercent}}%) of {{456}} images</div>
+        </div>
+    </sly-field>
 </sly-card>
