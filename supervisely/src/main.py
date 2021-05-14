@@ -18,6 +18,7 @@ def main():
 
     # init data for UI widgets
     ui.init(data, state)
+    
 
     g.my_app.run(data=data, state=state)
 
