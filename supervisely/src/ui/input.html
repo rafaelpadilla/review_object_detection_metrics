@@ -1,0 +1,19 @@
+<div>
+    <div class="fflex" style="align-items: stretch">
+        <sly-card title="Ground Truth Project" style="width: 50%" class="mr15">
+            <sly-field title="" description="Project">
+                <a slot="title" target="_blank"
+                   :href="`/projects/${data.gtProjectId}/datasets`">{{data.gtProjectName}}</a>
+                <sly-icon slot="icon" :options="{ imageUrl: `${data.gtProjectPreviewUrl}` }"/>
+            </sly-field>
+        </sly-card>
+
+        <sly-card title="Prediction project" style="width: 50%">
+            <sly-field title="" description="Project">
+                <a slot="title" target="_blank"
+                   :href="`/projects/${data.predProjectId}/datasets`">{{data.predProjectName}}</a>
+                <sly-icon slot="icon" :options="{ imageUrl: `${data.predProjectPreviewUrl}` }"/>
+            </sly-field>
+        </sly-card>
+    </div>
+</div>

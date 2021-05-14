@@ -341,7 +341,12 @@ def calculate_project_mAP(src_list_np, dst_list_np, method, dst_project, target_
     # src_set_list = src_list_np[:, -1].tolist()
     # dst_set_list = dst_list_np[:, -1].tolist()
     src_set_list = []
-    [src_set_list.extend(el) for el in src_list_np[:, -1]]
+    try:
+        [src_set_list.extend(el) for el in src_list_np[:, -1]]
+    except Exception as e:
+        x = 10
+        x += 1
+
     dst_set_list = []
     [dst_set_list.extend(el) for el in dst_list_np[:, -1]]
 
