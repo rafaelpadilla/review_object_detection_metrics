@@ -1,14 +1,44 @@
-<sly-card class="mt15" title="Settings" subtitle="sdfknskjfdbkjs adas ">
+<sly-card class="mt15" title="Settings" subtitle="Base settings: Percentage, IoUThreshold, ScoreThreshold">
     <sly-field
             title="Sample percent"
             description="Percent of images that will be sampled randomly for metrics evaluation">
         <div class="fflex">
             <el-slider
-                    class="mr10"
+                    class="ml10 mr10"
                     style="flex: 1"
-                    v-model="state.samplePercent">
+                    v-model="state.samplePercent"
+                    @change="state.samplePercent = $event;"
+            >
             </el-slider>
             <div>{{123}} ({{state.samplePercent}}%) of {{456}} images</div>
         </div>
     </sly-field>
+    <sly-field title="IoU threshold" description="intersection over union threshold values object to be positive selected">
+        <div class="fflex">
+            <el-slider class="ml10 mr10"
+                       v-model="state.IoUThreshold"
+                       :min="1"
+                       :max="100"
+                       @change="state.IoUThreshold = $event;"
+                       style="flex: 1">
+            </el-slider>
+            <div class="mr10">{{state.IoUThreshold}}%</div>
+        </div>
+    </sly-field>
+    <sly-field title="Score threshold"
+               description="score threshold values object to be positive selected"
+               class="ml20 mr20"
+    >
+        <div class="fflex">
+            <el-slider class="ml10 mr10"
+                       v-model="state.ScoreThreshold"
+                       :min="1"
+                       :max="100"
+                       @change="state.ScoreThreshold = $event;"
+                       style="flex: 1">
+            </el-slider>
+            <div class="mr10">{{state.ScoreThreshold}}%</div>
+        </div>
+    </sly-field>
+    <el-button class="regular" type="primary" @click="command('evaluate')">buttonName</el-button>
 </sly-card>
