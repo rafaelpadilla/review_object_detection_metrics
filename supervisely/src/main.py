@@ -27,6 +27,7 @@ def main():
 # @TODO: check requirements - two files instead of one
 # @TODO: disable class selection for conflicts
 # @TODO: clear global unused requirements
-# @TODO: remove zero cell clickability (Umar)
+# @TODO: remove zero cell clickability (Umar) - wip
+# @TODO: check plt2bb in utils.py for bugs
 if __name__ == "__main__":
     sly.main_wrapper("main", main)

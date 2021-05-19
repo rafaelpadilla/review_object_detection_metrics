@@ -5,7 +5,6 @@
     {% include 'supervisely/src/ui/settings.html' %}
     <el-tabs type="border-card" class="mt10">
         <el-tab-pane label="Confusion Matrix">
-            selected classes: {{state.selectedClasses}}
             {% include 'supervisely/src/ui/confusionmatrix.html' %}
         </el-tab-pane>
         <el-tab-pane label="Metrics">
