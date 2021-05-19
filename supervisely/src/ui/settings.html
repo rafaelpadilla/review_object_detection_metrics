@@ -6,11 +6,13 @@
             <el-slider
                     class="ml10 mr10"
                     style="flex: 1"
+                    :min="1"
+                    :max="100"
                     v-model="state.samplePercent"
                     @change="state.samplePercent = $event;"
             >
             </el-slider>
-            <div>{{123}} ({{state.samplePercent}}%) of {{456}} images</div>
+            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 * state.samplePercent)}}
         </div>
     </sly-field>
     <sly-field title="IoU threshold" description="intersection over union threshold values object to be positive selected">
