@@ -4,9 +4,12 @@ import globals as g
 import ui
 import numpy as np
 import random
-from supervisely.src.confusion_matrix.bounding_box_py import CoordinatesType, BBType, BBFormat, BoundingBox
-from supervisely.src.confusion_matrix import confusion_matrix_py
 import shelve
+from src.utils.enumerators import MethodAveragePrecision
+from supervisely.src.confusion_matrix.bounding_box_py import CoordinatesType, BBType, BBFormat, BoundingBox
+from supervisely.src.ui.confusion_matrix import calculate_confusion_matrix
+from supervisely.src.ui.metrics import calculate_metrics
+import utils
 
 
 def get_intersected_datasets(img_dict, show_info=False):
@@ -110,99 +113,56 @@ def filter_confidences(image_list, confidence_threshold):
     return new_image_list
 
 
-def plt2bb(batch_element, encoder, type_coordinates=CoordinatesType.ABSOLUTE,
-           bb_type=BBType.GROUND_TRUTH, _format=BBFormat.XYX2Y2):
-        ret = []
-        # print('plt2bb: batch_element =', batch_element)
-        annotations = batch_element['annotation']['objects']
-        for ann in annotations:
-            class_title = ann['classTitle']
-            points = ann['points']['exterior']
-            x1, y1 = points[0]
-            x2, y2 = points[1]
-
-            if x1 >= x2 or y1 >= y2:
-                continue
-
-            width = batch_element['annotation']['size']['width']
-            height = batch_element['annotation']['size']['height']
-
-            try:
-                confidence = None if bb_type == BBType.GROUND_TRUTH else ann['tags'][0]['value']
-            except:
-                print('ann')
-                print('bb_type =', bb_type)
-                for k, v in ann.items():
-                    print(k, v)
-                print('RESULT = ', None if bb_type == BBType.GROUND_TRUTH else 'URAAA!!!!')
-                if bb_type == BBType.GROUND_TRUTH:
-                    confidence = None
-                else:
-                    if ann['tags']:
-                        confidence = ann['tags'][0]['value']
-                    else:
-                        confidence = None
-
-            bb = encoder(image_name=batch_element['image_name'], class_id=class_title,
-                         coordinates=(x1, y1, x2, y2), type_coordinates=type_coordinates,
-                         img_size=(width, height), confidence=confidence, bb_type=bb_type, format=_format)
-            ret.append(bb)
-        return ret
-
-
-def match_objects():
-    pass
-
-
-def exec_download(classes_names, percentage, confidence_threshold, reload_always=False):
-    global _sample_, total_image_num, plt_boxes, previous_percentage
-    current_dataset = {}
-    if reload_always:
-        _sample_ = download(image_dict=ui.datasets.image_dict, percentage=percentage)
-        current_dataset = _sample_.copy()
-    else:
-        if percentage!=0 and previous_percentage < percentage:
-            previous_percentage = percentage
-            _sample_ = download(image_dict=ui.datasets.image_dict, percentage=percentage)
-            current_dataset = _sample_.copy()
-        else:
-            intersected_datasets = list(current_dataset.keys())
-            current_sample_sizes = dict()
-            for k, v in _sample_['gt_images'].items():
-                current_sample_sizes[k] = get_sample_size(dataset_length=len(v), percentage=percentage)
-            current_dataset = dict()
-            random_indexes = get_random_sample(_sample_, intersected_datasets, percentage,
-                                               __sample=current_sample_sizes)
-            for prj_key, prj_value in _sample_.items():
-                current_dataset[prj_key] = dict()
-                for dataset_key, dataset_value in prj_value.items():
-                    current_dataset[prj_key][dataset_key] = [_sample_[prj_key][dataset_key][index]
-                                                             for index in random_indexes[dataset_key]]
-
-    filtered_classes = {}
-    for prj_key, prj_value in current_dataset.items():  # gt + pred
-        filtered_classes[prj_key] = {}
-        for dataset_key, dataset_value in prj_value.items():
-            filtered_classes[prj_key][dataset_key] = filter_classes(dataset_value, classes_names)
-
-    confidence_filtered_data = {}
-
-    for prj_key, prj_value in filtered_classes.items():  # gt + pred
-        confidence_filtered_data[prj_key] = {}
-        for dataset_key, dataset_value in prj_value.items():
-            if prj_key == 'gt_images':
-                confidence_filtered_data[prj_key][dataset_key] = dataset_value
-            if prj_key == 'pred_images':
-                confidence_filtered_data[prj_key][dataset_key] = filter_confidences(dataset_value, confidence_threshold)
-
-    plt_boxes = {}
-    for prj_key, prj_value in filtered_classes.items():
-        plt_boxes[prj_key] = []
-        bb_type = BBType.GROUND_TRUTH if prj_key == 'gt_images' else BBType.DETECTED
-        for dataset_key, dataset_value in prj_value.items():
-            for element in dataset_value:
-                boxes = plt2bb(batch_element=element, encoder=BoundingBox, bb_type=bb_type)
-                plt_boxes[prj_key].extend(boxes)
+# _sample_ = dict()
+# def exec_download(classes_names, percentage, confidence_threshold, reload_always=False):
+#     global _sample_, plt_boxes, previous_percentage
+#     current_dataset = {}
+#     if reload_always:
+#         _sample_ = download(image_dict=ui.datasets.image_dict, percentage=percentage)
+#         current_dataset = _sample_.copy()
+#     else:
+#         if percentage!=0 and previous_percentage < percentage:
+#             previous_percentage = percentage
+#             _sample_ = download(image_dict=ui.datasets.image_dict, percentage=percentage)
+#             current_dataset = _sample_.copy()
+#         else:
+#             intersected_datasets = list(current_dataset.keys())
+#             current_sample_sizes = dict()
+#             for k, v in _sample_['gt_images'].items():
+#                 current_sample_sizes[k] = get_sample_size(dataset_length=len(v), percentage=percentage)
+#             current_dataset = dict()
+#             random_indexes = get_random_sample(_sample_, intersected_datasets, percentage,
+#                                                __sample=current_sample_sizes)
+#             for prj_key, prj_value in _sample_.items():
+#                 current_dataset[prj_key] = dict()
+#                 for dataset_key, dataset_value in prj_value.items():
+#                     current_dataset[prj_key][dataset_key] = [_sample_[prj_key][dataset_key][index]
+#                                                              for index in random_indexes[dataset_key]]
+#
+#     filtered_classes = {}
+#     for prj_key, prj_value in current_dataset.items():  # gt + pred
+#         filtered_classes[prj_key] = {}
+#         for dataset_key, dataset_value in prj_value.items():
+#             filtered_classes[prj_key][dataset_key] = filter_classes(dataset_value, classes_names)
+#
+#     confidence_filtered_data = {}
+#
+#     for prj_key, prj_value in filtered_classes.items():  # gt + pred
+#         confidence_filtered_data[prj_key] = {}
+#         for dataset_key, dataset_value in prj_value.items():
+#             if prj_key == 'gt_images':
+#                 confidence_filtered_data[prj_key][dataset_key] = dataset_value
+#             if prj_key == 'pred_images':
+#                 confidence_filtered_data[prj_key][dataset_key] = filter_confidences(dataset_value, confidence_threshold)
+#
+#     plt_boxes = {}
+#     for prj_key, prj_value in filtered_classes.items():
+#         plt_boxes[prj_key] = []
+#         bb_type = BBType.GROUND_TRUTH if prj_key == 'gt_images' else BBType.DETECTED
+#         for dataset_key, dataset_value in prj_value.items():
+#             for element in dataset_value:
+#                 boxes = plt2bb(batch_element=element, encoder=BoundingBox, bb_type=bb_type)
+#                 plt_boxes[prj_key].extend(boxes)
 
 
 def download_v2(image_dict, percentage, cache, batch_size=10, show_info=False):
@@ -245,8 +205,29 @@ def download_v2(image_dict, percentage, cache, batch_size=10, show_info=False):
     return sample
 
 
+def class_filtering(dataset, classes_names):
+    filtered_classes = {}
+    for prj_key, prj_value in dataset.items():  # gt + pred
+        filtered_classes[prj_key] = {}
+        for dataset_key, dataset_value in prj_value.items():
+            filtered_classes[prj_key][dataset_key] = filter_classes(dataset_value, classes_names)
+    return filtered_classes
+
+
+def confidence_filtering(dataset, confidence_threshold):
+    filtered_confidence = {}
+    for prj_key, prj_value in dataset.items():  # gt + pred
+        filtered_confidence[prj_key] = {}
+        for dataset_key, dataset_value in prj_value.items():
+            if prj_key == 'gt_images':
+                filtered_confidence[prj_key][dataset_key] = dataset_value
+            if prj_key == 'pred_images':
+                filtered_confidence[prj_key][dataset_key] = filter_confidences(dataset_value, confidence_threshold)
+    return filtered_confidence
+
+
 def exec_download_v2(classes_names, percentage, confidence_threshold, reload_always=False):
-    global plt_boxes, current_dataset, confidence_filtered_data
+    global current_dataset, filtered_classes, filtered_confidences, plt_boxes
     db = shelve.open(filename='db', writeback=True)
     try:
         db['previous_percentage'] = db['current_percentage']
@@ -257,41 +238,47 @@ def exec_download_v2(classes_names, percentage, confidence_threshold, reload_alw
     if percentage != db['previous_percentage']:
         current_dataset = download_v2(image_dict=ui.datasets.image_dict, percentage=percentage, cache=db)
     db.close()
-
-    # for prj_key, prj_value in current_dataset.items():  # gt + pred
-    #     for dataset_key, dataset_value in prj_value.items():
-    #         print(prj_key, dataset_key, dataset_value[:5])
-
-    filtered_classes = {}
-    for prj_key, prj_value in current_dataset.items():  # gt + pred
-        filtered_classes[prj_key] = {}
-        for dataset_key, dataset_value in prj_value.items():
-            filtered_classes[prj_key][dataset_key] = filter_classes(dataset_value, classes_names)
-
-    confidence_filtered_data = {}
-
-    for prj_key, prj_value in filtered_classes.items():  # gt + pred
-        confidence_filtered_data[prj_key] = {}
-        for dataset_key, dataset_value in prj_value.items():
-            if prj_key == 'gt_images':
-                confidence_filtered_data[prj_key][dataset_key] = dataset_value
-            if prj_key == 'pred_images':
-                confidence_filtered_data[prj_key][dataset_key] = filter_confidences(dataset_value, confidence_threshold)
+    filtered_classes = class_filtering(dataset=current_dataset, classes_names=classes_names)
+    filtered_confidences = confidence_filtering(dataset=filtered_classes, confidence_threshold=confidence_threshold)
 
     plt_boxes = {}
-    for prj_key, prj_value in confidence_filtered_data.items():
+    for prj_key, prj_value in filtered_confidences.items():
         plt_boxes[prj_key] = []
         bb_type = BBType.GROUND_TRUTH if prj_key == 'gt_images' else BBType.DETECTED
         for dataset_key, dataset_value in prj_value.items():
             for element in dataset_value:
                 # print('element before bb = ', element)
-                boxes = plt2bb(batch_element=element, encoder=BoundingBox, bb_type=bb_type)
+                boxes = utils.plt2bb(batch_element=element, encoder=BoundingBox, bb_type=bb_type)
                 plt_boxes[prj_key].extend(boxes)
 
 
-_sample_ = dict()
+@g.my_app.callback("evaluate_button_click")
+@sly.timeit
+def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
+    global cm
+    selected_classes = state['selectedClasses']
+    percentage = state['samplePercent']
+    iou_threshold = state['IoUThreshold']/100
+    score_threshold = state['ScoreThreshold']/100
+    exec_download_v2(selected_classes, percentage=percentage, confidence_threshold=score_threshold, reload_always=True)
+
+    cm = calculate_confusion_matrix(gt=plt_boxes['gt_images'], det=plt_boxes['pred_images'],
+                                    iou_threshold=iou_threshold, score_threshold=score_threshold,
+                                    api=g.api, task_id=g.task_id)
+    calculate_metrics(api=g.api, task_id=g.task_id,
+                      src_list=filtered_confidences['gt_images'], dst_list=filtered_confidences['pred_images'],
+                      method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+                      dst_project_name=g.pred_project_info.name,
+                      iou_threshold=iou_threshold, score_threshold=score_threshold)
+
+
 total_image_num = dict()
+current_dataset = dict()
+filtered_classes = dict()
+filtered_confidences = dict()
 plt_boxes = dict()
-current_dataset = {}
-confidence_filtered_data = {}
+cm = dict()
+
+# gt = dict()
+# det = dict()
 
