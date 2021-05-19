@@ -1,25 +1,9 @@
 # @TODO: create class for confusion matrix
 import numpy as np
-# import bounding_box_py
 from .bounding_box_py import BoundingBox
 
 
 def collect_data(gt_boxes, det_boxes, score_threshold):
-    # _gt_boxes = list()
-    # for i in gt_boxes:
-    #     for box in i[-1]:  # encoder(BoundingBox, i[-1]):
-    #         _gt_boxes.append(box)
-    #
-    # _det_boxes = list()
-    # for i in det_boxes:
-    #     for box in i[-1]:  # encoder(BoundingBox, i[-1], bb_type=BBType.DETECTED):
-    #         if box.get_confidence() >= score_threshold:
-    #             _det_boxes.append(box)
-    # _gt_boxes = list()
-    # [_gt_boxes.extend(i[-1]) for i in gt_boxes]
-    # _det_boxes = list()
-    # [[_det_boxes.append(box) for box in i[-1] if box.get_confidence() >= score_threshold] for i in det_boxes]
-
     _gt_boxes = gt_boxes
     _det_boxes = list()
     for box in det_boxes:

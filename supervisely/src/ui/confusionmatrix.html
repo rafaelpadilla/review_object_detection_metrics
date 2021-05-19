@@ -1,19 +1,28 @@
-<sly-field title="Sample percent"
-           description="how many images should be randomly sampled for evaluation">
-    {{state.selected}}
+<sly-field title="Confusion Matrix"
+           description="Click on the cell to get info about classes confusion">
     <sly-confusion-matrix :data="data.slyConfusionMatrix.data"
                       :options="{ selectable: true }"
                       :value="state.selected"
                       @input="state.selected = $event; command('show_image_table')">
     </sly-confusion-matrix>
+</sly-field>
+<sly-field title="Image_mAP"
+           description="Image Statistic Table. Click on the row to get images below with annotations and detections">
     <sly-table v-loading="data.loading"
                :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
                :content="data.confusionTableImages"
                @input="state.selection = $event; command('show_images')"
     ></sly-table>
+</sly-field>
+<sly-field title="Original annotation vs Detections"
+           description="Selected image row in Image_mAP table">
     <sly-grid-gallery v-if="state.selection.selectedColumnName"
                       :content="data.previewContent"
                       :options="data.previewOptions">
+        <template v-slot:card-footer="{ annotation }">
+            <div class="mt5" style="text-align: center">
+                <el-tag type="primary">{{annotation.info.title}}</el-tag>
+            </div>
+        </template>
     </sly-grid-gallery>
 </sly-field>
-
