@@ -3,15 +3,14 @@
     {% include 'supervisely/src/ui/classes.html' %}
     {% include 'supervisely/src/ui/datasets.html' %}
     {% include 'supervisely/src/ui/settings.html' %}
-    <el-tabs type="border-card">
+    <el-tabs type="border-card" class="mt10">
         <el-tab-pane label="Confusion Matrix">
-            {{state.selectedClasses}}
-            <sly-confusion-matrix :data="data.slyConfusionMatrix.data"
-                      :options="{ selectable: true }"
-                      v-model="state.selected">
-            </sly-confusion-matrix>
+            selected classes: {{state.selectedClasses}}
+            {% include 'supervisely/src/ui/confusionmatrix.html' %}
         </el-tab-pane>
-        <el-tab-pane label="Config">Config</el-tab-pane>
+        <el-tab-pane label="Metrics">
+            {% include 'supervisely/src/ui/metrics.html' %}
+        </el-tab-pane>
         <el-tab-pane label="Role">Role</el-tab-pane>
         <el-tab-pane label="Task">Task</el-tab-pane>
     </el-tabs>
