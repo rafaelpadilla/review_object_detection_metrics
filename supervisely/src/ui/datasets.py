@@ -115,7 +115,3 @@ def init(data, state):
                 if gt_element.hash == pred_element.hash:
                     image_dict['gt_images'][intersected_key].append(gt_element)
                     image_dict['pred_images'][intersected_key].append(pred_element)
-
-        # print('gt_images - intersected_key =', len(image_dict['gt_images'][intersected_key]))
-        # print('pred_images - intersected_key =', len(image_dict['pred_images'][intersected_key]))
-
