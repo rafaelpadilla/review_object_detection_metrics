@@ -1,7 +1,7 @@
 import supervisely_lib as sly
 import globals as g
 
-global RESULTS, RESULTS_DATA, image_dict
+global RESULTS, RESULTS_DATA, image_dict, total_img_num
 RESULTS = None
 RESULTS_DATA = None
 image_dict = {}
@@ -93,7 +93,7 @@ def _get_all_images(api: sly.Api, project):
 
 
 def init(data, state):
-    global image_dict
+    global image_dict, total_img_num
 
     ds_info1, ds_images1 = _get_all_images(g.api, g.gt_project_info)
     ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
