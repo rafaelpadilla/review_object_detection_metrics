@@ -1,0 +1,13 @@
+<sly-table v-loading="data.loading"
+           :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
+           :content="data.tableProjects"
+></sly-table>
+<sly-table v-loading="data.loading"
+           :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
+           :content="data.tableDatasets"
+></sly-table>
+<sly-table v-loading="data.loading"
+           :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
+           :content="data.tableImages"
+           @input="state.selection = $event; command('show_images')"
+></sly-table>

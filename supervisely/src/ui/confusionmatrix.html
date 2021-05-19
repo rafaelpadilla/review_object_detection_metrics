@@ -1,7 +1,19 @@
-<sly-card class="mt15" title="Classes" subtitle="Choose classes that will be used for performance analysis">
+<sly-field title="Sample percent"
+           description="how many images should be randomly sampled for evaluation">
+    {{state.selected}}
     <sly-confusion-matrix :data="data.slyConfusionMatrix.data"
                       :options="{ selectable: true }"
-                      v-model="state.selected">
+                      :value="state.selected"
+                      @input="state.selected = $event; command('show_image_table')">
     </sly-confusion-matrix>
-</sly-card>
+    <sly-table v-loading="data.loading"
+               :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
+               :content="data.confusionTableImages"
+               @input="state.selection = $event; command('show_images')"
+    ></sly-table>
+    <sly-grid-gallery v-if="state.selection.selectedColumnName"
+                      :content="data.previewContent"
+                      :options="data.previewOptions">
+    </sly-grid-gallery>
+</sly-field>
 
