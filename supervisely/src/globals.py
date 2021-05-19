@@ -19,6 +19,9 @@ pred_project_id = int(os.environ['modal.state.predProjectId'])
 pred_project_info = api.project.get_info_by_id(pred_project_id, raise_error=True)
 pred_meta = sly.ProjectMeta.from_json(api.project.get_meta(pred_project_id))
 
+# api.project.get_meta(pred_project_id)
+# meta = app.public_api.project.get_meta(dst_project_id)
+
 root_source_dir = str(Path(sys.argv[0]).parents[2])
 sly.logger.info(f"Root source directory: {root_source_dir}")
 sys.path.append(root_source_dir)

@@ -6,6 +6,7 @@ import numpy as np
 import random
 from supervisely.src.confusion_matrix.bounding_box_py import CoordinatesType, BBType, BBFormat, BoundingBox
 from supervisely.src.confusion_matrix import confusion_matrix_py
+import shelve
 
 
 def get_intersected_datasets(img_dict, show_info=False):
@@ -82,12 +83,29 @@ def filter_classes(image_list, classes_names):
         # print('filter_classes: image =', image)
         # print('filter_classes: image.image_id =', image.image_id)
 
-        bboxes = image.annotation['objects']
+        bboxes = image['annotation']['objects']  # .annotation
         new_box_list = []
         for bbox in bboxes:
             if bbox['classTitle'] in classes_names:
                 new_box_list.append(bbox)
-        image.annotation['objects'] = new_box_list
+        image['annotation']['objects'] = new_box_list
+        new_image_list.append(image)
+    return new_image_list
+
+
+def filter_confidences(image_list, confidence_threshold):
+    new_image_list =[]
+    for image in image_list:
+        bboxes = image['annotation']['objects']
+        # print('filter_confidences: image =', image)
+        # print('bboxes =', bboxes)
+        if len(bboxes) < 1:
+            continue
+        new_box_list = []
+        for bbox in bboxes:
+            if bbox['tags'][0]['value'] > confidence_threshold:
+                new_box_list.append(bbox)
+        image['annotation']['objects'] = new_box_list
         new_image_list.append(image)
     return new_image_list
 
@@ -95,7 +113,8 @@ def filter_classes(image_list, classes_names):
 def plt2bb(batch_element, encoder, type_coordinates=CoordinatesType.ABSOLUTE,
            bb_type=BBType.GROUND_TRUTH, _format=BBFormat.XYX2Y2):
         ret = []
-        annotations = batch_element.annotation['objects']
+        # print('plt2bb: batch_element =', batch_element)
+        annotations = batch_element['annotation']['objects']
         for ann in annotations:
             class_title = ann['classTitle']
             points = ann['points']['exterior']
@@ -105,32 +124,30 @@ def plt2bb(batch_element, encoder, type_coordinates=CoordinatesType.ABSOLUTE,
             if x1 >= x2 or y1 >= y2:
                 continue
 
-            width = batch_element.annotation['size']['width']
-            height = batch_element.annotation['size']['height']
-            confidence = None if bb_type == BBType.GROUND_TRUTH else ann['tags'][0]['value']
+            width = batch_element['annotation']['size']['width']
+            height = batch_element['annotation']['size']['height']
 
-            bb = encoder(image_name=batch_element.image_name, class_id=class_title,
-                             coordinates=(x1, y1, x2, y2), type_coordinates=type_coordinates,
-                             img_size=(width, height), confidence=confidence, bb_type=bb_type, format=_format)
+            try:
+                confidence = None if bb_type == BBType.GROUND_TRUTH else ann['tags'][0]['value']
+            except:
+                print('ann')
+                print('bb_type =', bb_type)
+                for k, v in ann.items():
+                    print(k, v)
+                print('RESULT = ', None if bb_type == BBType.GROUND_TRUTH else 'URAAA!!!!')
+                if bb_type == BBType.GROUND_TRUTH:
+                    confidence = None
+                else:
+                    if ann['tags']:
+                        confidence = ann['tags'][0]['value']
+                    else:
+                        confidence = None
+
+            bb = encoder(image_name=batch_element['image_name'], class_id=class_title,
+                         coordinates=(x1, y1, x2, y2), type_coordinates=type_coordinates,
+                         img_size=(width, height), confidence=confidence, bb_type=bb_type, format=_format)
             ret.append(bb)
         return ret
-
-
-def filter_confidences(image_list, confidence_threshold):
-    new_image_list =[]
-    for image in image_list:
-        # print('filter_confidences: image =', image)
-        bboxes = image.annotation['objects']
-        # print('bboxes =', bboxes)
-        if len(bboxes) < 1:
-            continue
-        new_box_list = []
-        for bbox in bboxes:
-            if bbox['tags'][0]['value'] > confidence_threshold:
-                new_box_list.append(bbox)
-        image.annotation['objects'] = new_box_list
-        new_image_list.append(image)
-    return new_image_list
 
 
 def match_objects():
@@ -188,72 +205,93 @@ def exec_download(classes_names, percentage, confidence_threshold, reload_always
                 plt_boxes[prj_key].extend(boxes)
 
 
-class DataStorage:
-    def __init__(self, project_dict):
-        self.project_dict = project_dict
-        self.data = {}
+def download_v2(image_dict, percentage, cache, batch_size=10, show_info=False):
+    intersected_datasets = get_intersected_datasets(image_dict)
+    if show_info:
+        print('intersected_datasets =', intersected_datasets)
+        print('image_dict.keys() =', image_dict.keys())
+    sample = {}
+    indexes = get_random_sample(image_dict, intersected_datasets, percentage)
+    for project_key, project_info in image_dict.items():  # project_key in []
+        if show_info:
+            print('project_key =', project_key)
+        sample[project_key] = dict()
+        for dataset_key, dataset_info in project_info.items():
+            if show_info:
+                print('dataset_key =', dataset_key)
+            if dataset_key not in intersected_datasets:
+                continue
+            sample[project_key][dataset_key] = list()
+            dataset_id = dataset_info[0].dataset_id
+            sample[project_key][dataset_key] = [cache[str(dataset_info[index].id)]
+                         for index in indexes[dataset_key] if str(dataset_info[index].id) in cache]
 
-    def get_task_data(self):
-        for prj_key, prj_data in self.project_dict.items():
-            self.data[prj_key] = dict(project=prj_data)
-            ws_to_team = {}
-            datasets = g.api.dataset.get_list(prj_data.id)
-            for dataset in datasets:
-                dataset_name = dataset.name
-                images = g.api.image.get_list(dataset.id)
-                modified_images = []
-                for image_info in images:
-                    if prj_data.workspace_id not in ws_to_team:
-                        ws_to_team[prj_data.workspace_id] = g.api.workspace.get_info_by_id(prj_data.workspace_id).team_id
-                    meta = {
-                        "team_id": ws_to_team[prj_data.workspace_id],
-                        "workspace_id": prj_data.workspace_id,
-                        "project_id": prj_data.id,
-                        "project_name": prj_data.name,
-                        "dataset_name": dataset.name,
-                        "meta": image_info.meta
-                    }
-                    image_info = image_info._replace(meta=meta)
-                    modified_images.append(image_info)
-                self.data[prj_key][dataset_name] = {'dataset': dataset, 'images': modified_images}
-
-    def download(self):
-
-        pass
-
-    def get_sample(self):
-        pass
-
-    @staticmethod
-    def _get_all_images(api: sly.Api, project):
-        ds_info = {}
-        ds_images = {}
-        ws_to_team = {}
-        for dataset in api.dataset.get_list(project.id):
-            ds_info[dataset.name] = dataset
-            images = api.image.get_list(dataset.id)
-            modified_images = []
-            for image_info in images:
-                if project.workspace_id not in ws_to_team:
-                    ws_to_team[project.workspace_id] = api.workspace.get_info_by_id(project.workspace_id).team_id
-                meta = {
-                    "team_id": ws_to_team[project.workspace_id],
-                    "workspace_id": project.workspace_id,
-                    "project_id": project.id,
-                    "project_name": project.name,
-                    "dataset_name": dataset.name,
-                    "meta": image_info.meta
-                }
-                image_info = image_info._replace(meta=meta)
-                modified_images.append(image_info)
-            ds_images[dataset.name] = modified_images
-        return ds_info, ds_images
+            to_download_indexes = [index for index in indexes[dataset_key] if str(dataset_info[index].id) not in cache]
+            slice_to_download = [dataset_info[index] for index in to_download_indexes]
+            # image_id: {ImageInfo, Annotation_info}
+            for ix, batch in enumerate(sly.batched(slice_to_download, batch_size)):
+                image_ids = [image_info.id for image_info in batch]
+                annotations = g.api.annotation.download_batch(dataset_id, image_ids)
+                for batch_, annotation in zip(batch, annotations):
+                    batch_image_id = batch_.id
+                    annotation_image_id = annotation.image_id
+                    assert batch_image_id == annotation_image_id, 'different images'
+                    # print('batch_ =', batch_)
+                    dict_ = dict(image_id=batch_.id, image_name=batch_.name, labels_count=batch_.labels_count,
+                                 dataset_id=batch_.dataset_id, annotation=annotation.annotation,
+                                 full_storage_url=batch_.full_storage_url)
+                    cache[str(batch_image_id)] = dict_
+                    sample[project_key][dataset_key].append(dict_)
+    return sample
 
 
-data_storage = DataStorage(image_dict=ui.datasets.image_dict)
+def exec_download_v2(classes_names, percentage, confidence_threshold, reload_always=False):
+    global plt_boxes, current_dataset, confidence_filtered_data
+    db = shelve.open(filename='db', writeback=True)
+    try:
+        db['previous_percentage'] = db['current_percentage']
+    except:
+        db['previous_percentage'] = 0
+
+    db['current_percentage'] = percentage
+    if percentage != db['previous_percentage']:
+        current_dataset = download_v2(image_dict=ui.datasets.image_dict, percentage=percentage, cache=db)
+    db.close()
+
+    # for prj_key, prj_value in current_dataset.items():  # gt + pred
+    #     for dataset_key, dataset_value in prj_value.items():
+    #         print(prj_key, dataset_key, dataset_value[:5])
+
+    filtered_classes = {}
+    for prj_key, prj_value in current_dataset.items():  # gt + pred
+        filtered_classes[prj_key] = {}
+        for dataset_key, dataset_value in prj_value.items():
+            filtered_classes[prj_key][dataset_key] = filter_classes(dataset_value, classes_names)
+
+    confidence_filtered_data = {}
+
+    for prj_key, prj_value in filtered_classes.items():  # gt + pred
+        confidence_filtered_data[prj_key] = {}
+        for dataset_key, dataset_value in prj_value.items():
+            if prj_key == 'gt_images':
+                confidence_filtered_data[prj_key][dataset_key] = dataset_value
+            if prj_key == 'pred_images':
+                confidence_filtered_data[prj_key][dataset_key] = filter_confidences(dataset_value, confidence_threshold)
+
+    plt_boxes = {}
+    for prj_key, prj_value in confidence_filtered_data.items():
+        plt_boxes[prj_key] = []
+        bb_type = BBType.GROUND_TRUTH if prj_key == 'gt_images' else BBType.DETECTED
+        for dataset_key, dataset_value in prj_value.items():
+            for element in dataset_value:
+                # print('element before bb = ', element)
+                boxes = plt2bb(batch_element=element, encoder=BoundingBox, bb_type=bb_type)
+                plt_boxes[prj_key].extend(boxes)
+
 
 _sample_ = dict()
 total_image_num = dict()
 plt_boxes = dict()
-previous_percentage = 0
+current_dataset = {}
+confidence_filtered_data = {}
 
