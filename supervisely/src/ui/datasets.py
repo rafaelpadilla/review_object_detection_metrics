@@ -89,7 +89,7 @@ def _get_all_images(api: sly.Api, project):
             image_info = image_info._replace(meta=meta)
             modified_images.append(image_info)
         ds_images[dataset.name] = modified_images
-    return ds_info, ds_images
+    return ds_info, ds_images,
 
 
 def init(data, state):
@@ -112,6 +112,16 @@ def init(data, state):
 
         for gt_element in ds_images1[intersected_key]:
             for pred_element in ds_images2[intersected_key]:
-                if gt_element.hash == pred_element.hash:
+                if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
                     image_dict['gt_images'][intersected_key].append(gt_element)
                     image_dict['pred_images'][intersected_key].append(pred_element)
+
+        # print(intersected_key, len(image_dict['gt_images'][intersected_key]))
+        #
+        # for i, j in zip(image_dict['gt_images'][intersected_key], image_dict['pred_images'][intersected_key]):
+        #     # if i.name != j.name or i.hash != j.hash:
+        #         # print(i)
+        #         # print(j)
+        #     print(i.id, j.id, i.name, i.name == j.name, i.hash, i.hash == j.hash)
+
+
