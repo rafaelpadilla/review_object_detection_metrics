@@ -102,7 +102,7 @@ def show_images_body(api, state):
     avalible_objects = []
     for object_ in ann_2.annotation['objects']:
         if object_['classTitle'] in selected_lasses:
-            print("object_['tags'][0]['value'] =", object_['tags'][0]['value'])
+            # print("object_['tags'][0]['value'] =", object_['tags'][0]['value'])
             if object_['tags'][0]['value'] >= score:
                 avalible_objects.append(object_)
     ann_2.annotation['objects'] = avalible_objects
@@ -130,7 +130,7 @@ def show_images_body(api, state):
 @g.my_app.callback("show_images_confusion_matrix")
 @sly.timeit
 def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logger):
-    print('Show_images: ', state)
+    # print('Show_images: ', state)
     content = show_images_body(api, state)
 
     fields = [
@@ -143,7 +143,7 @@ def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logg
 @g.my_app.callback("show_images_per_image")
 @sly.timeit
 def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
-    print('Show_images: ', state)
+    # print('Show_images: ', state)
     content = show_images_body(api, state)
 
     fields = [
@@ -156,7 +156,7 @@ def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
-    print('Show_images: ', state)
+    # print('Show_images: ', state)
     content = show_images_body(api, state)
     fields = [
         {"field": "data.perClassPreviewContent", "payload": content},
