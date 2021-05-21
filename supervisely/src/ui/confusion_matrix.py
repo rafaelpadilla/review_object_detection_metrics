@@ -5,7 +5,7 @@ from supervisely.src.confusion_matrix import confusion_matrix_py
 
 def init(data, state):
     state['selection'] = {}
-    state['selected'] = None
+    state['selected'] = {'rowClass': None, 'colClass': None}
     conf_matrx_columns_v2 = []
     diagonal_max = 0
     max_value = 0
@@ -19,8 +19,8 @@ def init(data, state):
     }
     data['slyConfusionMatrix'] = slyConfusionMatrix
     data['confusionTableImages'] = {}
-    data['previewContent'] = {}
-    data['previewOptions'] = {}
+    data['confusionMatrixPreviewContent'] = {}
+    data['confusionMatrixPreviewOptions'] = {}
 
 
 def calculate_confusion_matrix(gt, det, iou_threshold, score_threshold, api: sly.Api, task_id):
