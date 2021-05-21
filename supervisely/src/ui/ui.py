@@ -119,23 +119,24 @@ def show_images_body(api, state, gallery_template):
                 avalible_objects.append(object_)
     ann_2.annotation['objects'] = avalible_objects
 
-    gallery_template.set_left(title='original', ann=ann_1.annotation,
-                              image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
-    gallery_template.set_right(title='detection', ann=ann_2.annotation,
-                               image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
-    gallery_template.update()
+    # gallery_template.set_left(title='original', ann=ann_1.annotation,
+    #                           image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
+    # gallery_template.set_right(title='detection', ann=ann_2.annotation,
+    #                            image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
+    # gallery_template.update()
+    # return 1
     content = {
         "projectMeta": g.gt_meta.to_json(),
         "annotations": {
             "ann_1": {
                 "url": api.image.get_info_by_id(image_id_1).full_storage_url,
                 "figures": ann_1.annotation['objects'],
-                "info": {"title": "original"}
+                "title": "original"
             },
             "ann_2": {
                 "url": api.image.get_info_by_id(image_id_2).full_storage_url,
                 "figures": ann_2.annotation['objects'],
-                "info": {"title": "detection"}
+                "title": "detection"
             },
         },
         "layout": [["ann_1"], ["ann_2"]]
@@ -149,11 +150,12 @@ def show_images_body(api, state, gallery_template):
 def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logger):
     # print('Show_images: ', state)
     content = show_images_body(api, state, gallery_conf_matrix)
-    fields = [
-        {"field": "data.confusionMatrixPreviewContent", "payload": content},
-        {"field": "data.confusionMatrixPreviewOptions", "payload": options},
-    ]
-    api.app.set_fields(task_id, fields)
+    if content != 1:
+        fields = [
+            {"field": "data.confusionMatrixPreviewContent", "payload": content},
+            {"field": "data.confusionMatrixPreviewOptions", "payload": options},
+        ]
+        api.app.set_fields(task_id, fields)
 
 
 @g.my_app.callback("show_images_per_image")
@@ -161,12 +163,12 @@ def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logg
 def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
     # print('Show_images: ', state)
     content = show_images_body(api, state, gallery_per_image)
-
-    fields = [
-        {"field": "data.perImagesPreviewContent", "payload": content},
-        {"field": "data.perImagesPreviewOptions", "payload": options},
-    ]
-    api.app.set_fields(task_id, fields)
+    if content != 1:
+        fields = [
+            {"field": "data.perImagesPreviewContent", "payload": content},
+            {"field": "data.perImagesPreviewOptions", "payload": options},
+        ]
+        api.app.set_fields(task_id, fields)
 
 
 @g.my_app.callback("show_images_per_class")
@@ -174,11 +176,12 @@ def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
     # print('Show_images: ', state)
     content = show_images_body(api, state, gallery_per_class)
-    fields = [
-        {"field": "data.perClassPreviewContent", "payload": content},
-        {"field": "data.perClassPreviewOptions", "payload": options},
-    ]
-    api.app.set_fields(task_id, fields)
+    if content != 1:
+        fields = [
+            {"field": "data.perClassPreviewContent", "payload": content},
+            {"field": "data.perClassPreviewOptions", "payload": options},
+        ]
+        api.app.set_fields(task_id, fields)
 
 
 options = {
