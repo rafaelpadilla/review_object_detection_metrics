@@ -13,11 +13,13 @@ task_id = my_app.task_id
 
 gt_project_id = int(os.environ['modal.state.gtProjectId'])
 gt_project_info = api.project.get_info_by_id(gt_project_id, raise_error=True)
-gt_meta = sly.ProjectMeta.from_json(api.project.get_meta(gt_project_id))
+_gt_meta_ = api.project.get_meta(gt_project_id)
+gt_meta = sly.ProjectMeta.from_json(_gt_meta_)
 
 pred_project_id = int(os.environ['modal.state.predProjectId'])
 pred_project_info = api.project.get_info_by_id(pred_project_id, raise_error=True)
-pred_meta = sly.ProjectMeta.from_json(api.project.get_meta(pred_project_id))
+_pred_meta_ = api.project.get_meta(pred_project_id)
+pred_meta = sly.ProjectMeta.from_json(_pred_meta_)
 
 root_source_dir = str(Path(sys.argv[0]).parents[2])
 sly.logger.info(f"Root source directory: {root_source_dir}")
