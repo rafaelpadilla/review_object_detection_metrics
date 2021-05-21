@@ -23,12 +23,12 @@ def main():
     ui.init(data, state)
     g.my_app.run(data=data, state=state)
 
+# @TODO: подключить виджет галереи из SDK sly.app.widgets.CompareGallery
+# @TODO: создать видэет в SDK sly.app.widgets.table __init__(click_cb=None)
 # @TODO: show-input в слайдеры и сделать их по размеру 450px
 # @TODO: Compare Datasets descr: += Only matched images are used in ....
 # @TODO: BUTTON_NAAME -> Calculate metrics
 # @TODO: обираем список selected classes
-# @TODO: подключить виджет галереи из SDK sly.app.widgets.CompareGallery
-
 # @TODO: Images for the selected cel in confusion matrix: bird (actual) <-> "cat" (predicted)
 # @TODO: DESCRIPTION 2 "bird" objects are detected as "dogs"
 # @TODO: DESCRIPTION 2 "bird" objects are not detected (bird <-> None)
@@ -42,6 +42,7 @@ def main():
 # dog FP 10 vs 7 BUG
 # Extra Class Info -> cart to field, remove table
 # Sly Field - добавить перед таблицей для выбранного класса
+# Overall -> Per datasets (оставить только 2 таблички, остальное убрать)
 
 # @TODO: check requirements - two files instead of one
 # @TODO: disable class selection for conflicts
