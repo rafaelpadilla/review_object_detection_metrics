@@ -4,6 +4,7 @@ from supervisely.src import download_data as dd
 from supervisely.src import utils
 from src.bounding_box import BoundingBox, BBType, BBFormat
 from src.utils.enumerators import MethodAveragePrecision
+from supervisely_lib.app.widgets.compare_gallery import CompareGallery
 
 import input
 import classes
@@ -14,6 +15,18 @@ import metrics
 import per_image_metrics
 import per_class_metrics
 import overall_metrics
+import globals as g
+
+aggregated_meta = {'classes': [], 'tags': g._pred_meta_['tags'], 'projectType': 'images'}
+for i in g._gt_meta_['classes']:
+    for j in g._pred_meta_['classes']:
+        if i['title'] == j['title'] and i['shape'] == j['shape']:
+            aggregated_meta['classes'].append(i)
+
+aggregated_meta = sly.ProjectMeta.from_json(aggregated_meta)
+gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.confusionMatrixPreviewContent', aggregated_meta)
+gallery_per_image = CompareGallery(g.task_id, g.api, 'data.perImagesPreviewContent', aggregated_meta)
+gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClassPreviewContent', aggregated_meta)
 
 
 def init(data, state):
@@ -77,8 +90,8 @@ def show_image_table(api: sly.Api, task_id, context, state, app_logger):
     api.app.set_fields(task_id, fields)
 
 
-def show_images_body(api, state):
-    selected_lasses = state['selectedClasses']
+def show_images_body(api, state, gallery_template):
+    selected_classes = state['selectedClasses']
     selected_row_data = state["selection"]["selectedRowData"]
     score = state['ScoreThreshold']/100
     if selected_row_data is not None and state["selection"]["selectedColumnName"] is not None:
@@ -95,18 +108,22 @@ def show_images_body(api, state):
 
     avalible_objects = []
     for object_ in ann_1.annotation['objects']:
-        if object_['classTitle'] in selected_lasses:
+        if object_['classTitle'] in selected_classes:
             avalible_objects.append(object_)
     ann_1.annotation['objects'] = avalible_objects
 
     avalible_objects = []
     for object_ in ann_2.annotation['objects']:
-        if object_['classTitle'] in selected_lasses:
-            # print("object_['tags'][0]['value'] =", object_['tags'][0]['value'])
+        if object_['classTitle'] in selected_classes:
             if object_['tags'][0]['value'] >= score:
                 avalible_objects.append(object_)
     ann_2.annotation['objects'] = avalible_objects
 
+    gallery_template.set_left(title='original', ann=ann_1.annotation,
+                              image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
+    gallery_template.set_right(title='detection', ann=ann_2.annotation,
+                               image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
+    gallery_template.update()
     content = {
         "projectMeta": g.gt_meta.to_json(),
         "annotations": {
@@ -131,8 +148,7 @@ def show_images_body(api, state):
 @sly.timeit
 def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logger):
     # print('Show_images: ', state)
-    content = show_images_body(api, state)
-
+    content = show_images_body(api, state, gallery_conf_matrix)
     fields = [
         {"field": "data.confusionMatrixPreviewContent", "payload": content},
         {"field": "data.confusionMatrixPreviewOptions", "payload": options},
@@ -144,7 +160,7 @@ def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logg
 @sly.timeit
 def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
     # print('Show_images: ', state)
-    content = show_images_body(api, state)
+    content = show_images_body(api, state, gallery_per_image)
 
     fields = [
         {"field": "data.perImagesPreviewContent", "payload": content},
@@ -157,7 +173,7 @@ def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
     # print('Show_images: ', state)
-    content = show_images_body(api, state)
+    content = show_images_body(api, state, gallery_per_class)
     fields = [
         {"field": "data.perClassPreviewContent", "payload": content},
         {"field": "data.perClassPreviewOptions", "payload": options},
