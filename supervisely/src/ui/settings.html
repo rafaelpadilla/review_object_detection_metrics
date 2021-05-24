@@ -5,10 +5,11 @@
         <div class="fflex">
             <el-slider
                     class="ml10 mr10"
-                    style="flex: 1"
+                    style="width: 450px"
                     :min="1"
                     :max="100"
                     v-model="state.samplePercent"
+                    show-input
                     @change="state.samplePercent = $event;"
             >
             </el-slider>
@@ -18,11 +19,13 @@
     <sly-field title="IoU threshold" description="intersection over union threshold values object to be positive selected">
         <div class="fflex">
             <el-slider class="ml10 mr10"
-                       v-model="state.IoUThreshold"
+                       style="width: 450px"
                        :min="1"
                        :max="100"
+                       v-model="state.IoUThreshold"
+                       show-input
                        @change="state.IoUThreshold = $event;"
-                       style="flex: 1">
+                       >
             </el-slider>
             <div class="mr10">{{state.IoUThreshold}}%</div>
         </div>
@@ -33,14 +36,16 @@
     >
         <div class="fflex">
             <el-slider class="ml10 mr10"
-                       v-model="state.ScoreThreshold"
+                       style="width: 450px"
                        :min="1"
                        :max="100"
+                       v-model="state.ScoreThreshold"
+                       show-input
                        @change="state.ScoreThreshold = $event;"
-                       style="flex: 1">
+                       >
             </el-slider>
             <div class="mr10">{{state.ScoreThreshold}}%</div>
         </div>
     </sly-field>
-    <el-button class="regular" type="primary" @click="command('evaluate_button_click')">buttonName</el-button>
+    <el-button class="regular" type="primary" @click="command('evaluate_button_click')">Calculate metrics</el-button>
 </sly-card>

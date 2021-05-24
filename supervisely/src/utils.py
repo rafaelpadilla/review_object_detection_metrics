@@ -4,7 +4,6 @@ from src.bounding_box import CoordinatesType, BBType, BBFormat
 def plt2bb(batch_element, encoder, type_coordinates=CoordinatesType.ABSOLUTE,
            bb_type=BBType.GROUND_TRUTH, _format=BBFormat.XYX2Y2):
     ret = []
-    # print('plt2bb: batch_element =', batch_element)
     annotations = batch_element['annotation']['objects']
     for ann in annotations:
         class_title = ann['classTitle']
@@ -21,11 +20,6 @@ def plt2bb(batch_element, encoder, type_coordinates=CoordinatesType.ABSOLUTE,
         try:
             confidence = None if bb_type == BBType.GROUND_TRUTH else ann['tags'][0]['value']
         except:
-            # print('ann')
-            # print('bb_type =', bb_type)
-            # for k, v in ann.items():
-            #     print(k, v)
-            # print('RESULT = ', None if bb_type == BBType.GROUND_TRUTH else 'Problem with tags: confidence value!!!!')
             if bb_type == BBType.GROUND_TRUTH:
                 confidence = None
             else:

@@ -12,16 +12,3 @@
                :content="data.tableDatasets"
     ></sly-table>
 </sly-field>
-<sly-field title="Precision/Recall Curve"
-           description="Precision/Recall Curves for corresponding classes">
-    <sly-table :content="data.tableClasses"
-               style="align-self: flex-start;">
-    </sly-table>
-</sly-field>
-<sly-field title="Precision/Recall Curve"
-           description="Precision/Recall Curves for corresponding classes">
-    <sly-line-chart style="flex: 1; align-right: flex-start;"
-                    :options.sync="data.lineChartOptions"
-                    :content="data.lineChartSeries">
-    </sly-line-chart>
-</sly-field>

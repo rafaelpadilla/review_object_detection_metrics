@@ -19,7 +19,6 @@ def process_items(ds_info1, collection1, ds_info2, collection2):
         images2 = collection2.get(name, [])
         if len(images1) == 0:
             compare["message"] = ["unmatched (in GT project)"]
-            # compare["icon"] = [["zmdi zmdi-folder-outline"]]
             compare["icon"] = [["zmdi zmdi-long-arrow-left", "zmdi zmdi-alert-circle-o"]]
 
             compare["color"] = ["#F39C12"]
@@ -29,7 +28,6 @@ def process_items(ds_info1, collection1, ds_info2, collection2):
             results_data.append([images2])
         elif len(images2) == 0:
             compare["message"] = ["unmatched (in PRED project)"]
-            # compare["icon"] = [["zmdi zmdi-folder-outline"]]
             compare["icon"] = [["zmdi zmdi-alert-circle-o", "zmdi zmdi-long-arrow-right"]]
             compare["color"] = ["#F39C12"]
             compare["numbers"] = [-1]
@@ -54,7 +52,6 @@ def process_items(ds_info1, collection1, ds_info2, collection2):
             compare["icon"] = [["zmdi zmdi-check"], ["zmdi zmdi-close"], ["zmdi zmdi-plus-circle-o"],
                                ["zmdi zmdi-plus-circle-o"]]
             compare["color"] = ["green", "red", "#20a0ff", "#20a0ff"]
-            # compare["numbers"] = [len(matched) / 2, len(diff) / 2, len(uniq1), len(uniq2)]
             compare["numbers"] = [len(matched), len(diff), len(uniq1), len(uniq2)]
             compare["left"] = {"name": name, "count": len(images1)}
             compare["right"] = {"name": name, "count": len(images2)}
@@ -99,14 +96,11 @@ def init(data, state):
     ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
     result = process_items(ds_info1, ds_images1, ds_info2, ds_images2)
     data['table'] = result
-    # print('ds_info1 =', ds_info1)
-    # print('ds_images1 =', ds_images1)
 
     intersected_keys = list(set(list(ds_images1)) & set(list(ds_images2)))
     image_dict = {'gt_images': {}, 'pred_images': {}}
 
     for intersected_key in intersected_keys:
-        # print('datasets: intersected_key =', intersected_key)
         image_dict['gt_images'][intersected_key] = []
         image_dict['pred_images'][intersected_key] = []
 
@@ -115,13 +109,3 @@ def init(data, state):
                 if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
                     image_dict['gt_images'][intersected_key].append(gt_element)
                     image_dict['pred_images'][intersected_key].append(pred_element)
-
-        # print(intersected_key, len(image_dict['gt_images'][intersected_key]))
-        #
-        # for i, j in zip(image_dict['gt_images'][intersected_key], image_dict['pred_images'][intersected_key]):
-        #     # if i.name != j.name or i.hash != j.hash:
-        #         # print(i)
-        #         # print(j)
-        #     print(i.id, j.id, i.name, i.name == j.name, i.hash, i.hash == j.hash)
-
-

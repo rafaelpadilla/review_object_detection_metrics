@@ -1,20 +1,19 @@
-<sly-field title="Image_mAP"
+<sly-field title="Metrics per images "
            description="Image Statistic Table. Click on the row to get images below with annotations and detections">
     <sly-table v-loading="data.loading"
                :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
-               :content="data.perImageTableImages"
+               :content="data.perImageTable"
                @input="state.selection = $event; command('show_images_per_image')"
     ></sly-table>
 </sly-field>
 <sly-field title="Original annotation vs Detections"
            description="Selected image row in Image_mAP table">
     <sly-grid-gallery v-if="state.selection.selectedColumnName"
-                      :content="data.perImagesPreviewContent"
-                      :options="data.perImagesPreviewOptions">
+                      :content="data.perImage.content"
+                      :options="data.perImage.options">
         <template v-slot:card-footer="{ annotation }">
             <div class="mt5" style="text-align: center">
                 <el-tag type="primary">{{annotation.title}}</el-tag>
-<!--                annotation.info.title     annotation.title-->
             </div>
         </template>
     </sly-grid-gallery>

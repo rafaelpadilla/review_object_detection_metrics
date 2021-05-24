@@ -3,7 +3,6 @@
     {% include 'supervisely/src/ui/classes.html' %}
     {% include 'supervisely/src/ui/datasets.html' %}
     {% include 'supervisely/src/ui/settings.html' %}
-    Selected classes: {{state.selectedClasses}}
     <el-tabs type="border-card" class="mt10">
         <el-tab-pane label="Confusion Matrix">
             {% include 'supervisely/src/ui/confusionmatrix.html' %}

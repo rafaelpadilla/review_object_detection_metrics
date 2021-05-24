@@ -1,10 +1,10 @@
 import supervisely_lib as sly
-import globals as g
 from supervisely.src import download_data as dd
 from supervisely.src import utils
 from src.bounding_box import BoundingBox, BBType, BBFormat
 from src.utils.enumerators import MethodAveragePrecision
 from supervisely_lib.app.widgets.compare_gallery import CompareGallery
+from supervisely_lib.app.widgets.sly_table import SlyTable
 
 import input
 import classes
@@ -24,9 +24,11 @@ for i in g._gt_meta_['classes']:
             aggregated_meta['classes'].append(i)
 
 aggregated_meta = sly.ProjectMeta.from_json(aggregated_meta)
-gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.confusionMatrixPreviewContent', aggregated_meta)
-gallery_per_image = CompareGallery(g.task_id, g.api, 'data.perImagesPreviewContent', aggregated_meta)
-gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClassPreviewContent', aggregated_meta)
+gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.CMGallery', aggregated_meta)
+gallery_per_image = CompareGallery(g.task_id, g.api, 'data.perImage', aggregated_meta)
+gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', aggregated_meta)
+
+cm_image_table = SlyTable(g.api, g.task_id, 'data.CMTableImages', metrics.image_columns)
 
 
 def init(data, state):
@@ -40,11 +42,7 @@ def init(data, state):
     overall_metrics.init(data, state)
 
 
-@g.my_app.callback("show_image_table")
-@sly.timeit
-def show_image_table(api: sly.Api, task_id, context, state, app_logger):
-    cm = dd.cm
-    # print('!!!! it works !!!!')
+def show_image_table_body(api, task_id, state, v_model):
     print('state =', state)
     selected_cell = state['selected']
     row_class = selected_cell['rowClass']
@@ -52,6 +50,7 @@ def show_image_table(api: sly.Api, task_id, context, state, app_logger):
     iou_threshold = state['IoUThreshold'] / 100
     score_threshold = state['ScoreThreshold'] / 100
 
+    cm = dd.cm
     images_to_show = list(set(cm[col_class][row_class]))
 
     selected_image_infos = dict(gt_images=[], pred_images=[])
@@ -84,10 +83,40 @@ def show_image_table(api: sly.Api, task_id, context, state, app_logger):
 
     images_pd_data = metrics.calculate_image_mAP(gts, pred, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                                                  iou=iou_threshold, score=score_threshold)
+
+    text = '''Images for the selected cell in confusion matrix: "{}" (actual) <-> "{}" (predicted)'''.format(row_class, col_class)
+
+    if len(list(cm[col_class][row_class])) == 1:
+        description_1 = '''{} "{}" objects is detected as "{}"'''.format(len(list(cm[col_class][row_class])),
+                                                                          row_class, col_class)
+    else:
+        description_1 = '''{} "{}" objects are detected as "{}"'''.format(len(list(cm[col_class][row_class])),
+                                                                          row_class, col_class)
     fields = [
-        {"field": "data.confusionTableImages", "payload": {"columns": metrics.image_columns, "data": images_pd_data}},
+        {"field": "data.CMImageTableTitle", "payload": text},
+        {"field": "data.CMImageTableDescription", "payload": description_1}
     ]
     api.app.set_fields(task_id, fields)
+
+    cm_image_table.set_data(images_pd_data)
+    cm_image_table.update()
+
+
+@g.my_app.callback("show_image_table_cm")
+@sly.timeit
+def show_image_table_cm(api: sly.Api, task_id, context, state, app_logger):
+    v_model = "data.CMTableImages"
+    show_image_table_body(api, task_id, state, v_model)
+
+
+# ======================================================================================================================
+def filter_classes(ann, selected_classes):
+    ann = sly.Annotation.from_json(ann.annotation, aggregated_meta)
+    tmp_list = list()
+    for ii in ann.labels:
+        if ii.obj_class.name in selected_classes:
+            tmp_list.append(ii)
+    return sly.Annotation(ann.img_size, tmp_list, ann.img_tags, ann.img_description)
 
 
 def show_images_body(api, state, gallery_template):
@@ -103,91 +132,28 @@ def show_images_body(api, state, gallery_template):
     else:
         return
 
-    ann_1 = api.annotation.download(image_id_1)
-    ann_2 = api.annotation.download(image_id_2)
-
-    avalible_objects = []
-    for object_ in ann_1.annotation['objects']:
-        if object_['classTitle'] in selected_classes:
-            avalible_objects.append(object_)
-    ann_1.annotation['objects'] = avalible_objects
-
-    avalible_objects = []
-    for object_ in ann_2.annotation['objects']:
-        if object_['classTitle'] in selected_classes:
-            if object_['tags'][0]['value'] >= score:
-                avalible_objects.append(object_)
-    ann_2.annotation['objects'] = avalible_objects
-
-    # gallery_template.set_left(title='original', ann=ann_1.annotation,
-    #                           image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
-    # gallery_template.set_right(title='detection', ann=ann_2.annotation,
-    #                            image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
-    # gallery_template.update()
-    # return 1
-    content = {
-        "projectMeta": g.gt_meta.to_json(),
-        "annotations": {
-            "ann_1": {
-                "url": api.image.get_info_by_id(image_id_1).full_storage_url,
-                "figures": ann_1.annotation['objects'],
-                "title": "original"
-            },
-            "ann_2": {
-                "url": api.image.get_info_by_id(image_id_2).full_storage_url,
-                "figures": ann_2.annotation['objects'],
-                "title": "detection"
-            },
-        },
-        "layout": [["ann_1"], ["ann_2"]]
-    }
-    # <pre>{{data.previewContent}}</pre> # to show code
-    return content
+    ann_1 = filter_classes(api.annotation.download(image_id_1), selected_classes)
+    ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes)
+    gallery_template.set_left(title='original', ann=ann_1,
+                              image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
+    gallery_template.set_right(title='detection', ann=ann_2,
+                               image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
+    gallery_template.update()
 
 
 @g.my_app.callback("show_images_confusion_matrix")
 @sly.timeit
 def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logger):
-    # print('Show_images: ', state)
-    content = show_images_body(api, state, gallery_conf_matrix)
-    if content != 1:
-        fields = [
-            {"field": "data.confusionMatrixPreviewContent", "payload": content},
-            {"field": "data.confusionMatrixPreviewOptions", "payload": options},
-        ]
-        api.app.set_fields(task_id, fields)
+    show_images_body(api, state, gallery_conf_matrix)
 
 
 @g.my_app.callback("show_images_per_image")
 @sly.timeit
 def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
-    # print('Show_images: ', state)
-    content = show_images_body(api, state, gallery_per_image)
-    if content != 1:
-        fields = [
-            {"field": "data.perImagesPreviewContent", "payload": content},
-            {"field": "data.perImagesPreviewOptions", "payload": options},
-        ]
-        api.app.set_fields(task_id, fields)
+    show_images_body(api, state, gallery_per_image)
 
 
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
-    # print('Show_images: ', state)
-    content = show_images_body(api, state, gallery_per_class)
-    if content != 1:
-        fields = [
-            {"field": "data.perClassPreviewContent", "payload": content},
-            {"field": "data.perClassPreviewOptions", "payload": options},
-        ]
-        api.app.set_fields(task_id, fields)
-
-
-options = {
-    "showOpacityInHeader": False,
-    "opacity": 0.8,
-    "fillRectangle": False,
-    "syncViews": True,
-    "syncViewsBindings": [["ann_1", "ann_2"]]
-}
+    show_images_body(api, state, gallery_per_class)

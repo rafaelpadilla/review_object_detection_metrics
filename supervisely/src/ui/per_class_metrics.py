@@ -6,12 +6,11 @@ import metrics
 
 def init(data, state):
     data['perClassExtendedTable'] = []
-    data['perClassTable'] = {"columns": metrics.table_classes_columns, "data": []}
+    # data['perClassTable'] = {"columns": metrics.table_classes_columns, "data": []}
     data['perClassLineChartOptions'] = {"title": "Line chart", "showLegend": True}
     data['perClassLineChartSeries'] = []
     data['perClassSingleImagesTable'] = {"columns": metrics.image_columns, "data": []}
-    data['perClassPreviewContent'] = {}
-    data['perClassPreviewOptions'] = {}
+    data['perClass'] = {}
 
 
 def calculate_per_classes_metrics(api, task_id, src_list, dst_list, dst_project_name, method,
@@ -34,8 +33,8 @@ def calculate_per_classes_metrics(api, task_id, src_list, dst_list, dst_project_
     line_chart_options = {"title": "Line chart", "showLegend": True}
     fields = [
         {"field": "data.perClassExtendedTable", "payload": table_data},
-        {"field": "data.perClassTable", "payload": {"columns": metrics.table_classes_columns,
-                                                    "data": table_classes}},
+        # {"field": "data.perClassTable", "payload": {"columns": metrics.table_classes_columns,
+        #                                             "data": table_classes}},
         {"field": "data.perClassLineChartOptions", "payload": line_chart_options},
         {"field": "data.perClassLineChartSeries", "payload": line_chart_series}
     ]
@@ -94,8 +93,8 @@ def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_pro
     fields = [
         {"field": "data.perClassSingleImagesTable", "payload": {"columns": metrics.image_columns,
                                                                 "data": class_images_pd_data}},
-        {"field": "data.perClassTable", "payload": {"columns": metrics.table_classes_columns,
-                                                    "data": target_table}},
+        # {"field": "data.perClassTable", "payload": {"columns": metrics.table_classes_columns,
+        #                                             "data": target_table}},
         {"field": "data.perClassLineChartSeries", "payload": target_chart}
     ]
     api.app.set_fields(task_id, fields)

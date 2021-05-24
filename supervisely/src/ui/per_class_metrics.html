@@ -11,16 +11,16 @@
             <el-button
                     class="regular" type="primary" size="mini"
                     @click="state.selectedClassName = row.className; command('view_class')">
-                Evaluate
+                Preview
             </el-button>
         </template>
     </el-table-column>
 </el-table><!--class Table with Evaluate buttons-->
-<sly-card class="mt15"
+<sly-field class="mt15"
           title="Extra Class Info"
-          subtitle="Extra Class Info"
+          description="Extra Class Info"
 >
-    <sly-table :content="data.perClassTable"></sly-table>
+<!--    <sly-table :content="data.perClassTable"></sly-table>-->
     <sly-line-chart style="flex: 1; align-right: flex-start;"
                     :options.sync="data.perClassLineChartOptions"
                     :content="data.perClassLineChartSeries">
@@ -30,16 +30,15 @@
                :content="data.perClassSingleImagesTable"
                @input="state.selection = $event; command('show_images_per_class')"
     ></sly-table>
-</sly-card><!--selected class info-->
+</sly-field><!--selected class info-->
 <sly-field title="Original annotation vs Detections"
            description="Selected image row in Image_mAP table">
     <sly-grid-gallery v-if="state.selection.selectedColumnName"
-                      :content="data.perClassPreviewContent"
-                      :options="data.perClassPreviewOptions">
+                      :content="data.perClass.content"
+                      :options="data.perClass.options">
         <template v-slot:card-footer="{ annotation }">
             <div class="mt5" style="text-align: center">
                 <el-tag type="primary">{{annotation.title}}</el-tag>
-<!--                annotation.info.title       annotation.info.title      -->
             </div>
         </template>
     </sly-grid-gallery>
