@@ -214,7 +214,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;lt;class&amp;gt; &amp;lt;left&amp;gt; &amp;lt;top&amp;gt; &amp;lt;right&amp;gt; &amp;lt;bottom&amp;gt; (ABSOLUTE)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;lt;class&amp;gt; &amp;lt;left&amp;gt; &amp;lt;top&amp;gt; &amp;lt;width&amp;gt; &amp;lt;height&amp;gt; (ABSOLUTE)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>Absolute values (.txt)</string>

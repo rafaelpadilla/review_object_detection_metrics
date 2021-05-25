@@ -504,7 +504,7 @@ class Ui_Dialog(object):
         self.rad_gt_format_openimages_csv.setText(_translate("Dialog", "OpenImage dataset (.csv)"))
         self.rad_gt_format_labelme_xml.setText(_translate("Dialog", "Label Me (.xml)"))
         self.rad_gt_format_pascalvoc_xml.setText(_translate("Dialog", "PASCAL VOC (.xml)"))
-        self.rad_gt_format_abs_values_text.setToolTip(_translate("Dialog", "<html><head/><body><p>&lt;class&gt; &lt;left&gt; &lt;top&gt; &lt;right&gt; &lt;bottom&gt; (ABSOLUTE)</p></body></html>"))
+        self.rad_gt_format_abs_values_text.setToolTip(_translate("Dialog", "<html><head/><body><p>&lt;class&gt; &lt;left&gt; &lt;top&gt; &lt;width&gt; &lt;height&gt; (ABSOLUTE)</p></body></html>"))
         self.rad_gt_format_abs_values_text.setText(_translate("Dialog", "Absolute values (.txt)"))
         self.rad_gt_format_yolo_text.setText(_translate("Dialog", "(*) YOLO (.txt)"))
         self.rad_gt_format_cvat_xml.setToolTip(_translate("Dialog", "<html><head/><body><p><span style=\" font-weight:600;\">Format:</span> A unique XML file containing all detections of the dataset in the CVAT format as described at <a href=\"https://github.com/openvinotoolkit/cvat/blob/7512fd6883829ff2692ef42a5a41a06f3805da14/cvat/apps/documentation/xml_format.md\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/openvinotoolkit/cvat/blob/7512fd6883829ff2692ef42a5a41a06f3805da14/cvat/apps/documentation/xml_format.md</span></a>"))
