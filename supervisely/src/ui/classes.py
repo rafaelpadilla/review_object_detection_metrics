@@ -2,7 +2,7 @@ import supervisely_lib as sly
 import globals as g
 
 
-def _process_items(collection1, collection2, diff_msg="Shape conflict"):
+def _process_items(collection1, collection2, diff_msg="Automatic conversion to rectangle format"):
     items1 = {item.name: 1 for item in collection1}
     items2 = {item.name: 1 for item in collection2}
     names = items1.keys() | items2.keys()
@@ -53,7 +53,7 @@ def _process_items(collection1, collection2, diff_msg="Shape conflict"):
             if flag is False:
                 compare["infoMessage"] = diff_msg
                 compare["infoColor"] = "red"
-                compare["infoIcon"] = ["zmdi zmdi-close"],
+                compare["infoIcon"] = ["zmdi zmdi-flag"],
                 differ.append(compare)
             else:
                 compare["infoIcon"] = ["zmdi zmdi-check"],
