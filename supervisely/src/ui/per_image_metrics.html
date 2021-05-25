@@ -6,8 +6,8 @@
                @input="state.selection = $event; command('show_images_per_image')"
     ></sly-table>
 </sly-field>
-<sly-field title="Original annotation vs Detections"
-           description="Selected image row in Image_mAP table">
+<sly-field :title="data.perImageGalleryTitle"
+           description="Original Ground Truth Annotations vs Detections">
     <sly-grid-gallery v-if="state.selection.selectedColumnName"
                       :content="data.perImage.content"
                       :options="data.perImage.options">

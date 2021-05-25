@@ -8,6 +8,7 @@ image_sly_table = SlyTable(g.api, g.task_id, "data.perImageTable", metrics.image
 def init(data, state):
     data['perImageTable'] = {}
     data['perImage'] = {}
+    data['perImageGalleryTitle'] = 'Please, select row from ImageTable.'
 
 
 def calculate_per_image_metrics(api, task_id, gts, pred, method, iou_threshold, score_threshold):
