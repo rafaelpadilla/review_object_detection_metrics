@@ -20,7 +20,8 @@ def init(data, state):
     data['CMTableImages'] = {}
     data['CMGallery'] = {}
     data['CMImageTableTitle'] = "Cell is not selected."
-    data['CMImageTableDescription'] = "Cell is not selected."
+    data['CMImageTableDescription1'] = "Cell is not selected."
+    data['CMGalleryTitle'] = 'Please, select row from ImageTable.'
 
 
 confusion_matrix = ConfusionMatrix(api=g.api, task_id=g.task_id, v_model='data.slyConfusionMatrix')
