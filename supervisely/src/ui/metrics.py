@@ -64,25 +64,29 @@ def calculate_image_mAP(src_list, dst_list, method, target_class=None, iou=0.5, 
     images_pd_data = list()
     full_logs = list()
     matched = 0
-
+    print('target_class =', target_class)
     for src_image_info in src_list:
         for dst_image_info in dst_list:
             if src_image_info[1] == dst_image_info[1]:
                 matched += 1
                 rez = calculate_mAP(src_image_info[-1], dst_image_info[-1], iou, score, method)
-                rez_d = dict2tuple(rez, target_class)
-                src_image_image_id = src_image_info[0]
-                dst_image_image_id = dst_image_info[0]
-                src_image_image_name = src_image_info[1]
-                src_image_link = src_image_info[2]
-                dataset_name = src_image_info[3]
-                per_image_data = [str(src_image_image_id), str(dst_image_image_id), dataset_name,
-                                  '<a href="{0}" rel="noopener noreferrer" target="_blank">{1}</a>'.format(
-                                      src_image_link,
-                                      src_image_image_name)]
-                per_image_data.extend(rez_d)
-                images_pd_data.append(per_image_data)
-                full_logs.append(rez)
+                # print('rez = ', rez)
+                try:
+                    rez_d = dict2tuple(rez, target_class)
+                    src_image_image_id = src_image_info[0]
+                    dst_image_image_id = dst_image_info[0]
+                    src_image_image_name = src_image_info[1]
+                    src_image_link = src_image_info[2]
+                    dataset_name = src_image_info[3]
+                    per_image_data = [str(src_image_image_id), str(dst_image_image_id), dataset_name,
+                                      '<a href="{0}" rel="noopener noreferrer" target="_blank">{1}</a>'.format(
+                                          src_image_link,
+                                          src_image_image_name)]
+                    per_image_data.extend(rez_d)
+                    images_pd_data.append(per_image_data)
+                    full_logs.append(rez)
+                except:
+                    pass
     if show_logs:
         print('Lengths of sets =', len(src_list), len(dst_list))
         print('processed  {} of (src={}, dst={})'.format(matched, len(src_list), len(dst_list)))
