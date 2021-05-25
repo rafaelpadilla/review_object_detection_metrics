@@ -30,8 +30,24 @@ def get_random_sample(image_dict, intersected_datasets, percentage):
         dataset_length = len(value)
         total_image_num[key] = dataset_length
         sample_size = get_sample_size(dataset_length, percentage)
+        # Chooses k unique random elements from a population sequence or set
         indexes[key] = random.sample(range(dataset_length), sample_size)
     return indexes
+
+
+def check_for_existence(dataset):
+    tmp_dict = dict()
+    for prj_key, prj_value in dataset.items():
+        tmp_dict[prj_key] = {}
+        for dataset_key, dataset_value in prj_value.items():
+            existing_names = []
+            tmp_dict[prj_key][dataset_key] = list()
+            for value in dataset_value:
+                print('value = ', value)
+                if value['image_name'] not in existing_names:
+                    existing_names.append(value['image_name'])
+                    tmp_dict[prj_key][dataset_key].append(value)
+    return tmp_dict
 
 
 def filter_classes(image_list, classes_names):
@@ -203,8 +219,12 @@ def download(image_dict, percentage, cache, batch_size=10, show_info=False):
                 continue
             sample[project_key][dataset_key] = list()
             dataset_id = dataset_info[0].dataset_id
-            sample[project_key][dataset_key] = [cache[str(dataset_info[index].id)]
-                         for index in indexes[dataset_key] if str(dataset_info[index].id) in cache]
+
+            sample[project_key][dataset_key] = [
+                cache[str(dataset_info[index].id)]
+                for index in indexes[dataset_key]
+                if str(dataset_info[index].id) in cache
+            ]
             to_download_indexes = [index for index in indexes[dataset_key] if str(dataset_info[index].id) not in cache]
             slice_to_download = [dataset_info[index] for index in to_download_indexes]
             for ix, batch in enumerate(sly.batched(slice_to_download, batch_size)):
@@ -225,11 +245,12 @@ def download(image_dict, percentage, cache, batch_size=10, show_info=False):
     return sample
 
 
-def download_and_prepare_data(classes_names, percentage, confidence_threshold, show_logs=False):
-    global current_dataset, filtered_classes, filtered_confidences, plt_boxes
+def download_and_prepare_data(classes_names, percentage, confidence_threshold):
+    global current_dataset, filtered_classes, filtered_confidences
     db = shelve.open(filename='db', writeback=True)
     current_dataset = download(image_dict=ui.datasets.image_dict, percentage=percentage, cache=db)
     db.close()
+    # current_dataset = check_for_existence(current_dataset)
     filtered_classes = class_filtering(dataset=current_dataset, classes_names=classes_names)
     filtered_confidences = confidence_filtering(dataset=filtered_classes, confidence_threshold=confidence_threshold)
 
@@ -258,41 +279,44 @@ def get_prepared_data(api: sly.Api, src_list, dst_list, encoder):
 @g.my_app.callback("evaluate_button_click")
 @sly.timeit
 def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
-    global cm, gts, pred, dataset_names
+    global cm, gts, pred, dataset_names, previous_percentage
     selected_classes = state['selectedClasses']
     percentage = state['samplePercent']
-    iou_threshold = state['IoUThreshold']/100
-    score_threshold = state['ScoreThreshold']/100
+    iou_threshold = state['IoUThreshold'] / 100
+    score_threshold = state['ScoreThreshold'] / 100
 
     if selected_classes:
-        download_and_prepare_data(selected_classes, percentage=percentage, confidence_threshold=score_threshold)
+        if percentage != previous_percentage:
+            download_and_prepare_data(selected_classes, percentage=percentage, confidence_threshold=score_threshold)
+            previous_percentage = percentage
 
-    if filtered_confidences['gt_images'] and filtered_confidences['pred_images']:
-        confusion_matrix.set_data(gt=filtered_confidences['gt_images'], det=filtered_confidences['pred_images'])
-        confusion_matrix.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
-        confusion_matrix.update()
-        cm = confusion_matrix.cm_dict
+        if filtered_confidences['gt_images'] and filtered_confidences['pred_images']:
+            confusion_matrix.set_data(gt=filtered_confidences['gt_images'], det=filtered_confidences['pred_images'])
+            confusion_matrix.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
+            confusion_matrix.update()
+            cm = confusion_matrix.cm_dict
 
-        gts, pred, dataset_names = get_prepared_data(api=g.api,
-                                                     src_list=filtered_confidences['gt_images'],
-                                                     dst_list=filtered_confidences['pred_images'],
-                                                     encoder=RepoBoundingBox)
-        method = metrics.MethodAveragePrecision.EVERY_POINT_INTERPOLATION
+            gts, pred, dataset_names = get_prepared_data(api=g.api,
+                                                         src_list=filtered_confidences['gt_images'],
+                                                         dst_list=filtered_confidences['pred_images'],
+                                                         encoder=RepoBoundingBox)
+            method = metrics.MethodAveragePrecision.EVERY_POINT_INTERPOLATION
 
-        overall_metrics.calculate_overall_metrics(api, task_id, gts, pred, g.pred_project_info.name, method,
-                                                  iou_threshold, score_threshold)
-        per_image_metrics.calculate_per_image_metrics(api, task_id, gts, pred, method,
+            overall_metrics.calculate_overall_metrics(api, task_id, gts, pred, g.pred_project_info.name, method,
                                                       iou_threshold, score_threshold)
-        per_class_metrics.calculate_per_classes_metrics(api, task_id, gts, pred, g.pred_project_info.name, method,
-                                                        iou_threshold, score_threshold)
+            per_image_metrics.calculate_per_image_metrics(api, task_id, gts, pred, method,
+                                                          iou_threshold, score_threshold)
+            per_class_metrics.calculate_per_classes_metrics(api, task_id, gts, pred, g.pred_project_info.name, method,
+                                                            iou_threshold, score_threshold)
 
 
 @g.my_app.callback("view_class")
 @sly.timeit
 def view_class(api: sly.Api, task_id, context, state, app_logger):
+    print('state =', state)
     class_name = state["selectedClassName"]
-    iou_threshold = state["IoUThreshold"]/100
-    score_threshold = state['ScoreThreshold']/100
+    iou_threshold = state["IoUThreshold"] / 100
+    score_threshold = state['ScoreThreshold'] / 100
     per_class_metrics.selected_class_metrics(api, task_id, gts, pred, class_name, g.pred_project_info.name,
                                              iou_threshold, score_threshold)
 
@@ -305,4 +329,5 @@ cm = dict()
 gts = {}
 pred = {}
 dataset_names = {}
+previous_percentage = 0
 confusion_matrix = ConfusionMatrix(api=g.api, task_id=g.task_id, v_model='data.slyConfusionMatrix')
