@@ -84,17 +84,44 @@ def show_image_table_body(api, task_id, state, v_model):
     images_pd_data = metrics.calculate_image_mAP(gts, pred, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                                                  iou=iou_threshold, score=score_threshold)
 
-    text = '''Images for the selected cell in confusion matrix: "{}" (actual) <-> "{}" (predicted)'''.format(row_class, col_class)
+    text = '''Images for the selected cell in confusion matrix: "{}" (actual) <-> "{}" (predicted)'''.format(row_class,
+                                                                                                             col_class)
 
-    if len(list(cm[col_class][row_class])) == 1:
-        description_1 = '''{} "{}" objects is detected as "{}"'''.format(len(list(cm[col_class][row_class])),
-                                                                          row_class, col_class)
+    if col_class != 'None' and row_class != 'None':
+        if len(list(cm[col_class][row_class])) == 1:
+            description_1 = '''{} "{}" objects is detected as "{}"'''.format(len(list(cm[col_class][row_class])),
+                                                                             row_class, col_class)
+        else:
+            description_1 = '''{} "{}" objects are detected as "{}"'''.format(len(list(cm[col_class][row_class])),
+                                                                              row_class, col_class)
     else:
-        description_1 = '''{} "{}" objects are detected as "{}"'''.format(len(list(cm[col_class][row_class])),
-                                                                          row_class, col_class)
+        description_1 = None
+
+    if len(list(cm['None'][row_class])) != 0:
+        if len(list(cm['None'][row_class])) == 1:
+            description_2 = '''{} "{}" object is not detected"'''.format(len(list(cm['None'][row_class])),
+                                                                         row_class)
+        else:
+            description_2 = '''{} "{}" objects are not detected"'''.format(len(list(cm['None'][row_class])),
+                                                                           row_class)
+    else:
+        description_2 = None
+
+    if len(list(cm[col_class]['None'])) != 0:
+        if len(list(cm[col_class]['None'])) == 1:
+            description_3 = '''Model predicted {} "{}" object that is not in GT (None <-> {})"'''.format(
+                len(list(cm[col_class]['None'])), col_class, col_class)
+        else:
+            description_3 = '''Model predicted {} "{}" objects that are not in GT (None <-> {})'''.format(
+                len(list(cm[col_class]['None'])), col_class, col_class)
+    else:
+        description_3 = None
+
     fields = [
         {"field": "data.CMImageTableTitle", "payload": text},
-        {"field": "data.CMImageTableDescription", "payload": description_1}
+        {"field": "data.CMImageTableDescription1", "payload": description_1},
+        {"field": "data.CMImageTableDescription2", "payload": description_2},
+        {"field": "data.CMImageTableDescription3", "payload": description_3}
     ]
     api.app.set_fields(task_id, fields)
 
@@ -110,19 +137,40 @@ def show_image_table_cm(api: sly.Api, task_id, context, state, app_logger):
 
 
 # ======================================================================================================================
-def filter_classes(ann, selected_classes):
+def filter_classes(ann, selected_classes, score=None):
     ann = sly.Annotation.from_json(ann.annotation, aggregated_meta)
     tmp_list = list()
+    tag_list = list()
     for ii in ann.labels:
         if ii.obj_class.name in selected_classes:
+            print('ii.obj_class.name =', ii.obj_class.name)
             tmp_list.append(ii)
-    return sly.Annotation(ann.img_size, tmp_list, ann.img_tags, ann.img_description)
+            if score is not None:
+                print('ii.tags =', ii.tags)
+                for ij in ii.tags:
+                    if ij.value >= score:
+                        print(ij)
+                        print(ij.value)
+                        tag_list.append(ij)
+
+    ann = ann.clone(labels=tmp_list)
+    if score is not None:
+        ann = ann.clone(img_tags=tag_list)
+    return ann
 
 
-def show_images_body(api, state, gallery_template):
+def show_images_body(api, task_id, state, gallery_template, v_model):
+    print('state =', state)
     selected_classes = state['selectedClasses']
     selected_row_data = state["selection"]["selectedRowData"]
-    score = state['ScoreThreshold']/100
+
+    try:
+        image_name = selected_row_data['name'].split('_blank">')[-1].split('</')[0]
+    except:
+        image_name = 'empty state'
+
+    score = state['ScoreThreshold'] / 100
+    print('scoreThreshold =', score)
     if selected_row_data is not None and state["selection"]["selectedColumnName"] is not None:
         keys = [key for key in selected_row_data]
         if 'SRC_ID' not in keys:
@@ -133,27 +181,34 @@ def show_images_body(api, state, gallery_template):
         return
 
     ann_1 = filter_classes(api.annotation.download(image_id_1), selected_classes)
-    ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes)
+    ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes, score)
+
     gallery_template.set_left(title='original', ann=ann_1,
                               image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
     gallery_template.set_right(title='detection', ann=ann_2,
                                image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
     gallery_template.update()
 
+    text = 'Grid gallery for {}'.format(image_name)
+    fields = [
+        {"field": v_model, "payload": text},
+    ]
+    api.app.set_fields(task_id, fields)
+
 
 @g.my_app.callback("show_images_confusion_matrix")
 @sly.timeit
 def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logger):
-    show_images_body(api, state, gallery_conf_matrix)
+    show_images_body(api, task_id, state, gallery_conf_matrix, "data.CMGalleryTitle")
 
 
 @g.my_app.callback("show_images_per_image")
 @sly.timeit
 def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
-    show_images_body(api, state, gallery_per_image)
+    show_images_body(api, task_id, state, gallery_per_image, "data.perImageGalleryTitle")
 
 
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
-    show_images_body(api, state, gallery_per_class)
+    show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle")
