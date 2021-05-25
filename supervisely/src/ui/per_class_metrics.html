@@ -17,11 +17,16 @@
     </el-table-column>
 </el-table><!--class Table with Evaluate buttons-->
 <sly-field class="mt15"
-          title="Extra Class Info"
-          description="Extra Class Info"
+          :title="data.perClassSelectedClsTitle"
+          description="Additional Info for selected class"
 >
+    <sly-notification class="mt10"
+                      :options="data.notification.options"
+                      :content="data.notification.content">
+
+    </sly-notification>
 <!--    <sly-table :content="data.perClassTable"></sly-table>-->
-    <sly-line-chart style="flex: 1; align-right: flex-start;"
+    <sly-line-chart style="flex: 1; align-right: flex-start; width: 450px"
                     :options.sync="data.perClassLineChartOptions"
                     :content="data.perClassLineChartSeries">
     </sly-line-chart>
@@ -31,8 +36,8 @@
                @input="state.selection = $event; command('show_images_per_class')"
     ></sly-table>
 </sly-field><!--selected class info-->
-<sly-field title="Original annotation vs Detections"
-           description="Selected image row in Image_mAP table">
+<sly-field :title="data.perClassGalleryTitle"
+           description="Original Ground Truth Annotations vs Detections">
     <sly-grid-gallery v-if="state.selection.selectedColumnName"
                       :content="data.perClass.content"
                       :options="data.perClass.options">
