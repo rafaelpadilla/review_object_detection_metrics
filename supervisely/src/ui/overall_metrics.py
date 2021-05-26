@@ -1,4 +1,5 @@
-from supervisely_lib.app.widgets.sly_table import SlyTable
+# from supervisely_lib.app.widgets.sly_table import SlyTable
+from widgets.sly_table import SlyTable
 import globals as g
 import metrics
 

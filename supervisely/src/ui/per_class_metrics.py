@@ -104,7 +104,6 @@ def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_pro
         target_chart = line_chart_series
         target_table = table_classes
 
-
     perClassSelectedClsTitle = 'Selected class is "{}"'.format(class_name)
     fields = [
         {"field": "data.perClassSingleImagesTable", "payload": {"columns": metrics.image_columns,

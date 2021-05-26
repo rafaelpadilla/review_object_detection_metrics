@@ -1,5 +1,6 @@
 import globals as g
 from supervisely_lib.app.widgets.confusion_matrix import ConfusionMatrix
+from widgets.confusion_matrix import ConfusionMatrix
 
 
 def init(data, state):

@@ -3,9 +3,10 @@ from supervisely.src import download_data as dd
 from supervisely.src import utils
 from src.bounding_box import BoundingBox, BBType, BBFormat
 from src.utils.enumerators import MethodAveragePrecision
-from supervisely_lib.app.widgets.compare_gallery import CompareGallery
-from supervisely_lib.app.widgets.sly_table import SlyTable
-
+# from supervisely_lib.app.widgets.compare_gallery import CompareGallery
+# from supervisely_lib.app.widgets.sly_table import SlyTable
+from widgets.compare_gallery import CompareGallery
+from widgets.sly_table import SlyTable
 import input
 import classes
 import settings
