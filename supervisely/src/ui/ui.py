@@ -144,14 +144,14 @@ def filter_classes(ann, selected_classes, score=None):
     tag_list = list()
     for ii in ann.labels:
         if ii.obj_class.name in selected_classes:
-            print('ii.obj_class.name =', ii.obj_class.name)
+            # print('ii.obj_class.name =', ii.obj_class.name)
             tmp_list.append(ii)
             if score is not None:
-                print('ii.tags =', ii.tags)
+                # print('ii.tags =', ii.tags)
                 for ij in ii.tags:
                     if ij.value >= score:
-                        print(ij)
-                        print(ij.value)
+                        # print(ij)
+                        # print(ij.value)
                         tag_list.append(ij)
 
     ann = ann.clone(labels=tmp_list)
@@ -161,7 +161,7 @@ def filter_classes(ann, selected_classes, score=None):
 
 
 def show_images_body(api, task_id, state, gallery_template, v_model):
-    print('state =', state)
+    # print('state =', state)
     selected_classes = state['selectedClasses']
     selected_row_data = state["selection"]["selectedRowData"]
 
@@ -171,7 +171,7 @@ def show_images_body(api, task_id, state, gallery_template, v_model):
         image_name = 'empty state'
 
     score = state['ScoreThreshold'] / 100
-    print('scoreThreshold =', score)
+    # print('scoreThreshold =', score)
     if selected_row_data is not None and state["selection"]["selectedColumnName"] is not None:
         keys = [key for key in selected_row_data]
         if 'SRC_ID' not in keys:
