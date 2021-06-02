@@ -12,7 +12,7 @@
 
 ## Citation
 
-This work was published in the [Journal Electronics - Special Issue Deep Learning Based Object Detection](https://www.mdpi.com/journal/electronics/special_issues/learning_based_detection). 
+This work was published in the [Journal Electronics - Special Issue Deep Learning Based Object Detection](https://www.mdpi.com/2079-9292/10/3/279). 
 
 If you use this code for your research, please consider citing:
 
@@ -30,7 +30,7 @@ ISSN = {2079-9292},
 DOI = {10.3390/electronics10030279}
 }
 ```
-Download the paper [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/published_paper.pdf).
+Download the paper [here](https://www.mdpi.com/2079-9292/10/3/279/pdf) or [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/published_paper.pdf).
 
 
 Open-Source Toolbox for Object Detection Metrics
