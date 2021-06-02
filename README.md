@@ -33,7 +33,7 @@ DOI = {10.3390/electronics10030279}
 Download the paper [here](https://www.mdpi.com/2079-9292/10/3/279/pdf) or [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/published_paper.pdf).
 
 
-Open-Source Toolbox for Object Detection Metrics
+Open-Source Visual Interface for Object Detection Metrics
 ================================================
 
 Our  [previously available  tool](https://github.com/rafaelpadilla/Object-Detection-Metrics) for  object  detection assessment has received many positive feedbacks, which motivated us to upgrade it with other metrics and support more bounding box formats. As some external tools, competitions and works are already using the older version, we decided not to modify it but release a newer and more complete project.
