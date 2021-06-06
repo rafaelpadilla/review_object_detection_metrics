@@ -121,12 +121,9 @@ def plot_coco_pr_graph(results, mAP=None, ap50=None, savePath=None, showGraphic=
         plt.show()
         # plt.waitforbuttonpress()
         plt.pause(0.05)
-    return 0
 
 
-if __name__ == '__main__':
-    args = parseArgs()
-    #print(args)
+def __cli__(args):
 
     # check if args are correct:
     verifyArgs(args)
@@ -146,14 +143,16 @@ if __name__ == '__main__':
         gt_anno = converter.yolo2bb(args.anno_gt, args.img_gt, args.names)
     elif args.gtformat == 'absolute':
         gt_anno = converter.text2bb(args.anno_gt, img_dir=args.img_gt)
+    elif args.gtformat == 'cvat':
+        gt_anno = converter.cvat2bb(args.anno_gt)
     else:
-        raise Exception("%s is not a valid ground truth annotation format"%args.anno_gt)
+        raise Exception("%s is not a valid ground truth annotation format. Valid formats are: coco, voc, imagenet, labelme, openimg, yolo, absolute, cvat"%args.anno_gt)
 
     # collect detection truth labels:
     if args.detformat == 'coco':
         logging.warning("COCO detection format specified. Ignoring 'detcoord'...")
         # load in json:
-
+        det_anno = converter.coco2bb(args.anno_det, bb_type=BBType.DETECTED)
     else:
         if args.detformat == 'xywh':
             # x,y,width, height
@@ -170,20 +169,19 @@ if __name__ == '__main__':
             COORD_TYPE = CoordinatesType.RELATIVE
         else:
             raise Exception("%s is not a valid detection coordinate format"%args.detcoord)
+        det_anno = converter.text2bb(args.anno_det, bb_type=BBType.DETECTED, bb_format=BB_FORMAT, type_coordinates=COORD_TYPE, img_dir=args.img_det)
 
-    det_anno = converter.text2bb(args.anno_det, bb_type=BBType.DETECTED, bb_format=BB_FORMAT, type_coordinates=COORD_TYPE, img_dir=args.img_det)
+        # If VOC specified, then switch id based to string for detection bbox:
+        #if args.gtformat == 'voc' or args.gtformat == 'imagenet':
+        with open(args.names, 'r') as r:
+            names = list(map(str.strip, r.readlines()))
+            for det in det_anno:
+                _out = names[int(det._class_id)]
+                det._class_id = _out
 
     # print out results of annotations loaded:
     print("%d ground truth bounding boxes retrieved"%(len(gt_anno)))
     print("%d detection bounding boxes retrieved"%(len(det_anno)))
-
-    # If VOC specified, then switch id based to string for detection bbox:
-    #if args.gtformat == 'voc' or args.gtformat == 'imagenet':
-    with open(args.names, 'r') as r:
-        names = list(map(str.strip, r.readlines()))
-        for det in det_anno:
-            _out = names[int(det._class_id)]
-            det._class_id = _out
 
     # compute bboxes with given metric:
     if args.metrics == 'coco':
@@ -195,7 +193,7 @@ if __name__ == '__main__':
         
         value_only = tuple([float(_i[1]) for _i in coco_sum.items()])
         print( ('\nCOCO metric:\n'
-                'AP [0.5:0.95:0.05]: %f\n'
+                'AP [.5:.05:.95]: %f\n'
                 'AP50: %f\n'
                 'AP75: %f\n'
                 'AP Small: %f\n'
@@ -208,13 +206,9 @@ if __name__ == '__main__':
                 'AR Medium: %f\n'
                 'AR Large: %f\n'%value_only) )
 
-        '''
         print("Per class:")
         for item in coco_out.items():
-            print("%s: AP50: \n"%(item[0],))
-            print(item[1])
-            # TODO: take PR curve and use COCO to determine AP
-        '''
+            print("%s AP50: %f\n"%(item[0], item[1]['AP']))
 
         if args.prgraph:
             plot_coco_pr_graph(coco_out, mAP=coco_sum['AP50'], ap50=coco_sum['AP'], savePath=args.savepath, showGraphic=False)
@@ -223,22 +217,31 @@ if __name__ == '__main__':
         logging.info("Running metric with VOC2007 metric")
         
         voc_sum = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold, method=MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION)
-        #print(voc_sum)
         print("mAP: %f"%(voc_sum['mAP']))
         print("Class APs:")
         for class_item in voc_sum['per_class'].items():
             print(
                 "%s: %f"%(class_item[0], class_item[1]['AP'])
             )
-            #print("%s AP: %f"%(class_item[0], class_item[1][0]))
         
         if args.prgraph:
             pascal_voc_evaluator.plot_precision_recall_curve(voc_sum['per_class'], mAP=voc_sum['mAP'], savePath=args.savepath, showGraphic=False)
 
     elif args.metrics == 'voc2012' or args.metrics == 'auc':
         logging.info("Running metric with VOC2012 metric; AUC (Area Under Curve)")
-        pr = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold)
 
+        voc_sum = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold)
+        print("mAP: %f"%(voc_sum['mAP']))
+        print("Class APs:")
+        for class_item in voc_sum['per_class'].items():
+            print(
+                "%s: %f"%(class_item[0], class_item[1]['AP'])
+            )
     else:
         # Error out for incorrect metric format
         raise Exception("%s is not a valid metric (coco, voc2007, voc2012, auc)"%(args.gtformat))
+
+
+if __name__ == '__main__':
+    args = parseArgs()
+    __cli__(args)
