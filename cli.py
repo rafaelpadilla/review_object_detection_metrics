@@ -1,5 +1,6 @@
 # Created by Vijay Rajagopal
 import os
+from src.evaluators.tube_evaluator import TubeEvaluator
 import sys
 import argparse
 import logging
@@ -12,10 +13,6 @@ import src.utils.converter as converter
 import src.utils.general_utils as general_utils
 from src.bounding_box import BoundingBox
 import matplotlib.pyplot as plt
-
-gt_formats = ['coco', 'openimage', 'imagenet', 'abs_val', 'cvat', 'voc', 'label_me', 'YOLO']
-dt_formats = ['id_ltrb', 'id_']
-coords = ['abs', 'rel']
 
 def parseArgs():
     parser = argparse.ArgumentParser()
@@ -70,6 +67,9 @@ def verifyArgs(args):
 
     if args.gtformat == 'voc' and args.names == '':
         raise Exception("VOC or ImageNet ground truth format specified, but name file not specified.")
+
+    if 'tube' == args.gtformat != args.detformat:
+        raise Exception("Spatio-Temporal Tube AP specified in one format parameter but not other!")
 
     
     if args.img_gt == '':
@@ -145,6 +145,9 @@ def __cli__(args):
         gt_anno = converter.text2bb(args.anno_gt, img_dir=args.img_gt)
     elif args.gtformat == 'cvat':
         gt_anno = converter.cvat2bb(args.anno_gt)
+    elif args.gtformat == 'tube':
+        logging.warning("Spatio-Temporal Tube AP specified. Loading ground truth and detection results at same time...")
+        tube = TubeEvaluator(args.anno_gt, args.anno_det)
     else:
         raise Exception("%s is not a valid ground truth annotation format. Valid formats are: coco, voc, imagenet, labelme, openimg, yolo, absolute, cvat"%args.anno_gt)
 
@@ -153,6 +156,9 @@ def __cli__(args):
         logging.warning("COCO detection format specified. Ignoring 'detcoord'...")
         # load in json:
         det_anno = converter.coco2bb(args.anno_det, bb_type=BBType.DETECTED)
+    elif args.detformat == 'tube':
+        # ignore the detection reading phase
+        pass
     else:
         if args.detformat == 'xywh':
             # x,y,width, height
@@ -173,17 +179,21 @@ def __cli__(args):
 
         # If VOC specified, then switch id based to string for detection bbox:
         #if args.gtformat == 'voc' or args.gtformat == 'imagenet':
-        with open(args.names, 'r') as r:
-            names = list(map(str.strip, r.readlines()))
-            for det in det_anno:
-                _out = names[int(det._class_id)]
-                det._class_id = _out
+        if args.names != '':
+            # if names file not given, assume id-based detection output
+            with open(args.names, 'r') as r:
+                names = list(map(str.strip, r.readlines()))
+                for det in det_anno:
+                    _out = names[int(det._class_id)]
+                    det._class_id = _out
 
     # print out results of annotations loaded:
     print("%d ground truth bounding boxes retrieved"%(len(gt_anno)))
     print("%d detection bounding boxes retrieved"%(len(det_anno)))
 
     # compute bboxes with given metric:
+
+    # COCO (101-POINT INTERPOLATION)
     if args.metrics == 'coco':
         logging.info("Running metric with COCO metric")
 
@@ -204,15 +214,20 @@ def __cli__(args):
                 'AR100: %f\n'
                 'AR Small: %f\n'
                 'AR Medium: %f\n'
-                'AR Large: %f\n'%value_only) )
+                'AR Large: %f\n\n'%value_only) )
 
-        print("Per class:")
+        print("Class APs:")
         for item in coco_out.items():
-            print("%s AP50: %f\n"%(item[0], item[1]['AP']))
+            if item[1]['AP'] != None:
+                print("%s AP50: %f\n"%(item[0], item[1]['AP']))
+            else:
+                logging.warning('AP for %s is None'%(item[0]))
 
         if args.prgraph:
             plot_coco_pr_graph(coco_out, mAP=coco_sum['AP50'], ap50=coco_sum['AP'], savePath=args.savepath, showGraphic=False)
+        return coco_sum
 
+    # 11-POINT INTERPOLATION:
     elif args.metrics == 'voc2007':
         logging.info("Running metric with VOC2007 metric")
         
@@ -220,13 +235,16 @@ def __cli__(args):
         print("mAP: %f"%(voc_sum['mAP']))
         print("Class APs:")
         for class_item in voc_sum['per_class'].items():
-            print(
-                "%s: %f"%(class_item[0], class_item[1]['AP'])
-            )
-        
+            if class_item[1]['AP'] != None:
+                print("%s AP: %f"%(class_item[0], class_item[1]['AP']))
+            else:
+                logging.warning('AP for %s is None'%(class_item[0]))
+
         if args.prgraph:
             pascal_voc_evaluator.plot_precision_recall_curve(voc_sum['per_class'], mAP=voc_sum['mAP'], savePath=args.savepath, showGraphic=False)
+        return voc_sum
 
+    # EVERY POINT INTERPOLATION:
     elif args.metrics == 'voc2012' or args.metrics == 'auc':
         logging.info("Running metric with VOC2012 metric; AUC (Area Under Curve)")
 
@@ -234,13 +252,21 @@ def __cli__(args):
         print("mAP: %f"%(voc_sum['mAP']))
         print("Class APs:")
         for class_item in voc_sum['per_class'].items():
-            print(
-                "%s: %f"%(class_item[0], class_item[1]['AP'])
-            )
+            print("%s AP: %f"%(class_item[0], class_item[1]['AP']))
+        return voc_sum
+    
+    # SST METRIC:
+    elif args.metrics == 'tube':
+        tube_out = tube.evaluate()
+        per_class, mAP = tube_out
+        print("mAP: %f"%(mAP))
+        print("Class APs:")
+        for name, class_obj in per_class.items():
+            print("%s AP: %f"%(name, class_obj['AP'])) 
+        return tube_out
     else:
         # Error out for incorrect metric format
         raise Exception("%s is not a valid metric (coco, voc2007, voc2012, auc)"%(args.gtformat))
-
 
 if __name__ == '__main__':
     args = parseArgs()
