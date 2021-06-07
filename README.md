@@ -349,7 +349,7 @@ The following table shows all the possible arguments you can provide to the CLI:
 
 This is an unofficial feature, but if there is a need to add this project's functionality into another project or python script, you can import the `cli.py` and utilize the `__cli__` function.
 
-The `__cli__` function contains the heart of the CLI functionality and requires a `Namespace` object with all fields from the original `argparse` function in `cli.py` to be present. For an example, take a look at the [test_cli.py](./test/test_cli.py) file.
+The `__cli__` function contains the heart of the CLI functionality and requires a `Namespace` object with all fields from the original `argparse` function in `cli.py` to be present. **For an example, take a look at the [test_cli.py](./tests/test_cli.py) file.**
 
 ## Contributing
 
