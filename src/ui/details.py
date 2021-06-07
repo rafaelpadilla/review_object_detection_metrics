@@ -12,7 +12,6 @@ from src.utils.general_utils import (add_bb_into_image, get_files_dir,
                                      remove_file_extension,
                                      show_image_in_qt_component)
 
-
 class Details_Dialog(QMainWindow, Details_UI):
     def __init__(self):
         QMainWindow.__init__(self)
@@ -118,15 +117,16 @@ class Details_Dialog(QMainWindow, Details_UI):
                 bboxes = BoundingBox.get_bounding_boxes_by_image_name(self.gt_annotations, img_name)
             # Draw bounding boxes
             for bb in bboxes:
-                img = add_bb_into_image(img, bb, color=(0, 255, 0), thickness=2, label=None)
+                label = bb._class_id if self.chb_confidence_bb.isChecked() else None
+                img = add_bb_into_image(img, bb, color=(0, 255, 0), thickness=2, label=label)
         if self.chb_det_bb.isChecked() and self.det_annotations is not None:
             bboxes = BoundingBox.get_bounding_boxes_by_image_name(self.det_annotations, img_name)
             if len(bboxes) == 0:
-                bboxes = BoundingBox.get_bounding_boxes_by_image_name(self.det_annotations,
-                                                                      img_name)
+                bboxes = BoundingBox.get_bounding_boxes_by_image_name(self.det_annotations, img_name)
             # Draw bounding boxes
             for bb in bboxes:
-                img = add_bb_into_image(img, bb, color=(0, 0, 255), thickness=2, label=None)
+                label = bb._class_id+str(round(bb._confidence, 3)) if self.chb_confidence_bb.isChecked() else None
+                img = add_bb_into_image(img, bb, color=(0, 0, 255), thickness=2, label=label)
         return img
 
     def show_dialog(self, type_bb, gt_annotations=None, det_annotations=None, dir_images=None):
@@ -192,6 +192,12 @@ class Details_Dialog(QMainWindow, Details_UI):
             cv2.imwrite(file_name, cv2.cvtColor(self.loaded_image, cv2.COLOR_RGB2BGR))
 
     def chb_det_bb_clicked(self, state):
+        # Draw bounding boxes
+        self.loaded_image = self.draw_bounding_boxes()
+        # Show image
+        show_image_in_qt_component(self.loaded_image, self.lbl_sample_image)
+
+    def chb_confidence_bb_clicked(self, state):
         # Draw bounding boxes
         self.loaded_image = self.draw_bounding_boxes()
         # Show image

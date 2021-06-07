@@ -131,9 +131,9 @@ p, li { white-space: pre-wrap; }
    <property name="geometry">
     <rect>
      <x>520</x>
-     <y>380</y>
+     <y>370</y>
      <width>161</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
    <property name="text">
@@ -143,10 +143,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QCheckBox" name="chb_det_bb">
    <property name="geometry">
     <rect>
-     <x>730</x>
-     <y>380</y>
+     <x>520</x>
+     <y>370</y>
      <width>141</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
    <property name="layoutDirection">
@@ -154,6 +154,22 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text">
     <string>draw detections</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="chb_confidence_bb">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>370</y>
+     <width>141</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="text">
+    <string>show class and confidence</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_previous_image">
