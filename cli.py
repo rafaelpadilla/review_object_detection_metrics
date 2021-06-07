@@ -83,9 +83,8 @@ def verifyArgs(args):
     if args.names == '':
         logging.warning("Names property empty so assuming detection format is class_id based.")
 
-    #TODO: check if formats are legit:
 
-
+# TODO: Check if the plotting function is redundant for COCO eval
 def plot_coco_pr_graph(results, mAP=None, ap50=None, savePath=None, showGraphic=True):
     result = None
     plt.close()
@@ -119,7 +118,6 @@ def plot_coco_pr_graph(results, mAP=None, ap50=None, savePath=None, showGraphic=
         plt.savefig(os.path.join(savePath, 'all_classes.png'))
     if showGraphic is True:
         plt.show()
-        # plt.waitforbuttonpress()
         plt.pause(0.05)
 
 
