@@ -28,8 +28,8 @@ def test_cli_coco_metric():
     args.anno_gt = 'tests/test_coco_eval/gts'
     args.anno_det = 'tests/test_coco_eval/dets'
     args.metrics = 'coco'
-    args.gtformat = 'coco'
-    args.detformat = 'coco'
+    args.format_gt = 'coco'
+    args.format_det = 'coco'
     res = cli.__cli__(args)
 
     assert abs(res["AP"] - 0.503647) < tol
@@ -61,9 +61,9 @@ def test_cli_voc_metric():
     # Important attributes set for testing:
     args.anno_gt = './tests/test_case_1/gts/'
     args.anno_det = './tests/test_case_1/dets/'
-    args.gtformat = 'absolute'
-    args.detformat = 'xywh'
-    args.detcoord = 'abs'
+    args.format_gt = 'absolute'
+    args.format_det = 'xywh'
+    args.coord_det = 'abs'
 
     testing_ious = [0.1, 0.3, 0.5, 0.75]
     # ELEVEN_POINT_INTERPOLATION

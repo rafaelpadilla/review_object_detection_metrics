@@ -25,15 +25,15 @@ def parseArgs():
     #parser.add_argument('--img_gt', type=str, required=False)
     #parser.add_argument('--img_det', type=str, required=False)
 
-    # gtformat: as in the application screenshot:
-    parser.add_argument('--gtformat', type=str)
+    # format_gt: as in the application screenshot:
+    parser.add_argument('--format_gt', type=str)
 
-    # detformat: shares input from coord (either xyrb, xywh, or coco)
-    parser.add_argument('--detformat', type=str)
+    # format_det: shares input from coord (either xyrb, xywh, or coco)
+    parser.add_argument('--format_det', type=str)
 
     # Absolute or relative (abs, rel)
     #parser.add_argument('--gtcoord',  type=str)
-    parser.add_argument('--detcoord', type=str)
+    parser.add_argument('--coord_det', type=str)
 
     # Actual computation type:
     parser.add_argument('--metrics', type=str)
@@ -67,10 +67,10 @@ def verifyArgs(args):
     if args.prgraph and args.savepath == '':
         raise Exception("Precision-Recall graph specified but no save path given!")
 
-    if args.gtformat == 'voc' and args.names == '':
+    if args.format_gt == 'voc' and args.names == '':
         raise Exception("VOC or ImageNet ground truth format specified, but name file not specified.")
 
-    if 'tube' == args.gtformat != args.detformat:
+    if 'tube' == args.format_gt != args.format_det:
         raise Exception("Spatio-Temporal Tube AP specified in one format parameter but not other!")
 
     
@@ -129,56 +129,56 @@ def __cli__(args):
     verifyArgs(args)
 
     # collect ground truth labels:
-    if args.gtformat == 'coco':
+    if args.format_gt == 'coco':
         gt_anno = converter.coco2bb(args.anno_gt)
-    elif args.gtformat == 'voc':
+    elif args.format_gt == 'voc':
         gt_anno = converter.vocpascal2bb(args.anno_gt)
-    elif args.gtformat == 'imagenet':
+    elif args.format_gt == 'imagenet':
         gt_anno = converter.imagenet2bb(args.anno_gt)
-    elif args.gtformat == 'labelme':
+    elif args.format_gt == 'labelme':
         gt_anno = converter.labelme2bb(args.anno_gt)
-    elif args.gtformat == 'openimg':
+    elif args.format_gt == 'openimg':
         gt_anno = converter.openimage2bb(args.anno_gt, args.img)
-    elif args.gtformat == 'yolo':
+    elif args.format_gt == 'yolo':
         gt_anno = converter.yolo2bb(args.anno_gt, args.img, args.names)
-    elif args.gtformat == 'absolute':
+    elif args.format_gt == 'absolute':
         gt_anno = converter.text2bb(args.anno_gt, img_dir=args.img)
-    elif args.gtformat == 'cvat':
+    elif args.format_gt == 'cvat':
         gt_anno = converter.cvat2bb(args.anno_gt)
-    elif args.gtformat == 'tube':
+    elif args.format_gt == 'tube':
         logging.warning("Spatio-Temporal Tube AP specified. Loading ground truth and detection results at same time...")
         tube = TubeEvaluator(args.anno_gt, args.anno_det)
     else:
         raise Exception("%s is not a valid ground truth annotation format. Valid formats are: coco, voc, imagenet, labelme, openimg, yolo, absolute, cvat"%args.anno_gt)
 
     # collect detection truth labels:
-    if args.detformat == 'coco':
-        logging.warning("COCO detection format specified. Ignoring 'detcoord'...")
+    if args.format_det == 'coco':
+        logging.warning("COCO detection format specified. Ignoring 'coord_det'...")
         # load in json:
         det_anno = converter.coco2bb(args.anno_det, bb_type=BBType.DETECTED)
-    elif args.detformat == 'tube':
+    elif args.format_det == 'tube':
         # ignore the detection reading phase
         pass
     else:
-        if args.detformat == 'xywh':
+        if args.format_det == 'xywh':
             # x,y,width, height
             BB_FORMAT = BBFormat.XYWH
-        elif args.detformat == 'xyrb':
+        elif args.format_det == 'xyrb':
             # x,y,right,bottom
             BB_FORMAT = BBFormat.XYX2Y2
         else:
             raise Exception("%s is not a valid detection annotation format"%args.anno_det)
     
-        if args.detcoord == 'abs':
+        if args.coord_det == 'abs':
             COORD_TYPE = CoordinatesType.ABSOLUTE
-        elif args.detcoord == 'rel':
+        elif args.coord_det == 'rel':
             COORD_TYPE = CoordinatesType.RELATIVE
         else:
-            raise Exception("%s is not a valid detection coordinate format"%args.detcoord)
+            raise Exception("%s is not a valid detection coordinate format"%args.coord_det)
         det_anno = converter.text2bb(args.anno_det, bb_type=BBType.DETECTED, bb_format=BB_FORMAT, type_coordinates=COORD_TYPE, img_dir=args.img)
 
         # If VOC specified, then switch id based to string for detection bbox:
-        #if args.gtformat == 'voc' or args.gtformat == 'imagenet':
+        #if args.format_gt == 'voc' or args.format_gt == 'imagenet':
         if args.names != '':
             # if names file not given, assume id-based detection output
             with open(args.names, 'r') as r:
@@ -266,7 +266,7 @@ def __cli__(args):
         return tube_out
     else:
         # Error out for incorrect metric format
-        raise Exception("%s is not a valid metric (coco, voc2007, voc2012, auc)"%(args.gtformat))
+        raise Exception("%s is not a valid metric (coco, voc2007, voc2012, auc)"%(args.format_gt))
 
 if __name__ == '__main__':
     args = parseArgs()
