@@ -229,7 +229,7 @@ def __cli__(args):
 
     # 11-POINT INTERPOLATION:
     elif args.metrics == 'voc2007':
-        logging.info("Running metric with VOC2007 metric")
+        logging.info("Running metric with VOC2012 metric, using the 11-point interpolation approach")
         
         voc_sum = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold, method=MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION)
         print("mAP: %f"%(voc_sum['mAP']))
@@ -246,7 +246,7 @@ def __cli__(args):
 
     # EVERY POINT INTERPOLATION:
     elif args.metrics == 'voc2012' or args.metrics == 'auc':
-        logging.info("Running metric with VOC2012 metric; AUC (Area Under Curve)")
+        logging.info("Running metric with VOC2012 metric, using the every point interpolation approach")
 
         voc_sum = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold)
         print("mAP: %f"%(voc_sum['mAP']))
