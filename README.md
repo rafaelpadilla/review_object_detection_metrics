@@ -59,9 +59,12 @@ Ideally, in order to have trustworthy benchmarking among different approaches, i
   - [**Spatio-Temporal Tube Average Precision (STT-AP)**](#spatio-temporal-tube-average-precision-stt-ap)
   - [How to use this project](#how-to-use-this-project)
     - [Requirements](#requirements)
-    - [Running](#running)
+    - [Running GUI Tool](#running-gui-tool)
       - [Images](#images)
       - [Spatio-Temporal Tube](#spatio-temporal-tube)
+    - [Running CLI](#running-cli)
+      - [CLI Arguments](#cli-arguments)
+      - [Programmatical Usage](#programmatical-usage)
   - [Contributing](#contributing)
 
 
@@ -217,7 +220,7 @@ Install the tool: `python setup.py install`
 
 Run the UI: `python run.py`  
 
-### Running
+### Running GUI Tool
 
 #### Images
 To help users to apply different metrics using multiple bounding box formats, a GUI was created to facilitate the evaluation process. By running the command `python run.py`, the following screen will show:
@@ -319,6 +322,34 @@ from src.evaluators.tube_evaluator import TubeEvaluator
 tube_evaluator = TubeEvaluator(annot_filepath, preds_filepath)
 res, mAP = tube_evaluator.evaluate(thr=0.5)
 ```
+
+### Running CLI
+
+If there is a need for a command line interface (CLI), you can run the `cli.py` file.
+
+#### CLI Arguments
+The following table shows all the possible arguments you can provide to the CLI:
+| Argument        | Description                                                                                                                                           | Example                                                      | Default | Notes                                                                                                                  |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------|
+| --help, -h      | Shows a help message for tool                                                                                                                         | python cli.py -h                                             |         |                                                                                                                        |
+| --anno_gt       | Takes in a directory or file to the ground-truth annotations                                                                                          | python cli.py --anno_gt toyexample/gts_vocpascal_format      |         | Based on the `gtformat`, make sure this parameter points to the right kind of ground truth (directory or file)         |
+| --anno_gt       | Takes in a directory or file to the detection annotations                                                                                             | python cli.py --anno_gt toyexample/dets_classname_rel_xyx2y2 |         | Based on the `detformat`, make sure this parameter points to the right kind of ground truth (directory or file)        |
+| --img           | Takes in a directory where the corresponding images are located                                                                                       | python cli.py --img toyexample/images                        |         | Used in some ground truth annotation formats. At the current moment, there is visualization functionality for the CLI  |
+| --gtformat      | Takes in keyword that represents the format that the groundtruth will be in (example: COCO GT JSON format)                                            | python cli.py --gtformat coco                                |         | Available formats: `coco`, `voc`, `imagenet`, `labelme`, `openimg`, `yolo`, `absolute`, `cvat`, `tube`                 |
+| --detformat     | Takes in keyword that represents the format that the detection will be in (either text files or COCO Detection JSON format)                           | python cli.py --detformat coco                               |         | Available inputs: `coco`, `xyrb` (x,y,x2,y2), or `xywh` (x,y,width,height)                                             |
+| --metrics       | Takes in keyword that represents the metric that will be used                                                                                         | python cli.py --metrics voc2012                              |         |                                                                                                                        |
+| --names, -n     | The path of the file that contains the class names for this detection                                                                                 | python cli.py --names voc_classes.txt                        |         | The name file should just be a plaintext file with each class name delimited by a newline.                             |
+| --threshold, -t | Represents the IoU threshold for a given metric                                                                                                       | python cli.py --metrics voc2007 --threshold 0.75             | 0.5     |                                                                                                                        |
+| --prgraph, -pr  | A flag for creating a Precision x Recall graph for the given metric that it is being used in                                                          | python cli.py --metrics voc2007 -pr                          |         | This flag requires the `savepath` argument to be specified                                                             |
+| --savepath, -sp | An optional parameter used to specify where the visual output will be saved to. Required when `-pr` is specified                                      | python cli.py --savepath toyexample/image_out/               |         |                                                                                                                        |
+| --detcoord      | Argument is associated with `detformat` and represents the coordinate system of the detection files. Either absolute (normal coordinates) or relative | python cli.py --detformat xyrb --detcoord rel                |         | Available inputs: `abs`, `rel`                                                                                         |
+
+
+#### Programmatical Usage
+
+This is an unofficial feature, but if there is a need to add this project's functionality into another project or python script, you can import the `cli.py` and utilize the `__cli__` function.
+
+The `__cli__` function contains the heart of the CLI functionality and requires a `Namespace` object with all fields from the original `argparse` function in `cli.py` to be present. For an example, take a look at the [test_cli.py](./test/test_cli.py) file.
 
 ## Contributing
 

@@ -21,8 +21,7 @@ def test_cli_coco_metric():
     args.savepath = False
     args.prgraph = False
     args.threshold = 0.5
-    args.img_gt = ''
-    args.img_det = ''
+    args.img = ''
     args.names = ''
 
     # Important attributes set for testing:
@@ -56,8 +55,7 @@ def test_cli_voc_metric():
     args.savepath = False
     args.prgraph = False
     args.threshold = 0.5
-    args.img_gt = ''
-    args.img_det = ''
+    args.img = ''
     args.names = ''
     
     # Important attributes set for testing:

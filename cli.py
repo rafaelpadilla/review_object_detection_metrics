@@ -21,8 +21,9 @@ def parseArgs():
     parser.add_argument('--anno_det', type=str)
 
     # Folder path to corresponding images:
-    parser.add_argument('--img_gt', type=str, required=False)
-    parser.add_argument('--img_det', type=str, required=False)
+    parser.add_argument('--img', type=str, required=False)
+    #parser.add_argument('--img_gt', type=str, required=False)
+    #parser.add_argument('--img_det', type=str, required=False)
 
     # gtformat: as in the application screenshot:
     parser.add_argument('--gtformat', type=str)
@@ -40,12 +41,13 @@ def parseArgs():
     # metadata for metrics (not always needed)
     parser.add_argument('--names', '-n', type=str, default='')
     parser.add_argument('-t', '--threshold', type=float, default=0.5)
-    parser.add_argument('--imgsize', type=str, default=416)
     
     # extra data (graphs and etc.)
     parser.add_argument('--prgraph', '-pr', action='store_true')
     parser.add_argument('-sp', '--savepath', type=str, required=False, default="")
-    parser.add_argument('--info', action='store_true')
+    
+    # TODO: Add the same dataset analysis seen in the GUI:
+    #parser.add_argument('--info', action='store_true')
     
     return parser.parse_args()
 
@@ -72,13 +74,13 @@ def verifyArgs(args):
         raise Exception("Spatio-Temporal Tube AP specified in one format parameter but not other!")
 
     
-    if args.img_gt == '':
-        logging.warning("Image path for ground truth not specified. Assuming path is same as annotations.")
-        args.img_gt = args.anno_gt
+    if args.img == '':
+        logging.warning("Image path not specified. Assuming path is same as ground truth annotations.")
+        args.img = args.anno_gt
 
-    if args.img_det == '':
-        logging.warning("Image path for detection not specified. Assuming path is same as annotations.")
-        args.img_det = args.anno_det
+    #if args.img_det == '':
+    #    logging.warning("Image path for detection not specified. Assuming path is same as annotations.")
+    #    args.img_det = args.anno_det
 
     if args.names == '':
         logging.warning("Names property empty so assuming detection format is class_id based.")
@@ -136,11 +138,11 @@ def __cli__(args):
     elif args.gtformat == 'labelme':
         gt_anno = converter.labelme2bb(args.anno_gt)
     elif args.gtformat == 'openimg':
-        gt_anno = converter.openimage2bb(args.anno_gt, args.img_gt)
+        gt_anno = converter.openimage2bb(args.anno_gt, args.img)
     elif args.gtformat == 'yolo':
-        gt_anno = converter.yolo2bb(args.anno_gt, args.img_gt, args.names)
+        gt_anno = converter.yolo2bb(args.anno_gt, args.img, args.names)
     elif args.gtformat == 'absolute':
-        gt_anno = converter.text2bb(args.anno_gt, img_dir=args.img_gt)
+        gt_anno = converter.text2bb(args.anno_gt, img_dir=args.img)
     elif args.gtformat == 'cvat':
         gt_anno = converter.cvat2bb(args.anno_gt)
     elif args.gtformat == 'tube':
@@ -173,7 +175,7 @@ def __cli__(args):
             COORD_TYPE = CoordinatesType.RELATIVE
         else:
             raise Exception("%s is not a valid detection coordinate format"%args.detcoord)
-        det_anno = converter.text2bb(args.anno_det, bb_type=BBType.DETECTED, bb_format=BB_FORMAT, type_coordinates=COORD_TYPE, img_dir=args.img_det)
+        det_anno = converter.text2bb(args.anno_det, bb_type=BBType.DETECTED, bb_format=BB_FORMAT, type_coordinates=COORD_TYPE, img_dir=args.img)
 
         # If VOC specified, then switch id based to string for detection bbox:
         #if args.gtformat == 'voc' or args.gtformat == 'imagenet':
