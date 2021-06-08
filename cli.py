@@ -36,7 +36,7 @@ def parseArgs():
     parser.add_argument('--coord_det', type=str)
 
     # Actual computation type:
-    parser.add_argument('--metrics', type=str)
+    parser.add_argument('--metric', type=str)
     
     # metadata for metrics (not always needed)
     parser.add_argument('--names', '-n', type=str, default='')
@@ -44,7 +44,7 @@ def parseArgs():
     
     # extra data (graphs and etc.)
     parser.add_argument('--prgraph', '-pr', action='store_true')
-    parser.add_argument('-sp', '--savepath', type=str, required=False, default="")
+    parser.add_argument('-sp', '--savepath', type=str, required=False, default="./results/")
     
     # TODO: Add the same dataset analysis seen in the GUI:
     #parser.add_argument('--info', action='store_true')
@@ -61,9 +61,6 @@ def verifyArgs(args):
     if args.threshold > 1 or args.threshold < 0:
         raise Exception('Incorrect range for threshold (0-1)')
 
-    if not os.path.exists(args.savepath):
-        raise Exception('Savepath does not exist!')
-
     if args.prgraph and args.savepath == '':
         raise Exception("Precision-Recall graph specified but no save path given!")
 
@@ -78,12 +75,16 @@ def verifyArgs(args):
         logging.warning("Image path not specified. Assuming path is same as ground truth annotations.")
         args.img = args.anno_gt
 
-    #if args.img_det == '':
-    #    logging.warning("Image path for detection not specified. Assuming path is same as annotations.")
-    #    args.img_det = args.anno_det
-
     if args.names == '':
         logging.warning("Names property empty so assuming detection format is class_id based.")
+
+    if not os.path.exists(args.savepath):
+        logging.warning("Savepath directory %s is not found. Attempting to create folder"%(args.savepath))
+        try:
+            os.mkdir(args.savepath)
+        except:
+            logging.error("Could not create directory! Exiting...")
+            raise Exception()
 
 
 # TODO: Check if the plotting function is redundant for COCO eval
@@ -194,7 +195,7 @@ def __cli__(args):
     # compute bboxes with given metric:
 
     # COCO (101-POINT INTERPOLATION)
-    if args.metrics == 'coco':
+    if args.metric == 'coco':
         logging.info("Running metric with COCO metric")
 
         # use coco_out for PR graphs and coco_sum for just the AP
@@ -228,7 +229,7 @@ def __cli__(args):
         return coco_sum
 
     # 11-POINT INTERPOLATION:
-    elif args.metrics == 'voc2007':
+    elif args.metric == 'voc2007':
         logging.info("Running metric with VOC2012 metric, using the 11-point interpolation approach")
         
         voc_sum = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold, method=MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION)
@@ -245,18 +246,24 @@ def __cli__(args):
         return voc_sum
 
     # EVERY POINT INTERPOLATION:
-    elif args.metrics == 'voc2012' or args.metrics == 'auc':
+    elif args.metric == 'voc2012' or args.metric == 'auc':
         logging.info("Running metric with VOC2012 metric, using the every point interpolation approach")
 
         voc_sum = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold)
         print("mAP: %f"%(voc_sum['mAP']))
         print("Class APs:")
         for class_item in voc_sum['per_class'].items():
-            print("%s AP: %f"%(class_item[0], class_item[1]['AP']))
+            if class_item[1]['AP'] != None:
+                print("%s AP: %f"%(class_item[0], class_item[1]['AP']))
+            else:
+                logging.warning('AP for %s is None'%(class_item[0]))
+        
+        if args.prgraph:
+            pascal_voc_evaluator.plot_precision_recall_curve(voc_sum['per_class'], mAP=voc_sum['mAP'], savePath=args.savepath, showGraphic=False)
         return voc_sum
     
     # SST METRIC:
-    elif args.metrics == 'tube':
+    elif args.metric == 'tube':
         tube_out = tube.evaluate()
         per_class, mAP = tube_out
         print("mAP: %f"%(mAP))

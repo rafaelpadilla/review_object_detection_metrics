@@ -27,7 +27,7 @@ def test_cli_coco_metric():
     # Important attributes set for testing:
     args.anno_gt = 'tests/test_coco_eval/gts'
     args.anno_det = 'tests/test_coco_eval/dets'
-    args.metrics = 'coco'
+    args.metric = 'coco'
     args.format_gt = 'coco'
     args.format_det = 'coco'
     res = cli.__cli__(args)
@@ -68,7 +68,7 @@ def test_cli_voc_metric():
     testing_ious = [0.1, 0.3, 0.5, 0.75]
     # ELEVEN_POINT_INTERPOLATION
     expected_APs = {'object': {0.1: 0.3333333333, 0.3: 0.2683982683, 0.5: 0.0303030303, 0.75: 0.0}}
-    args.metrics='voc2007'
+    args.metric='voc2007'
 
     for idx, iou in enumerate(testing_ious):
         args.threshold = iou
@@ -83,7 +83,7 @@ def test_cli_voc_metric():
 
     # EVERY_POINT_INTERPOLATION
     expected_APs = {'object': {0.1: 0.3371980676, 0.3: 0.2456866804, 0.5: 0.0222222222, 0.75: 0.0}}
-    args.metrics='voc2012'
+    args.metric='voc2012'
     
     for idx, iou in enumerate(testing_ious):
         args.threshold = iou
