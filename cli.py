@@ -225,7 +225,9 @@ def __cli__(args):
                 logging.warning('AP for %s is None'%(item[0]))
 
         if args.prgraph:
-            plot_coco_pr_graph(coco_out, mAP=coco_sum['AP50'], ap50=coco_sum['AP'], savePath=args.savepath, showGraphic=False)
+            logging.warning("Graphing precision-recall is not supported!")
+            #plot_coco_pr_graph(coco_out, mAP=coco_sum['AP50'], ap50=coco_sum['AP'], savePath=args.savepath, showGraphic=False)
+        
         return coco_sum
 
     # 11-POINT INTERPOLATION:
