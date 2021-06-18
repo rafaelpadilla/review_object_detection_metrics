@@ -66,19 +66,6 @@ def filter_classes(image_list, classes_names):
     return new_image_list
 
 
-def fn(additional_gt_images, classes_names):
-    new_image_list = []
-    for image in additional_gt_images:
-        bboxes = image['annotation']['objects']  # .annotation
-        new_box_list = []
-        for bbox in bboxes:
-            if bbox['classTitle'] in classes_names:
-                new_box_list.append(bbox)
-        image['annotation']['objects'] = new_box_list
-        new_image_list.append(image)
-    return new_image_list
-
-
 def class_filtering(dataset, classes_names):
     filtered_class = {}
     for prj_key, prj_value in dataset.items():  # gt + pred
@@ -232,6 +219,7 @@ def download(image_dict, percentage, cache, batch_size=10, show_info=False):
             for ix, batch in enumerate(sly.batched(slice_to_download, batch_size)):
                 image_ids = [image_info.id for image_info in batch]
                 annotations = g.api.annotation.download_batch(dataset_id, image_ids)
+
                 for batch_, annotation in zip(batch, annotations):
                     batch_image_id = batch_.id
                     annotation_image_id = annotation.image_id
