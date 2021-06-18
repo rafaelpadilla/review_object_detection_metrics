@@ -160,9 +160,10 @@ def filter_classes(ann, selected_classes, score=None):
     return ann
 
 
-def show_images_body(api, task_id, state, gallery_template, v_model):
+def show_images_body(api, task_id, state, gallery_template, v_model, selected_image_classes=None):
     # print('state =', state)
-    selected_classes = state['selectedClasses']
+    selected_classes = state['selectedClasses'] if selected_image_classes is None else selected_image_classes
+
     selected_row_data = state["selection"]["selectedRowData"]
 
     try:
@@ -212,4 +213,7 @@ def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
-    show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle")
+    print('show_images_per_class =', state)
+    print('selectedClassName =', state['selectedClassName'])
+    selected_image_classes = state['selectedClassName']  # state['selectedClassName']
+    show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle", selected_image_classes)
