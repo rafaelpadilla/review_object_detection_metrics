@@ -2,6 +2,9 @@ import numpy as np
 import supervisely_lib as sly
 import globals as g
 import metrics
+# from supervisely_lib.app.widgets.sly_table import SlyTable
+from widgets.sly_table import SlyTable
+image_sly_table = SlyTable(g.api, g.task_id, "data.perClassTable", metrics.image_columns)
 
 
 def init(data, state):
@@ -14,7 +17,7 @@ def init(data, state):
     data['perClassGalleryTitle'] = 'Please, select row from ImageTable.'
     note_text = '''There may be differences between the Class table and the Image table. 
     Such a situation is possible due to since when considering one single image, we do not pay 
-    attention to other class errors in other images from the set, but when evaluating the entire set, 
+    attention to selected class errors in other images from the set, but when evaluating the entire set, 
     these errors are immediately accessible.'''
     data['notification'] = {
         "content": "##### {}".format(note_text),
