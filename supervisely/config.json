@@ -5,8 +5,8 @@
     "report"
   ],
   "description": "Explore images for every combination of classes pairs in co-occurrence table",
-  "docker_image": "supervisely/base-py-sdk:6.1.79",
-  "main_script": "supervisely/src/sly_main.py",
+  "docker_image": "supervisely/base-py-sdk:6.1.80",
+  "main_script": "supervisely/src/main.py",
   "modal_template": "src/modal.html",
   "modal_template_state": {},
   "gui_template": "src/gui.html",
