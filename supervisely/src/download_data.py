@@ -286,6 +286,10 @@ def view_class(api: sly.Api, task_id, context, state, app_logger):
     score_threshold = state['ScoreThreshold'] / 100
     per_class_metrics.selected_class_metrics(api, task_id, gts, pred, class_name, g.pred_project_info.name,
                                              iou_threshold, score_threshold)
+    fields = [
+        {"field": "state.perClassActiveStep", "payload": 2}
+    ]
+    api.app.set_fields(task_id, fields)
 
 
 total_image_num = dict()
