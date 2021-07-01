@@ -8,6 +8,7 @@ image_sly_table = SlyTable(g.api, g.task_id, "data.perClassTable", metrics.image
 
 
 def init(data, state):
+    state['perClassActiveStep'] = 1
     data['perClassExtendedTable'] = []
     data['perClassTable'] = {"columns": metrics.table_classes_columns, "data": []}
     data['perClassLineChartOptions'] = {"title": "Precision/Recall curve", "showLegend": True}
