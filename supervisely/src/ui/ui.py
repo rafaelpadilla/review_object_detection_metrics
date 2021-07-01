@@ -26,6 +26,7 @@ cm_image_table = SlyTable(g.api, g.task_id, 'data.CMTableImages', metrics.image_
 
 
 def init(data, state):
+    state['activeName'] = "1"
     input.init(data, state)
     classes.init(data, state)
     datasets.init(data, state)
@@ -115,7 +116,7 @@ def show_image_table_body(api, task_id, state, v_model):
         {"field": "data.CMImageTableTitle", "payload": text},
         {"field": "data.CMImageTableDescription1", "payload": description_1},
         {"field": "data.CMImageTableDescription2", "payload": description_2},
-        {"field": "data.CMImageTableDescription3", "payload": description_3}
+        {"field": "data.CMImageTableDescription3", "payload": description_3},
     ]
     api.app.set_fields(task_id, fields)
 
@@ -127,6 +128,10 @@ def show_image_table_body(api, task_id, state, v_model):
 @sly.timeit
 def show_image_table_cm(api: sly.Api, task_id, context, state, app_logger):
     v_model = "data.CMTableImages"
+    fields = [
+        {"field": "state.CMActiveStep", "payload": 2}
+    ]
+    api.app.set_fields(task_id, fields)
     show_image_table_body(api, task_id, state, v_model)
 
 
@@ -137,14 +142,10 @@ def filter_classes(ann, selected_classes, score=None):
     tag_list = list()
     for ii in ann.labels:
         if ii.obj_class.name in selected_classes:
-            # print('ii.obj_class.name =', ii.obj_class.name)
             tmp_list.append(ii)
             if score is not None:
-                # print('ii.tags =', ii.tags)
                 for ij in ii.tags:
                     if ij.value >= score:
-                        # print(ij)
-                        # print(ij.value)
                         tag_list.append(ij)
 
     ann = ann.clone(labels=tmp_list)
@@ -154,9 +155,7 @@ def filter_classes(ann, selected_classes, score=None):
 
 
 def show_images_body(api, task_id, state, gallery_template, v_model, selected_image_classes=None):
-    # print('state =', state)
     selected_classes = state['selectedClasses'] if selected_image_classes is None else selected_image_classes
-
     selected_row_data = state["selection"]["selectedRowData"]
 
     try:
@@ -165,7 +164,6 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
         image_name = 'empty state'
 
     score = state['ScoreThreshold'] / 100
-    # print('scoreThreshold =', score)
     if selected_row_data is not None and state["selection"]["selectedColumnName"] is not None:
         keys = [key for key in selected_row_data]
         if 'SRC_ID' not in keys:
@@ -194,6 +192,10 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
 @g.my_app.callback("show_images_confusion_matrix")
 @sly.timeit
 def show_images_confusion_matrix(api: sly.Api, task_id, context, state, app_logger):
+    fields = [
+        {"field": "state.CMActiveStep", "payload": 3}
+    ]
+    api.app.set_fields(task_id, fields)
     show_images_body(api, task_id, state, gallery_conf_matrix, "data.CMGalleryTitle")
 
 
@@ -206,5 +208,10 @@ def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
+
     selected_image_classes = state['selectedClassName']
     show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle", selected_image_classes)
+    fields = [
+        {"field": "state.perClassActiveStep", "payload": 3}
+    ]
+    api.app.set_fields(task_id, fields)
