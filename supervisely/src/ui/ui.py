@@ -18,16 +18,9 @@ import per_class_metrics
 import overall_metrics
 import globals as g
 
-aggregated_meta = {'classes': [], 'tags': g._pred_meta_['tags'], 'projectType': 'images'}
-for i in g._gt_meta_['classes']:
-    for j in g._pred_meta_['classes']:
-        if i['title'] == j['title'] and i['shape'] == j['shape']:
-            aggregated_meta['classes'].append(i)
-
-aggregated_meta = sly.ProjectMeta.from_json(aggregated_meta)
-gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.CMGallery', aggregated_meta)
-gallery_per_image = CompareGallery(g.task_id, g.api, 'data.perImage', aggregated_meta)
-gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', aggregated_meta)
+gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.CMGallery', g.aggregated_meta)
+gallery_per_image = CompareGallery(g.task_id, g.api, 'data.perImage', g.aggregated_meta)
+gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
 
 cm_image_table = SlyTable(g.api, g.task_id, 'data.CMTableImages', metrics.image_columns)
 
@@ -139,7 +132,7 @@ def show_image_table_cm(api: sly.Api, task_id, context, state, app_logger):
 
 # ======================================================================================================================
 def filter_classes(ann, selected_classes, score=None):
-    ann = sly.Annotation.from_json(ann.annotation, aggregated_meta)
+    ann = sly.Annotation.from_json(ann.annotation, g.aggregated_meta)
     tmp_list = list()
     tag_list = list()
     for ii in ann.labels:
@@ -213,7 +206,5 @@ def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
-    print('show_images_per_class =', state)
-    print('selectedClassName =', state['selectedClassName'])
-    selected_image_classes = state['selectedClassName']  # state['selectedClassName']
+    selected_image_classes = state['selectedClassName']
     show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle", selected_image_classes)

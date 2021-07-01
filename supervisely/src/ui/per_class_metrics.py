@@ -49,8 +49,6 @@ def calculate_per_classes_metrics(api, task_id, src_list, dst_list, dst_project_
     line_chart_options = {"title": "Precision/Recall curve", "showLegend": True}
     fields = [
         {"field": "data.perClassExtendedTable", "payload": table_data},
-        # {"field": "data.perClassTable", "payload": {"columns": metrics.table_classes_columns,
-        #                                             "data": table_classes}},
         {"field": "data.perClassLineChartOptions", "payload": line_chart_options},
         {"field": "data.perClassLineChartSeries", "payload": line_chart_series}
     ]
@@ -70,11 +68,9 @@ def expand_line(data, class_name):
 def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_project, iou_threshold, score_threshold):
     if class_name != 'ALL':
         images_names_with_target_class = list(set(expand_line(src_list, class_name) + expand_line(dst_list, class_name)))
-        print('images_names_with_target_class =', images_names_with_target_class)
         row_indexes1 = [id_ for id_, line in enumerate(src_list) if line[1] in images_names_with_target_class]
         row_indexes2 = [id_ for id_, line in enumerate(dst_list) if line[1] in images_names_with_target_class]
         row_indexes = list(set(row_indexes1 + row_indexes2))
-        print('row_indexes =', row_indexes)
         single_class_src_list_np = [src_list[id_] for id_ in row_indexes]
         single_class_dst_list_np = [dst_list[id_] for id_ in row_indexes]
 
@@ -111,8 +107,6 @@ def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_pro
     fields = [
         {"field": "data.perClassSingleImagesTable", "payload": {"columns": metrics.image_columns,
                                                                 "data": class_images_pd_data}},
-        # {"field": "data.perClassTable", "payload": {"columns": metrics.table_classes_columns,
-        #                                             "data": target_table}},  # projects_pd_data
         {"field": "data.perClassLineChartSeries", "payload": target_chart},
         {"field": "data.perClassSelectedClsTitle", "payload": perClassSelectedClsTitle}
     ]
