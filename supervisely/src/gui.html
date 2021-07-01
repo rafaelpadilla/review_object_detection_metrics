@@ -3,18 +3,18 @@
     {% include 'supervisely/src/ui/classes.html' %}
     {% include 'supervisely/src/ui/datasets.html' %}
     {% include 'supervisely/src/ui/settings.html' %}
-    <el-tabs type="border-card" class="mt10">
-        <el-tab-pane label="Confusion Matrix">
+    <el-collapse v-model="state.activeName" accordion>
+        <el-collapse-item title="Confusion Matrix" name="1">
             {% include 'supervisely/src/ui/confusionmatrix.html' %}
-        </el-tab-pane>
-        <el-tab-pane label="Per Images">
+        </el-collapse-item>
+        <el-collapse-item title="Per Images" name="2">
             {% include 'supervisely/src/ui/per_image_metrics.html' %}
-        </el-tab-pane>
-        <el-tab-pane label="Per Classes">
+        </el-collapse-item>
+        <el-collapse-item title="Per Classes" name="3">
             {% include 'supervisely/src/ui/per_class_metrics.html' %}
-        </el-tab-pane>
-        <el-tab-pane label="Overall">
+        </el-collapse-item>
+        <el-collapse-item title="Overall" name="4">
             {% include 'supervisely/src/ui/overall_metrics.html' %}
-        </el-tab-pane>
-    </el-tabs>
+        </el-collapse-item>
+    </el-collapse>
 </div>
