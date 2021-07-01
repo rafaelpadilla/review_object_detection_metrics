@@ -6,6 +6,7 @@ from widgets.confusion_matrix import ConfusionMatrix
 def init(data, state):
     state['selection'] = {}
     state['selected'] = {'rowClass': None, 'colClass': None}
+    state['CMActiveStep'] = 1
     conf_matrx_columns_v2 = []
     diagonal_max = 0
     max_value = 0
