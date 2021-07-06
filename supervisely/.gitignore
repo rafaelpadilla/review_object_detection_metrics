@@ -7,4 +7,6 @@ secret_debug.env
 /notebooks/confusion_matrix_explanation.ipynb
 /src/db
 /src/README.md
-/src/trash
+/src/ui/templates/trash
+/src/ui/templates/
+/notebooks/
