@@ -1,19 +1,39 @@
-import numpy as np
-from collections import namedtuple
-import sys
 import supervisely_lib as sly
-import utils
-
+import numpy as np
+import globals as g
+import confusion_matrix
+import per_image_metrics
+import per_class_metrics
+import overall_metrics
+import sys
 sys.path.append('../../')
-from src.bounding_box import BoundingBox, BBType, BBFormat
 from src.evaluators.pascal_voc_evaluator import get_pascalvoc_metrics
 from src.utils.enumerators import MethodAveragePrecision
 
-result = namedtuple('Result', ['TP', 'FP', 'NPOS', 'Precision', 'Recall', 'AP'])
+# import utils
+# from src.bounding_box import BoundingBox, BBType, BBFormat
 
-table_classes_columns = ['className', 'TP', 'FP', 'npos', 'Recall', 'Precision', 'AP']
-image_columns = ['SRC_ID', 'DST_ID', "dataset_name", "name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
-dataset_and_project_columns = ["name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
+
+def init(data, state):
+    confusion_matrix.init(data, state)
+    per_image_metrics.init(data, state)
+    per_class_metrics.init(data, state)
+    overall_metrics.init(data, state)
+    g.my_app.compile_template(g.root_source_dir)
+
+
+@g.my_app.callback("back_to_settings")
+@sly.timeit
+def back_to_settings(api: sly.Api, task_id, context, state, app_logger):
+    fields = [
+        # {"field": "state.activeName", "payload": 'Settings'}
+        {"field": "state.GlobalActiveStep", "payload": 2},
+        {"field": "state.GlobalSettingsCollapsed", "payload": False},
+        {"field": "state.GlobalMetricsCollapsed", "payload": True},
+        {"field": "state.GlobalMetricsDisabled", "payload": True},
+    ]
+    api.app.set_fields(task_id, fields)
+    confusion_matrix.reset_cm_state_to_default(api, task_id)
 
 
 def dict2tuple(dictionary, target_class, round_level=4):
@@ -35,13 +55,13 @@ def dict2tuple(dictionary, target_class, round_level=4):
                 true__positive += dict__['total TP']
                 num__positives += dict__['total positives']
         except:
-            return result(0, 0, 0, 0, 0, 0)
+            return g.result(0, 0, 0, 0, 0, 0)
         average_precision = round(dictionary['mAP'], round_level)
         recall = round(true__positive / num__positives, round_level) if num__positives != 0 else 0
         precision = round(np.divide(true__positive, (false_positive + true__positive)), round_level) \
             if false_positive + true__positive != 0 else 0
 
-    return result(str(int(true__positive)), str(int(false_positive)), str(int(num__positives)),
+    return g.result(str(int(true__positive)), str(int(false_positive)), str(int(num__positives)),
                   str(precision), str(recall), str(average_precision))
 
 
