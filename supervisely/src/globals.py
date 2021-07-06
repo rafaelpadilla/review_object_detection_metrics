@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 import sys
 import supervisely_lib as sly
-
+from collections import namedtuple
 
 my_app = sly.AppService()
 team_id = int(os.environ['context.teamId'])
@@ -42,4 +42,9 @@ ui_sources_dir = os.path.join(source_path, "ui")
 sys.path.append(ui_sources_dir)
 sly.logger.info(f"Added to sys.path: {ui_sources_dir}")
 
+
+result = namedtuple('Result', ['TP', 'FP', 'NPOS', 'Precision', 'Recall', 'AP'])
+table_classes_columns = ['className', 'TP', 'FP', 'npos', 'Recall', 'Precision', 'AP']
+image_columns = ['SRC_ID', 'DST_ID', "dataset_name", "name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
+dataset_and_project_columns = ["name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
 
