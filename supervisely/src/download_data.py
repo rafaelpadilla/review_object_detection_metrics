@@ -220,6 +220,7 @@ def download_and_prepare_data(classes_names, percentage, confidence_threshold):
     db.close()
     filtered_classes = class_filtering(dataset=current_dataset, classes_names=classes_names)
     filtered_confidences = confidence_filtering(dataset=filtered_classes, confidence_threshold=confidence_threshold)
+    return filtered_confidences
 
 
 def get_prepared_data(api: sly.Api, src_list, dst_list, encoder):
@@ -241,40 +242,6 @@ def get_prepared_data(api: sly.Api, src_list, dst_list, encoder):
             pred.append([pr_image['image_id'], pr_image['image_name'], pr_image['full_storage_url'],
                          dataset_names[pr_image['dataset_id']], pred_boxes])
     return gts, pred, dataset_names
-
-
-@g.my_app.callback("evaluate_button_click")
-@sly.timeit
-def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
-    global cm, gts, pred, dataset_names, previous_percentage
-    selected_classes = state['selectedClasses']
-    percentage = state['samplePercent']
-    iou_threshold = state['IoUThreshold'] / 100
-    score_threshold = state['ScoreThreshold'] / 100
-
-    if selected_classes:
-        if percentage != previous_percentage:
-            download_and_prepare_data(selected_classes, percentage=percentage, confidence_threshold=score_threshold)
-            previous_percentage = percentage
-
-        if filtered_confidences['gt_images'] and filtered_confidences['pred_images']:
-            confusion_matrix.set_data(gt=filtered_confidences['gt_images'], det=filtered_confidences['pred_images'])
-            confusion_matrix.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
-            confusion_matrix.update()
-            cm = confusion_matrix.cm_dict
-
-            gts, pred, dataset_names = get_prepared_data(api=g.api,
-                                                         src_list=filtered_confidences['gt_images'],
-                                                         dst_list=filtered_confidences['pred_images'],
-                                                         encoder=RepoBoundingBox)
-            method = metrics.MethodAveragePrecision.EVERY_POINT_INTERPOLATION
-
-            overall_metrics.calculate_overall_metrics(api, task_id, gts, pred, g.pred_project_info.name, method,
-                                                      iou_threshold, score_threshold)
-            per_image_metrics.calculate_per_image_metrics(api, task_id, gts, pred, method,
-                                                          iou_threshold, score_threshold)
-            per_class_metrics.calculate_per_classes_metrics(api, task_id, gts, pred, g.pred_project_info.name, method,
-                                                            iou_threshold, score_threshold)
 
 
 @g.my_app.callback("view_class")
