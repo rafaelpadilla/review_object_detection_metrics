@@ -1,9 +1,14 @@
-# from supervisely_lib.app.widgets.sly_table import SlyTable
-from widgets.sly_table import SlyTable
+import supervisely_lib as sly
 import globals as g
-import metrics
+from widgets.sly_table import SlyTable
+from widgets.compare_gallery import CompareGallery
 
-image_sly_table = SlyTable(g.api, g.task_id, "data.perImageTable", metrics.image_columns)
+import metrics
+import ui_utils
+# from supervisely_lib.app.widgets.sly_table import SlyTable
+
+image_sly_table = SlyTable(g.api, g.task_id, "data.perImageTable", g.image_columns)
+gallery_per_image = CompareGallery(g.task_id, g.api, 'data.perImage', g.aggregated_meta)
 
 
 def init(data, state):
@@ -18,3 +23,8 @@ def calculate_per_image_metrics(api, task_id, gts, pred, method, iou_threshold, 
     image_sly_table.set_data(images_pd_data)
     image_sly_table.update()
 
+
+@g.my_app.callback("show_images_per_image")
+@sly.timeit
+def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
+    ui_utils.show_images_body(api, task_id, state, gallery_per_image, "data.perImageGalleryTitle")
