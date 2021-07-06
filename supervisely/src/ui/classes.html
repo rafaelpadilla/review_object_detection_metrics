@@ -1,5 +1,10 @@
-<sly-card class="mt15" title="Classes" subtitle="Choose classes that will be used for performance analysis.
-Unmatched classes won't be used in future computations">
+<sly-card title="Classes"
+          subtitle="Choose classes that will be used for performance analysis. Unmatched classes won't be used in future computations"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.GlobalClassesCollapsed"
+          :disabled="{disabled: state.GlobalClassesDisabled, message: 'Smthg wrong'}"
+          ref="GlobalStep1"
+>
     <el-table
             class="ultra-table"
             :data="data.classesTable"
@@ -41,4 +46,5 @@ Unmatched classes won't be used in future computations">
             </template>
         </el-table-column>
     </el-table>
+    <el-button class="regular" type="primary" @click="command('set_classes')">Set classes</el-button>
 </sly-card>
