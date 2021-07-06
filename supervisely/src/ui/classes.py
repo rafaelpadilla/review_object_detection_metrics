@@ -1,5 +1,6 @@
 import supervisely_lib as sly
 import globals as g
+import confusion_matrix
 
 
 def _process_items(collection1, collection2, diff_msg="Automatic conversion to rectangle format"):
@@ -80,3 +81,20 @@ def init(data, state):
     classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
     data["classesTable"] = classes_table
     state["selectedClasses"] = []
+    state['GlobalClassesCollapsed'] = False
+    state['GlobalClassesDisabled'] = False
+
+
+@g.my_app.callback("set_classes")
+@sly.timeit
+def set_classes(api: sly.Api, task_id, context, state, app_logger):
+    fields = [
+        {"field": "state.activeName", "payload": 'Settings'},
+        {"field": "state.GlobalClassesCollapsed", "payload": True},
+        {"field": "state.GlobalActiveStep", "payload": 2},
+        {"field": "state.GlobalSettingsCollapsed", "payload": False},
+        {"field": "state.GlobalSettingsDisabled", "payload": False},
+        {"field": "state.GlobalShowSettings", "payload": True},
+    ]
+    api.app.set_fields(task_id, fields)
+    confusion_matrix.reset_cm_state_to_default(api, task_id)
