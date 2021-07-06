@@ -1,0 +1,25 @@
+<sly-card title="Metrics"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.GlobalMetricsCollapsed"
+          :disabled="{disabled: state.GlobalMetricsDisabled, message: 'Please, select classes and manage settings'}"
+          ref="GlobalStep3"
+>
+    <div class="fflex">
+        <el-button class="regular" type="primary" @click="command('back_to_settings')">Back to settings</el-button>
+        <el-button class="regular" type="primary" @click="command('back_to_classes')">Back to classes</el-button>
+    </div>
+    <el-tabs type="card" class="mt10">
+        <el-tab-pane label="Metrics">
+            {% include 'supervisely/src/ui/confusionmatrix.html' %}
+        </el-tab-pane>
+        <el-tab-pane label="Per Images">
+            {% include 'supervisely/src/ui/per_image_metrics.html' %}
+        </el-tab-pane>
+        <el-tab-pane label="Per Classes">
+            {% include 'supervisely/src/ui/per_class_metrics.html' %}
+        </el-tab-pane>
+        <el-tab-pane label="Overall">
+            {% include 'supervisely/src/ui/overall_metrics.html' %}
+        </el-tab-pane>
+    </el-tabs>
+</sly-card>
