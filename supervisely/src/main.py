@@ -16,10 +16,9 @@ def main():
 
     data = {}
     state = {}
-    g.my_app.compile_template(g.root_source_dir)
-
     # init data for UI widgets
     ui.init(data, state)
+    g.my_app.compile_template(g.root_source_dir)
     g.my_app.run(data=data, state=state)
 
 
