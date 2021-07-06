@@ -1,20 +1,15 @@
 <div>
     {% include 'supervisely/src/ui/input.html' %}
-    {% include 'supervisely/src/ui/classes.html' %}
     {% include 'supervisely/src/ui/datasets.html' %}
-    {% include 'supervisely/src/ui/settings.html' %}
-    <el-collapse v-model="state.activeName" accordion>
-        <el-collapse-item title="Confusion Matrix" name="1">
-            {% include 'supervisely/src/ui/confusionmatrix.html' %}
-        </el-collapse-item>
-        <el-collapse-item title="Per Images" name="2">
-            {% include 'supervisely/src/ui/per_image_metrics.html' %}
-        </el-collapse-item>
-        <el-collapse-item title="Per Classes" name="3">
-            {% include 'supervisely/src/ui/per_class_metrics.html' %}
-        </el-collapse-item>
-        <el-collapse-item title="Overall" name="4">
-            {% include 'supervisely/src/ui/overall_metrics.html' %}
-        </el-collapse-item>
-    </el-collapse>
+    <sly-stepper :active="state.GlobalActiveStep" class="mt10">
+        <sly-stepper-item>
+            {% include 'supervisely/src/ui/classes.html' %}
+        </sly-stepper-item>
+        <sly-stepper-item>
+            {% include 'supervisely/src/ui/settings.html' %}
+        </sly-stepper-item>
+        <sly-stepper-item>
+           {% include 'supervisely/src/ui/metrics.html' %}
+        </sly-stepper-item>
+    </sly-stepper>
 </div>
