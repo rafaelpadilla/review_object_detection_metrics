@@ -1,19 +1,22 @@
-import numpy as np
 import supervisely_lib as sly
 import globals as g
 import metrics
-# from supervisely_lib.app.widgets.sly_table import SlyTable
 from widgets.sly_table import SlyTable
-image_sly_table = SlyTable(g.api, g.task_id, "data.perClassTable", metrics.image_columns)
+from widgets.compare_gallery import CompareGallery
+import ui_utils
+# from supervisely_lib.app.widgets.sly_table import SlyTable
+
+image_sly_table = SlyTable(g.api, g.task_id, "data.perClassTable", g.image_columns)
+gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
 
 
 def init(data, state):
     state['perClassActiveStep'] = 1
     data['perClassExtendedTable'] = []
-    data['perClassTable'] = {"columns": metrics.table_classes_columns, "data": []}
+    data['perClassTable'] = {"columns": g.table_classes_columns, "data": []}
     data['perClassLineChartOptions'] = {"title": "Precision/Recall curve", "showLegend": True}
     data['perClassLineChartSeries'] = []
-    data['perClassSingleImagesTable'] = {"columns": metrics.image_columns, "data": []}
+    data['perClassSingleImagesTable'] = {"columns": g.image_columns, "data": []}
     data['perClass'] = {}
     data['perClassGalleryTitle'] = 'Please, select row from ImageTable.'
     note_text = '''There may be differences between the Class table and the Image table. 
@@ -110,5 +113,17 @@ def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_pro
                                                                 "data": class_images_pd_data}},
         {"field": "data.perClassLineChartSeries", "payload": target_chart},
         {"field": "data.perClassSelectedClsTitle", "payload": perClassSelectedClsTitle}
+    ]
+    api.app.set_fields(task_id, fields)
+
+
+@g.my_app.callback("show_images_per_class")
+@sly.timeit
+def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
+    selected_image_classes = state['selectedClassName']
+    ui_utils.show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle",
+                              selected_image_classes)
+    fields = [
+        {"field": "state.perClassActiveStep", "payload": 3}
     ]
     api.app.set_fields(task_id, fields)
