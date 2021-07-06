@@ -3,21 +3,21 @@ from widgets.sly_table import SlyTable
 import globals as g
 import metrics
 
-prj_sly_table = SlyTable(g.api, g.task_id, "data.tableProjects", metrics.dataset_and_project_columns)
-dataset_sly_table = SlyTable(g.api, g.task_id, "data.tableDatasets", metrics.dataset_and_project_columns)
+prj_sly_table = SlyTable(g.api, g.task_id, "data.tableProjects", g.dataset_and_project_columns)
+dataset_sly_table = SlyTable(g.api, g.task_id, "data.tableDatasets", g.dataset_and_project_columns)
 
 
 def init(data, state):
     data['tableProjects'] = {
-        "columns": metrics.dataset_and_project_columns,
+        "columns": g.dataset_and_project_columns,
         "data": []
     }
     data['tableDatasets'] = {
-        "columns": metrics.dataset_and_project_columns,
+        "columns": g.dataset_and_project_columns,
         "data": []
     }
     data['tableImages'] = {
-        "columns": metrics.image_columns,
+        "columns": g.image_columns,
         "data": []
     }
 
