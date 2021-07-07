@@ -53,8 +53,19 @@
         </div>
     </sly-field>
     <div class="fflex">
-        <el-button v-loading="state.loading" class="regular" type="primary" @click="command('evaluate_button_click')">Calculate metrics</el-button>
-        <el-button class="regular" :disabled="state.settingsDisableBackBtn" type="primary" @click="command('back_to_classes')">Back to Classes</el-button>
+        <el-button v-loading="state.loading"
+                   class="regular"
+                   type="primary"
+                   @click="command('evaluate_button_click')">
+            Download
+        </el-button>
+<!--        <el-button class="regular"-->
+<!--                   :disabled="state.settingsDisableBackBtn"-->
+<!--                   type="warning"-->
+<!--                   :plain="true"-->
+<!--                   v-if="data.doneSettings && !state.loading"-->
+<!--                   @click="command('back_to_classes')">-->
+<!--            Previous step-->
+<!--        </el-button>-->
     </div>
-
 </sly-card>
