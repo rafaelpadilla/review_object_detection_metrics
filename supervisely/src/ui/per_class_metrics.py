@@ -1,9 +1,11 @@
 import supervisely_lib as sly
 import globals as g
 import metrics
+import settings
 from widgets.sly_table import SlyTable
 from widgets.compare_gallery import CompareGallery
 import ui_utils
+
 # from supervisely_lib.app.widgets.sly_table import SlyTable
 
 image_sly_table = SlyTable(g.api, g.task_id, "data.perClassTable", g.image_columns)
@@ -19,7 +21,7 @@ def init(data, state):
     data['perClassSingleImagesTable'] = {"columns": g.image_columns, "data": []}
     data['perClass'] = {}
     data['perClassGalleryTitle'] = 'Please, select row from ImageTable.'
-    note_text = '''There may be differences between the Class table and the Image table. 
+    note_text = '''There may be differences between the Per Class Statistic table and the Image Statistic Table. 
     Such a situation is possible due to since when considering one single image, we do not pay 
     attention to selected class errors in other images from the set, but when evaluating the entire set, 
     these errors are immediately accessible.'''
@@ -28,9 +30,13 @@ def init(data, state):
         "options": {
             "name": "Important Note",
             "type": "note"
-            }
+        }
     }
     data['perClassSelectedClsTitle'] = 'Class is not selected'
+    state['perClassActiveNames'] = []
+    state['perClassShow1'] = False
+    state['perClassShow2'] = False
+    state['perClassShow3'] = False
 
 
 def calculate_per_classes_metrics(api, task_id, src_list, dst_list, dst_project_name, method,
@@ -71,7 +77,8 @@ def expand_line(data, class_name):
 
 def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_project, iou_threshold, score_threshold):
     if class_name != 'ALL':
-        images_names_with_target_class = list(set(expand_line(src_list, class_name) + expand_line(dst_list, class_name)))
+        images_names_with_target_class = list(
+            set(expand_line(src_list, class_name) + expand_line(dst_list, class_name)))
         row_indexes1 = [id_ for id_, line in enumerate(src_list) if line[1] in images_names_with_target_class]
         row_indexes2 = [id_ for id_, line in enumerate(dst_list) if line[1] in images_names_with_target_class]
         row_indexes = list(set(row_indexes1 + row_indexes2))
@@ -82,16 +89,15 @@ def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_pro
         single_class_src_list_np = src_list
         single_class_dst_list_np = dst_list
 
-    class_images_pd_data, \
-    class_full_logs = metrics.calculate_image_mAP(single_class_src_list_np, single_class_dst_list_np,
-                                                  metrics.MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
-                                                  target_class=class_name,
-                                                  iou=iou_threshold, score=score_threshold,
-                                                  need_rez=True)
-    projects_pd_data, \
-    prj_rez = metrics.calculate_project_mAP(single_class_src_list_np, single_class_dst_list_np,
-                                            metrics.MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
-                                            dst_project, iou=iou_threshold, score=score_threshold)
+    class_images_pd_data, class_full_logs = metrics.calculate_image_mAP(single_class_src_list_np,
+                                                                        single_class_dst_list_np,
+                                                                        metrics.MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+                                                                        target_class=class_name,
+                                                                        iou=iou_threshold, score=score_threshold,
+                                                                        need_rez=True)
+    projects_pd_data, prj_rez = metrics.calculate_project_mAP(single_class_src_list_np, single_class_dst_list_np,
+                                                              metrics.MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+                                                              dst_project, iou=iou_threshold, score=score_threshold)
     prj_viz_data = prj_rez['per_class']
     line_chart_series, table_classes = metrics.line_chart_builder(prj_viz_data)
 
@@ -109,10 +115,30 @@ def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_pro
 
     perClassSelectedClsTitle = 'Selected class is "{}"'.format(class_name)
     fields = [
-        {"field": "data.perClassSingleImagesTable", "payload": {"columns": metrics.image_columns,
+        {"field": "data.perClassSingleImagesTable", "payload": {"columns": g.image_columns,
                                                                 "data": class_images_pd_data}},
         {"field": "data.perClassLineChartSeries", "payload": target_chart},
         {"field": "data.perClassSelectedClsTitle", "payload": perClassSelectedClsTitle}
+    ]
+    api.app.set_fields(task_id, fields)
+
+
+@g.my_app.callback("view_class")
+@sly.timeit
+def view_class(api: sly.Api, task_id, context, state, app_logger):
+    print('state =', state)
+    class_name = state["selectedClassName"]
+    iou_threshold = state["IoUThreshold"] / 100
+    score_threshold = state['ScoreThreshold'] / 100
+    selected_class_metrics(api, task_id, settings.gts, settings.pred, class_name, g.pred_project_info.name,
+                           iou_threshold, score_threshold)
+    fields = [
+        {"field": "state.perClassActiveStep", "payload": 2},
+        {"field": "state.perClassActiveNames", "payload": ['per_class_table', 'per_class_image_statistic_table']},
+        {"field": "state.perClassShow2", "payload": True},
+        {"field": "state.perClassShow3", "payload": False},
+
+        {"field": "data.perClassImageStatTableInfo", "payload": "Image Metrics Table and Line Chart for selected class: {}".format(class_name)},
     ]
     api.app.set_fields(task_id, fields)
 
@@ -124,6 +150,10 @@ def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
     ui_utils.show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle",
                               selected_image_classes)
     fields = [
-        {"field": "state.perClassActiveStep", "payload": 3}
+        {"field": "state.perClassActiveStep", "payload": 3},
+        {"field": "state.perClassActiveNames",
+         "payload": ['per_class_table', 'per_class_image_statistic_table', 'per_class_gallery']},
+        {"field": "state.perClassShow2", "payload": True},
+        {"field": "state.perClassShow3", "payload": True},
     ]
     api.app.set_fields(task_id, fields)
