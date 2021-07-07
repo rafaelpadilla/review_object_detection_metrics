@@ -142,7 +142,7 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
                                image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
     gallery_template.update()
 
-    text = 'Grid gallery for {}'.format(image_name)
+    text = 'Gallery for {}'.format(image_name)
     fields = [
         {"field": v_model, "payload": text},
     ]
