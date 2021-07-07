@@ -15,7 +15,6 @@ def init(data, state):
     settings.init(data, state)
     metrics.init(data, state)
 
-
     # for collapses
     state['activeName'] = "Classes"
     # for stepper
