@@ -1,50 +1,67 @@
-<sly-stepper :active="state.perClassActiveStep">
-    <sly-stepper-item>
-        <el-table :data="data.perClassExtendedTable" border>
-            <el-table-column prop="className" label="name" sortable></el-table-column>
-            <el-table-column prop="TP" label="TP" sortable></el-table-column>
-            <el-table-column prop="FP" label="FP" sortable></el-table-column>
-            <el-table-column prop="npos" label="Count" sortable></el-table-column>
-            <el-table-column prop="Recall" label="R" sortable></el-table-column>
-            <el-table-column prop="Precision" label="P" sortable></el-table-column>
-            <el-table-column prop="AP" label="AP" sortable></el-table-column>
-            <el-table-column prop="tag" label="Action">
-                <template slot-scope="{ row }">
-                    <el-button
-                            class="regular" type="primary" size="mini"
-                            @click="state.selectedClassName = row.className; command('view_class')">
-                        Preview
-                    </el-button>
-                </template>
-            </el-table-column>
-        </el-table><!--class Table with Evaluate buttons-->
-    </sly-stepper-item>
-    <sly-stepper-item>
-        <sly-field class="mt15"
-                  :title="data.perClassSelectedClsTitle"
-                  description="Additional Info for selected class"
-        >
+<el-collapse v-model="state.perClassActiveNames" style="background-color: #E1E1E0;">
+    <el-collapse-item title="Per Class Metrics" name="per_class_table">
+        <div v-if="!state.perClassShow1">Please, select Classes and manage Settings.</div>
+        <sly-field v-if="state.perClassShow1"
+                   title="Per Class Metrics Table"
+                   description="Select Class in Class Metrics Table to preview Images with selected class original and detected objects.">
+            <el-table :data="data.perClassExtendedTable" border>
+                <el-table-column prop="className" label="name" sortable></el-table-column>
+                <el-table-column prop="TP" label="TP" sortable></el-table-column>
+                <el-table-column prop="FP" label="FP" sortable></el-table-column>
+                <el-table-column prop="npos" label="Count" sortable></el-table-column>
+                <el-table-column prop="Recall" label="R" sortable></el-table-column>
+                <el-table-column prop="Precision" label="P" sortable></el-table-column>
+                <el-table-column prop="AP" label="AP" sortable></el-table-column>
+                <el-table-column prop="tag" label="Action">
+                    <template slot-scope="{ row }">
+                        <el-button
+                                class="regular" type="primary" size="mini"
+                                @click="state.selectedClassName = row.className; command('view_class')">
+                            Preview
+                        </el-button>
+                    </template>
+                </el-table-column>
+            </el-table><!--class Table with Evaluate buttons-->
+        </sly-field>
+    </el-collapse-item>
+    <el-collapse-item title="Image Metrics Table with Chart" name="per_class_image_statistic_table">
+        <div v-if="!state.perClassShow2">Please, select Class.</div>
+        <sly-field v-if="state.perClassShow2"
+                   :title="data.perClassImageStatTableInfo"
+                   description="Select row in Image Metrics Table to preview Images with original annotations and Detections.">
             <sly-notification class="mt10"
                               :options="data.notification.options"
                               :content="data.notification.content">
 
             </sly-notification>
-        <!--    <sly-table :content="data.perClassTable"></sly-table>-->
-            <sly-line-chart style="flex: 1; align-right: flex-start; width: 450px"
-                            :options.sync="data.perClassLineChartOptions"
-                            :content="data.perClassLineChartSeries">
-            </sly-line-chart>
-            <sly-table v-loading="data.loading"
-                       :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
-                       :content="data.perClassSingleImagesTable"
-                       @input="state.selection = $event; command('show_images_per_class')"
-            ></sly-table>
-        </sly-field><!--selected class info-->
-    </sly-stepper-item>
-    <sly-stepper-item>
-        <sly-field :title="data.perClassGalleryTitle"
-                   description="Original Ground Truth Annotations vs Detections">
-            <sly-grid-gallery v-if="state.selection.selectedColumnName"
+            <div class="fflex">
+                <!--            style="flex: 1; align-left: flex-start;"-->
+                <sly-table v-loading="data.loading" style="width: 55%"
+                           :options="{perPage: 5, pageSizes: [5, 10, 15, 20, 25, 50, 100], fixColumns: 1}"
+                           :content="data.perClassSingleImagesTable"
+                           @input="state.selection = $event; command('show_images_per_class')"
+                ></sly-table>
+                <!--            class="ml10 mr10"-->
+                <!--            style="width: 450px"-->
+                <!--            style="flex: 1; align-left: flex-start; width: 450px"-->
+                <sly-line-chart class="mt65 ml10" style="width: 45%"
+                                :options.sync="data.perClassLineChartOptions"
+                                :content="data.perClassLineChartSeries">
+                </sly-line-chart>
+            </div>
+        </sly-field>
+    </el-collapse-item>
+    <el-collapse-item title="Grid Gallery" name="per_class_gallery">
+        <div v-if="state.perClassShow1 && !state.perClassShow2">
+            Please, select Class.
+        </div>
+        <div v-if="state.perClassShow1 && state.perClassShow2 && !state.perClassShow3">
+            Please, select row in Image Statistic Table.
+        </div>
+        <sly-field v-if="state.selection.selectedColumnName && state.perClassShow3"
+                   :title="data.perClassGalleryTitle"
+                   description="Original annotations VS Detections">
+            <sly-grid-gallery v-if="state.selection.selectedColumnName && state.perClassShow3"
                               :content="data.perClass.content"
                               :options="data.perClass.options">
                 <template v-slot:card-footer="{ annotation }">
@@ -54,8 +71,5 @@
                 </template>
             </sly-grid-gallery>
         </sly-field>
-    </sly-stepper-item>
-</sly-stepper>
-
-
-
+    </el-collapse-item>
+</el-collapse>
