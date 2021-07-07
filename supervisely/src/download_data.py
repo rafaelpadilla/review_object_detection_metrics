@@ -5,7 +5,7 @@ import supervisely_lib as sly
 import globals as g
 import ui
 from src.bounding_box import BoundingBox as RepoBoundingBox, BBType
-from supervisely.src.ui import metrics, overall_metrics, per_image_metrics, per_class_metrics
+# from supervisely.src.ui import metrics, overall_metrics, per_image_metrics, per_class_metrics
 # from supervisely_lib.app.widgets.confusion_matrix import ConfusionMatrix, plt2bb
 from utils import plt2bb
 from widgets.confusion_matrix import ConfusionMatrix
@@ -157,7 +157,6 @@ def download(image_dict, percentage, cache, batch_size=10, show_info=False):
         return intersected_datasets
 
     def get_random_sample(image_dict, intersected_datasets, percentage):
-
         def get_sample_size(dataset_length, percentage):
             sample_size = int(np.ceil(dataset_length / 100 * percentage))
             return sample_size
@@ -214,7 +213,6 @@ def download(image_dict, percentage, cache, batch_size=10, show_info=False):
 
 
 def download_and_prepare_data(classes_names, percentage, confidence_threshold):
-    global current_dataset, filtered_classes, filtered_confidences
     db = shelve.open(filename='db', writeback=True)
     current_dataset = download(image_dict=ui.datasets.image_dict, percentage=percentage, cache=db)
     db.close()
@@ -244,28 +242,8 @@ def get_prepared_data(api: sly.Api, src_list, dst_list, encoder):
     return gts, pred, dataset_names
 
 
-@g.my_app.callback("view_class")
-@sly.timeit
-def view_class(api: sly.Api, task_id, context, state, app_logger):
-    print('state =', state)
-    class_name = state["selectedClassName"]
-    iou_threshold = state["IoUThreshold"] / 100
-    score_threshold = state['ScoreThreshold'] / 100
-    per_class_metrics.selected_class_metrics(api, task_id, gts, pred, class_name, g.pred_project_info.name,
-                                             iou_threshold, score_threshold)
-    fields = [
-        {"field": "state.perClassActiveStep", "payload": 2}
-    ]
-    api.app.set_fields(task_id, fields)
-
-
 total_image_num = dict()
-current_dataset = dict()
-filtered_classes = dict()
-filtered_confidences = dict()
-cm = dict()
-gts = {}
-pred = {}
-dataset_names = {}
-previous_percentage = 0
-confusion_matrix = ConfusionMatrix(api=g.api, task_id=g.task_id, v_model='data.slyConfusionMatrix')
+
+# dataset_names = {}
+# previous_percentage = 0
+# confusion_matrix = ConfusionMatrix(api=g.api, task_id=g.task_id, v_model='data.slyConfusionMatrix')
