@@ -95,6 +95,10 @@ def set_classes(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.GlobalSettingsCollapsed", "payload": False},
         {"field": "state.GlobalSettingsDisabled", "payload": False},
         {"field": "state.GlobalShowSettings", "payload": True},
+
+        {"field": "state.GlobalMetricsCollapsed", "payload": True},
+        {"field": "state.GlobalMetricsDisabled", "payload": True},
+        {"field": "state.GlobalShowMetrics", "payload": False},
     ]
     api.app.set_fields(task_id, fields)
     confusion_matrix.reset_cm_state_to_default(api, task_id)
