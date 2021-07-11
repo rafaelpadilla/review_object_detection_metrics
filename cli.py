@@ -43,8 +43,8 @@ def parseArgs():
     parser.add_argument('-t', '--threshold', type=float, default=0.5)
     
     # extra data (graphs and etc.)
-    parser.add_argument('--prgraph', '-pr', action='store_true')
-    parser.add_argument('-sp', '--savepath', type=str, required=False, default="./results/")
+    parser.add_argument('--plot', '-p', action='store_true')
+    parser.add_argument('--save_path', '-sp', type=str, required=False, default="./results/")
     
     # TODO: Add the same dataset analysis seen in the GUI:
     #parser.add_argument('--info', action='store_true')
@@ -61,7 +61,7 @@ def verifyArgs(args):
     if args.threshold > 1 or args.threshold < 0:
         raise Exception('Incorrect range for threshold (0-1)')
 
-    if args.prgraph and args.savepath == '':
+    if args.plot and args.save_path == '':
         raise Exception("Precision-Recall graph specified but no save path given!")
 
     if args.format_gt == 'voc' and args.names == '':
@@ -78,51 +78,13 @@ def verifyArgs(args):
     if args.names == '':
         logging.warning("Names property empty so assuming detection format is class_id based.")
 
-    if not os.path.exists(args.savepath):
-        logging.warning("Savepath directory %s is not found. Attempting to create folder"%(args.savepath))
+    if not os.path.exists(args.save_path):
+        logging.warning("Savepath directory %s is not found. Attempting to create folder"%(args.save_path))
         try:
-            os.mkdir(args.savepath)
+            os.mkdir(args.save_path)
         except:
             logging.error("Could not create directory! Exiting...")
             raise Exception()
-
-
-# TODO: Check if the plotting function is redundant for COCO eval
-def plot_coco_pr_graph(results, mAP=None, ap50=None, savePath=None, showGraphic=True):
-    result = None
-    plt.close()
-    for classId, result in results.items():
-        if result is None:
-            raise IOError(f'Error: Class {classId} could not be found.')
-
-        if result['AP'] != None:
-            precision = result['interpolated precision']
-            recall = result['interpolated recall']
-            plt.plot(recall, precision, label=f'{classId}')
-        else:
-            logging.warning(f"Class {classId} does not have results")
-    
-    plt.xlabel('recall')
-    plt.ylabel('precision')
-    plt.xlim([-0.1, 1.1])
-    plt.ylim([-0.1, 1.1])
-    
-    if mAP and ap50:
-        map_str = "{0:.2f}%".format(mAP * 100)
-        ap_str = "{0:.2f}%".format(ap50 * 100)
-        plt.title(f'Precision x Recall curve, AP={ap_str}, AP @ 0.5={map_str}')
-    else:
-        plt.title('Precision x Recall curve')
-
-    plt.legend(shadow=True)
-    plt.grid()
-    
-    if savePath is not None:
-        plt.savefig(os.path.join(savePath, 'all_classes.png'))
-    if showGraphic is True:
-        plt.show()
-        plt.pause(0.05)
-
 
 def __cli__(args):
 
@@ -168,7 +130,7 @@ def __cli__(args):
             # x,y,right,bottom
             BB_FORMAT = BBFormat.XYX2Y2
         else:
-            raise Exception("%s is not a valid detection annotation format"%args.anno_det)
+            raise Exception("%s is not a valid detection annotation format"%args.format_det)
     
         if args.coord_det == 'abs':
             COORD_TYPE = CoordinatesType.ABSOLUTE
@@ -185,8 +147,12 @@ def __cli__(args):
             with open(args.names, 'r') as r:
                 names = list(map(str.strip, r.readlines()))
                 for det in det_anno:
-                    _out = names[int(det._class_id)]
-                    det._class_id = _out
+                    try:
+                        _index = int(det._class_id)
+                        _out = names[_index]
+                        det._class_id = _out
+                    except ValueError:
+                        print("Detection files have class IDs as integers!")
 
     # print out results of annotations loaded:
     print("%d ground truth bounding boxes retrieved"%(len(gt_anno)))
@@ -220,13 +186,12 @@ def __cli__(args):
         print("Class APs:")
         for item in coco_out.items():
             if item[1]['AP'] != None:
-                print("%s AP50: %f\n"%(item[0], item[1]['AP']))
+                print("%s AP50: %f"%(item[0], item[1]['AP']))
             else:
                 logging.warning('AP for %s is None'%(item[0]))
 
-        if args.prgraph:
+        if args.plot:
             logging.warning("Graphing precision-recall is not supported!")
-            #plot_coco_pr_graph(coco_out, mAP=coco_sum['AP50'], ap50=coco_sum['AP'], savePath=args.savepath, showGraphic=False)
         
         return coco_sum
 
@@ -243,8 +208,8 @@ def __cli__(args):
             else:
                 logging.warning('AP for %s is None'%(class_item[0]))
 
-        if args.prgraph:
-            pascal_voc_evaluator.plot_precision_recall_curve(voc_sum['per_class'], mAP=voc_sum['mAP'], savePath=args.savepath, showGraphic=False)
+        if args.plot:
+            pascal_voc_evaluator.plot_precision_recall_curve(voc_sum['per_class'], mAP=voc_sum['mAP'], savePath=args.save_path, showGraphic=False)
         return voc_sum
 
     # EVERY POINT INTERPOLATION:
@@ -260,8 +225,8 @@ def __cli__(args):
             else:
                 logging.warning('AP for %s is None'%(class_item[0]))
         
-        if args.prgraph:
-            pascal_voc_evaluator.plot_precision_recall_curve(voc_sum['per_class'], mAP=voc_sum['mAP'], savePath=args.savepath, showGraphic=False)
+        if args.plot:
+            pascal_voc_evaluator.plot_precision_recall_curve(voc_sum['per_class'], mAP=voc_sum['mAP'], savePath=args.save_path, showGraphic=False)
         return voc_sum
     
     # SST METRIC:

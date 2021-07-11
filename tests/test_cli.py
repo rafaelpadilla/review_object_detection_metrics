@@ -18,8 +18,8 @@ def test_cli_coco_metric():
     args = parser.parse_args()
 
     # Unused attributes assigned so that they exist in Namespace:
-    args.savepath = False
-    args.prgraph = False
+    args.save_path = False
+    args.plot = False
     args.threshold = 0.5
     args.img = ''
     args.names = ''
@@ -52,8 +52,8 @@ def test_cli_voc_metric():
     args = parser.parse_args()
     
     # Unused attributes assigned so that they exist in Namespace:
-    args.savepath = False
-    args.prgraph = False
+    args.save_path = False
+    args.plot = False
     args.threshold = 0.5
     args.img = ''
     args.names = ''
