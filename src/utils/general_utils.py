@@ -181,7 +181,7 @@ def get_file_name_only(file_path):
     return os.path.splitext(os.path.basename(file_path))[0]
 
 
-def find_file(directory, file_name, match_extension=True):
+def find_file(directory, file_name, match_extension=True, allowed_extensions=[]):
     if os.path.isdir(directory) is False:
         return None
     for dirpath, dirnames, files in os.walk(directory):
@@ -191,7 +191,7 @@ def find_file(directory, file_name, match_extension=True):
             if not match_extension:
                 f1 = os.path.splitext(f1)[0]
                 f2 = os.path.splitext(f2)[0]
-            if f1 == f2:
+            if f1 == f2 and (len(allowed_extensions) == 0 or os.path.splitext(f)[-1].lower() in extensions):
                 return os.path.join(dirpath, os.path.basename(f))
     return None
 

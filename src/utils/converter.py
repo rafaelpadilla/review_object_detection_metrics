@@ -319,12 +319,13 @@ def yolo2bb(annotations_path, images_dir, file_obj_names, bb_type=BBType.GROUND_
         all_classes = [line.replace('\n', '') for line in f]
     # Get annotation files in the path
     annotation_files = _get_annotation_files(annotations_path)
+    image_file_only = annotations_path == images_dir
     # Loop through each file
     for file_path in annotation_files:
         if not validations.is_yolo_format(file_path, bb_types=[bb_type]):
             continue
         img_name = os.path.basename(file_path)
-        img_file = general_utils.find_file(images_dir, img_name, match_extension=False)
+        img_file = general_utils.find_file(images_dir, img_name, match_extension=False, image_file_only=image_file_only)
         img_resolution = general_utils.get_image_resolution(img_file)
         if img_resolution is None:
             print(f'Warning: It was not possible to find the resolution of image {img_name}')
