@@ -191,7 +191,7 @@ def find_file(directory, file_name, match_extension=True, allowed_extensions=[])
             if not match_extension:
                 f1 = os.path.splitext(f1)[0]
                 f2 = os.path.splitext(f2)[0]
-            if f1 == f2 and (len(allowed_extensions) == 0 or os.path.splitext(f)[-1].lower() in extensions):
+            if f1 == f2 and (len(allowed_extensions) == 0 or os.path.splitext(f)[-1].lower() in allowed_extensions):
                 return os.path.join(dirpath, os.path.basename(f))
     return None
 
