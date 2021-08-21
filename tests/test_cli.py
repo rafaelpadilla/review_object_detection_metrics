@@ -22,7 +22,7 @@ def test_cli_coco_metric():
     args.plot = False
     args.threshold = 0.5
     args.img = ''
-    args.names = ''
+    args.name = ''
 
     # Important attributes set for testing:
     args.anno_gt = 'tests/test_coco_eval/gts'
@@ -46,7 +46,6 @@ def test_cli_coco_metric():
     assert abs(res["ARlarge"] - 0.553744) < tol
 
 
-
 def test_cli_voc_metric():
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
@@ -56,7 +55,7 @@ def test_cli_voc_metric():
     args.plot = False
     args.threshold = 0.5
     args.img = ''
-    args.names = ''
+    args.name = ''
     
     # Important attributes set for testing:
     args.anno_gt = './tests/test_case_1/gts/'
@@ -70,13 +69,10 @@ def test_cli_voc_metric():
     expected_APs = {'object': {0.1: 0.3333333333, 0.3: 0.2683982683, 0.5: 0.0303030303, 0.75: 0.0}}
     args.metric='voc2007'
 
-    for idx, iou in enumerate(testing_ious):
+    for iou in testing_ious:
         args.threshold = iou
         results_dict = cli.__cli__(args)
 
-        #results_dict = get_pascalvoc_metrics(
-        #    gts, dets, iou_threshold=iou, method=MethodAveragePrecision.ELEVEN_POINT_INTERPOLATION)
-        
         results = results_dict['per_class']
         for c, res in results.items():
             assert isclose(expected_APs[c][iou], res['AP'])
@@ -85,13 +81,9 @@ def test_cli_voc_metric():
     expected_APs = {'object': {0.1: 0.3371980676, 0.3: 0.2456866804, 0.5: 0.0222222222, 0.75: 0.0}}
     args.metric='voc2012'
     
-    for idx, iou in enumerate(testing_ious):
+    for iou in testing_ious:
         args.threshold = iou
         results_dict = cli.__cli__(args)
-
-        #results_dict = get_pascalvoc_metrics(
-        #    gts, dets, iou_threshold=iou, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION)
-        
         results = results_dict['per_class']
         for c, res in results.items():
             assert isclose(expected_APs[c][iou], res['AP'])
