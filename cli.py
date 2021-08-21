@@ -23,7 +23,7 @@ def parseArgs():
     parser.add_argument('--format_det', type=str) # (either xyrb, xywh, or coco)
     parser.add_argument('--coord_det', type=str)
     parser.add_argument('--metric', type=str)
-    parser.add_argument('--names', '-n', type=str, default='')
+    parser.add_argument('--name', '-n', type=str, default='')
     parser.add_argument('--threshold', '-t', type=float, default=0.5)
     parser.add_argument('--plot', '-p', action='store_true')
     parser.add_argument('--save_path', '-sp', type=str, required=False, default="./results/")
@@ -38,8 +38,8 @@ def verifyArgs(args):
         raise Exception('Incorrect range for threshold (0-1)')
     if args.plot and args.save_path == '':
         raise Exception("Precision-Recall graph specified but no save path given!")
-    if args.format_gt == 'voc' and args.names == '':
-        raise Exception("VOC or ImageNet ground truth format specified, but name file not specified.")
+    if args.format_gt == 'yolo' and args.name == '':
+        raise Exception("The ground truth format specified (%s), requires a name file. Specify with --name."%args.format_gt)
     if 'tube' == args.format_gt != args.format_det:
         raise Exception("Spatio-Temporal Tube AP specified in one format parameter but not other!")
 
@@ -47,7 +47,7 @@ def verifyArgs(args):
         logging.warning("Image path not specified. Assuming path is same as ground truth annotations.")
         args.img = args.anno_gt
 
-    if args.names == '':
+    if args.name == '':
         logging.warning("Names property empty so assuming detection format is class_id based.")
 
     if not os.path.exists(args.save_path):
@@ -74,7 +74,7 @@ def __cli__(args):
     elif args.format_gt == 'openimg':
         gt_anno = converter.openimage2bb(args.anno_gt, args.img)
     elif args.format_gt == 'yolo':
-        gt_anno = converter.yolo2bb(args.anno_gt, args.img, args.names)
+        gt_anno = converter.yolo2bb(args.anno_gt, args.img, args.name)
     elif args.format_gt == 'absolute':
         gt_anno = converter.text2bb(args.anno_gt, img_dir=args.img)
     elif args.format_gt == 'cvat':
@@ -87,7 +87,7 @@ def __cli__(args):
 
     # collect detection truth labels:
     if args.format_det == 'coco':
-        logging.warning("COCO detection format specified. Ignoring 'coord_det'...")
+        logging.warning("COCO detection format specified. Ignoring 'coord_det'")
         det_anno = converter.coco2bb(args.anno_det, bb_type=BBType.DETECTED)
     elif args.format_det == 'tube':
         pass
@@ -109,18 +109,9 @@ def __cli__(args):
             raise Exception("%s is not a valid detection coordinate format"%args.coord_det)
         det_anno = converter.text2bb(args.anno_det, bb_type=BBType.DETECTED, bb_format=BB_FORMAT, type_coordinates=COORD_TYPE, img_dir=args.img)
 
-        # If VOC specified, then switch id based to string for detection bbox:
-        if args.names != '':
-            # if names file not given, assume id-based detection output
-            with open(args.names, 'r') as r:
-                names = list(map(str.strip, r.readlines()))
-                for det in det_anno:
-                    try:
-                        _index = int(det._class_id)
-                        _out = names[_index]
-                        det._class_id = _out
-                    except ValueError:
-                        print("Detection files have class IDs as integers!")
+        # If the gt specified requires names, then switch id based to name:
+        if args.name != '':
+            det_anno = general_utils.replace_id_with_classes(det_anno, args.name)
 
     # print out results of annotations loaded:
     print("%d ground truth bounding boxes retrieved"%(len(gt_anno)))
