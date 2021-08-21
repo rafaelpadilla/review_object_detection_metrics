@@ -16,61 +16,33 @@ import matplotlib.pyplot as plt
 
 def parseArgs():
     parser = argparse.ArgumentParser()
-    # Folder path to annotations
     parser.add_argument('--anno_gt', type=str)
     parser.add_argument('--anno_det', type=str)
-
-    # Folder path to corresponding images:
     parser.add_argument('--img', type=str, required=False)
-    #parser.add_argument('--img_gt', type=str, required=False)
-    #parser.add_argument('--img_det', type=str, required=False)
-
-    # format_gt: as in the application screenshot:
     parser.add_argument('--format_gt', type=str)
-
-    # format_det: shares input from coord (either xyrb, xywh, or coco)
-    parser.add_argument('--format_det', type=str)
-
-    # Absolute or relative (abs, rel)
-    #parser.add_argument('--gtcoord',  type=str)
+    parser.add_argument('--format_det', type=str) # (either xyrb, xywh, or coco)
     parser.add_argument('--coord_det', type=str)
-
-    # Actual computation type:
     parser.add_argument('--metric', type=str)
-    
-    # metadata for metrics (not always needed)
     parser.add_argument('--names', '-n', type=str, default='')
-    parser.add_argument('-t', '--threshold', type=float, default=0.5)
-    
-    # extra data (graphs and etc.)
+    parser.add_argument('--threshold', '-t', type=float, default=0.5)
     parser.add_argument('--plot', '-p', action='store_true')
     parser.add_argument('--save_path', '-sp', type=str, required=False, default="./results/")
-    
-    # TODO: Add the same dataset analysis seen in the GUI:
-    #parser.add_argument('--info', action='store_true')
-    
     return parser.parse_args()
 
 def verifyArgs(args):
     if not os.path.exists(args.anno_gt):
         raise Exception('--anno_gt path does not exist!')
-
     if not os.path.exists(args.anno_det):
         raise Exception('--anno_det path does not exist!')
-
     if args.threshold > 1 or args.threshold < 0:
         raise Exception('Incorrect range for threshold (0-1)')
-
     if args.plot and args.save_path == '':
         raise Exception("Precision-Recall graph specified but no save path given!")
-
     if args.format_gt == 'voc' and args.names == '':
         raise Exception("VOC or ImageNet ground truth format specified, but name file not specified.")
-
     if 'tube' == args.format_gt != args.format_det:
         raise Exception("Spatio-Temporal Tube AP specified in one format parameter but not other!")
 
-    
     if args.img == '':
         logging.warning("Image path not specified. Assuming path is same as ground truth annotations.")
         args.img = args.anno_gt
@@ -79,15 +51,14 @@ def verifyArgs(args):
         logging.warning("Names property empty so assuming detection format is class_id based.")
 
     if not os.path.exists(args.save_path):
-        logging.warning("Savepath directory %s is not found. Attempting to create folder"%(args.save_path))
+        logging.warning("save-path directory %s is not found. Attempting to create folder..."%(args.save_path))
         try:
             os.mkdir(args.save_path)
         except:
-            logging.error("Could not create directory! Exiting...")
+            logging.error("Could not create directory! Exiting")
             raise Exception()
 
 def __cli__(args):
-
     # check if args are correct:
     verifyArgs(args)
 
@@ -117,10 +88,8 @@ def __cli__(args):
     # collect detection truth labels:
     if args.format_det == 'coco':
         logging.warning("COCO detection format specified. Ignoring 'coord_det'...")
-        # load in json:
         det_anno = converter.coco2bb(args.anno_det, bb_type=BBType.DETECTED)
     elif args.format_det == 'tube':
-        # ignore the detection reading phase
         pass
     else:
         if args.format_det == 'xywh':
@@ -141,7 +110,6 @@ def __cli__(args):
         det_anno = converter.text2bb(args.anno_det, bb_type=BBType.DETECTED, bb_format=BB_FORMAT, type_coordinates=COORD_TYPE, img_dir=args.img)
 
         # If VOC specified, then switch id based to string for detection bbox:
-        #if args.format_gt == 'voc' or args.format_gt == 'imagenet':
         if args.names != '':
             # if names file not given, assume id-based detection output
             with open(args.names, 'r') as r:
@@ -158,13 +126,10 @@ def __cli__(args):
     print("%d ground truth bounding boxes retrieved"%(len(gt_anno)))
     print("%d detection bounding boxes retrieved"%(len(det_anno)))
 
-    # compute bboxes with given metric:
 
     # COCO (101-POINT INTERPOLATION)
     if args.metric == 'coco':
         logging.info("Running metric with COCO metric")
-
-        # use coco_out for PR graphs and coco_sum for just the AP
         coco_sum = coco_evaluator.get_coco_summary(gt_anno, det_anno)
         coco_out = coco_evaluator.get_coco_metrics(gt_anno, det_anno, iou_threshold=args.threshold)
         
@@ -213,7 +178,7 @@ def __cli__(args):
         return voc_sum
 
     # EVERY POINT INTERPOLATION:
-    elif args.metric == 'voc2012' or args.metric == 'auc':
+    elif args.metric == 'voc2012':
         logging.info("Running metric with VOC2012 metric, using the every point interpolation approach")
 
         voc_sum = pascal_voc_evaluator.get_pascalvoc_metrics(gt_anno, det_anno, iou_threshold=args.threshold)
@@ -240,7 +205,7 @@ def __cli__(args):
         return tube_out
     else:
         # Error out for incorrect metric format
-        raise Exception("%s is not a valid metric (coco, voc2007, voc2012, auc)"%(args.format_gt))
+        raise Exception("%s is not a valid metric (coco, voc2007, voc2012)"%(args.format_gt))
 
 if __name__ == '__main__':
     args = parseArgs()
