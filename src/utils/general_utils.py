@@ -133,7 +133,7 @@ def get_files_dir(directory, extensions=['*']):
             extension = ''
         elif '.' not in extension:
             extension = f'.{extension}'
-        ret += [f for f in os.listdir(directory) if f.endswith(extension)]
+        ret += [f for f in os.listdir(directory) if f.lower().endswith(extension.lower())]
     return ret
 
 
@@ -160,11 +160,9 @@ def show_image_in_qt_component(image, label_component):
 
 
 def get_files_recursively(directory, extension="*"):
-    if '.' not in extension:
-        extension = '*.' + extension
     files = [
         os.path.join(dirpath, f) for dirpath, dirnames, files in os.walk(directory)
-        for f in fnmatch.filter(files, extension)
+        for f in get_files_dir(directory, [extension])
     ]
     # Disconsider hidden files, such as .DS_Store in the MAC OS
     ret = [f for f in files if not os.path.basename(f).startswith('.')]
