@@ -16,17 +16,17 @@ import matplotlib.pyplot as plt
 
 def parseArgs():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--anno_gt', type=str)
-    parser.add_argument('--anno_det', type=str)
-    parser.add_argument('--img', type=str, required=False)
-    parser.add_argument('--format_gt', type=str)
-    parser.add_argument('--format_det', type=str) # (either xyrb, xywh, or coco)
-    parser.add_argument('--coord_det', type=str)
-    parser.add_argument('--metric', type=str)
-    parser.add_argument('--name', '-n', type=str, default='')
-    parser.add_argument('--threshold', '-t', type=float, default=0.5)
-    parser.add_argument('--plot', '-p', action='store_true')
-    parser.add_argument('--save_path', '-sp', type=str, required=False, default="./results/")
+    parser.add_argument('--anno_gt', type=str, help="Takes in a directory or file to the ground-truth annotations")
+    parser.add_argument('--anno_det', type=str, help="Takes in a directory or file to the detection annotations")
+    parser.add_argument('--img', type=str, required=False, help="Takes in a directory where the corresponding images are located")
+    parser.add_argument('--format_gt', type=str, help="Takes in keyword that represents the format that the ground truth will be in (Available formats: coco, voc, imagenet, labelme, openimg, yolo, absolute, cvat, tube)")
+    parser.add_argument('--format_det', type=str, help="Takes in keyword that represents the format that the detection will be in (Available inputs: coco, xyrb (x,y,x2,y2), or xywh (x,y,width,height), xcycwh (x_center, y_center, w, h))") # (either xyrb, xywh, or coco)
+    parser.add_argument('--coord_det', type=str, help="Argument is associated with format_det and represents the coordinate system of the detection files. (Available inputs: abs, rel)")
+    parser.add_argument('--metric', type=str, help="Takes in keyword that represents the metric that will be used (Available options: coco, voc2007, voc2012)")
+    parser.add_argument('--name', '-n', type=str, default='', help="The path of the file that contains the class names for this detection (NOTE: required if ground truth format is specified as yolo or if detection files have class IDs)")
+    parser.add_argument('--threshold', '-t', type=float, default=0.5, help="A decimal from 1 to 0 representing the IoU threshold for a given metric")
+    parser.add_argument('--plot', '-p', action='store_true', help="A flag for creating a Precision x Recall graph for the given metric that it is being used in")
+    parser.add_argument('--save_path', '-sp', type=str, required=False, default="./results/", help="An optional parameter used to specify where the visual output will be saved to. Required when --plot is specified")
     return parser.parse_args()
 
 def verifyArgs(args):
@@ -98,11 +98,17 @@ def __cli__(args):
         elif args.format_det == 'xyrb':
             # x,y,right,bottom
             BB_FORMAT = BBFormat.XYX2Y2
+        elif args.format_det == 'xcycwh':
+            # x center y center
+            BB_FORMAT = BBFormat.YOLO
         else:
             raise Exception("%s is not a valid detection annotation format"%args.format_det)
     
         if args.coord_det == 'abs':
             COORD_TYPE = CoordinatesType.ABSOLUTE
+            if args.format_det == 'xcycwh':
+                logging.warning("format_det defined as YOLO (x_center, y_center, width, height) but coordinates defined as absolute!\
+                    This will probably give incorrect results!")
         elif args.coord_det == 'rel':
             COORD_TYPE = CoordinatesType.RELATIVE
         else:
