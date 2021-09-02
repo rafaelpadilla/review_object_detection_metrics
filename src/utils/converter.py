@@ -266,7 +266,7 @@ def text2bb(annotations_path,
             img_size = None
             # If coordinates are relative, image size must be obtained in the img_dir
             if type_coordinates == CoordinatesType.RELATIVE:
-                img_path = general_utils.find_file(img_dir, img_filename, match_extension=False)
+                img_path = general_utils.find_image_file(img_dir, img_filename)
                 if img_path is None or os.path.isfile(img_path) is False:
                     print(
                         f'Warning: Image not found in the directory {img_path}. It is required to get its dimensions'
@@ -324,7 +324,7 @@ def yolo2bb(annotations_path, images_dir, file_obj_names, bb_type=BBType.GROUND_
         if not validations.is_yolo_format(file_path, bb_types=[bb_type]):
             continue
         img_name = os.path.basename(file_path)
-        img_file = general_utils.find_file(images_dir, img_name, match_extension=False)
+        img_file = general_utils.find_image_file(images_dir, img_name)
         img_resolution = general_utils.get_image_resolution(img_file)
         if img_resolution is None:
             print(f'Warning: It was not possible to find the resolution of image {img_name}')

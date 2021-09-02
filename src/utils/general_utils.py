@@ -181,19 +181,28 @@ def get_file_name_only(file_path):
     return os.path.splitext(os.path.basename(file_path))[0]
 
 
-def find_file(directory, file_name, match_extension=True):
+# allowed_extensions is used only when match_extension=False
+def find_file(directory, file_name, match_extension=True, allowed_extensions=[]):
     if os.path.isdir(directory) is False:
         return None
     for dirpath, dirnames, files in os.walk(directory):
         for f in files:
             f1 = os.path.basename(f)
             f2 = file_name
-            if not match_extension:
+            if match_extension:
+                match = f1 == f2
+            else:
                 f1 = os.path.splitext(f1)[0]
                 f2 = os.path.splitext(f2)[0]
-            if f1 == f2:
+                f_ext = os.path.splitext(f)[-1].lower()
+                match = f1 == f2 and (len(allowed_extensions) == 0 or f_ext in allowed_extensions)
+            if match:
                 return os.path.join(dirpath, os.path.basename(f))
     return None
+
+
+def find_image_file(directory, file_name):
+    return find_file(directory, file_name, False, [".bmp", ".jpg", ".jpeg", ".png"])
 
 
 def get_image_resolution(image_file):
