@@ -87,3 +87,6 @@ target/
 
 # Mypy cache
 .mypy_cache/
+venv
+/supervisely_lib/
+/supervisely_lib/

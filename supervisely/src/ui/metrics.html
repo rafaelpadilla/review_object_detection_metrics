@@ -1,0 +1,22 @@
+<sly-card title="Metrics"
+          subtitle="Confusion Matrix, Per Image Statistics, Per Class Statistics, Overall Statistics"
+          :options="{collapsable: true}"
+          :collapsed.sync="state.GlobalMetricsCollapsed"
+          :disabled="{disabled: state.GlobalMetricsDisabled, message: 'Please, select classes and manage settings'}"
+          ref="GlobalStep3"
+>
+    <el-tabs type="card" class="mt10">
+        <el-tab-pane label="Confusion Matrix">
+            {% include 'supervisely/src/ui/confusionmatrix.html' %}
+        </el-tab-pane>
+        <el-tab-pane label="Per Classes">
+            {% include 'supervisely/src/ui/per_class_metrics.html' %}
+        </el-tab-pane>
+        <el-tab-pane label="Per Images">
+            {% include 'supervisely/src/ui/per_image_metrics.html' %}
+        </el-tab-pane>
+        <el-tab-pane label="Overall">
+            {% include 'supervisely/src/ui/overall_metrics.html' %}
+        </el-tab-pane>
+    </el-tabs>
+</sly-card>

@@ -1,4 +1,16 @@
 # conda env create -n <env_name> --file <this_file>.yml
+# sudo conda-env create -n new_od_env --file _backup_environment.yml
+# To activate this environment, use
+#
+#     $ conda activate new_od_env
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
+#pip install asyncio --upgrade
+#pip install ipykernel --upgrade
+
 channels:
   - conda-forge
   - defaults
@@ -14,6 +26,7 @@ dependencies:
   - pyqt=5.12
   - pytest=6.1
   - python=3.9
+  - supervisely=6.1.59
   - pip:
     - awscli==1.18.180
     - chardet==3.0.4

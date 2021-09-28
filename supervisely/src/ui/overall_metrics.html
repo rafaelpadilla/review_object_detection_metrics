@@ -1,0 +1,14 @@
+<sly-field title="Project_mAP"
+           description="Project Statistic Table">
+    <sly-table v-loading="data.loading"
+               :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
+               :content="data.tableProjects"
+    ></sly-table>
+</sly-field>
+<sly-field title="Datasets_mAP"
+           description="Dataset Statistic Table">
+    <sly-table v-loading="data.loading"
+               :options="{perPage: 10, pageSizes: [10, 20, 50, 100], fixColumns: 1}"
+               :content="data.tableDatasets"
+    ></sly-table>
+</sly-field>

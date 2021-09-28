@@ -1,0 +1,98 @@
+<el-collapse v-model="state.CMActiveNames">
+    <el-collapse-item title="Confusion Matrix" name="confusion_matrix">
+        <div v-if="!state.CMShow1">Please, select Classes and manage Settings.</div>
+        <sly-field v-if="state.CMShow1"
+                   title="Confusion Matrix for selected classes and current settings"
+                   description="Select cell to get additional info about image's statistics.">
+            <sly-confusion-matrix v-if="state.CMShow1"
+                                  :data="data.slyConfusionMatrix.data"
+                                  :options="{ selectable: true }"
+                                  :value="state.selected"
+                                  @input="state.selected = $event; command('show_image_table')">
+            </sly-confusion-matrix>
+        </sly-field>
+    </el-collapse-item>
+    <el-collapse-item title="Image Metrics Table" name="image_stat_table">
+        <!--        <div slot="description">-->
+        <div v-if="!state.CMShow2">{{data.CMImageTableDescription1}}</div>
+        <sly-field v-if="state.CMShow2"
+                   :title="data.CMImageTableTitle"
+                   data.CMImageTableTitle
+        >
+            <div slot="description">
+                <div v-if="data.CMImageTableDescription1">{{data.CMImageTableDescription1}}</div>
+                <div v-if="data.CMImageTableDescription2">{{data.CMImageTableDescription2}}</div>
+                <div v-if="data.CMImageTableDescription3">{{data.CMImageTableDescription3}}</div>
+                <div>Select row in Image Metrics Table to preview Images with original annotations and Detections.</div>
+            </div>
+            <sly-table v-loading="data.loading"
+                       :options="{perPage: 15, pageSizes: [10, 15, 20, 25, 50, 100], fixColumns: 1}"
+                       :content="data.CMTableImages"
+                       @input="state.selection = $event; command('show_images_gallery')"
+            ></sly-table>
+            <br/>
+            <div class="mt5"><i class="zmdi zmdi-map mr5" style="width: 15px; display: inline-block"></i>Legend:</div>
+            <div class="mt5">
+                <span style="color: green"><i class="zmdi zmdi-check mr5"
+                                              style="width: 15px; display: inline-block"></i>TP</span>
+                - True Positive value: number of objects that were detected correctly(IoU value is higher than
+                IoUThreshold and
+                Score value is higher than ScoreThreshold)
+            </div>
+            <div class="mt5">
+                <span style="color: red"><i class="zmdi zmdi-close mr5" style="width: 15px; display: inline-block"></i>FP</span>
+                - False Positive value: number of objects that were not detected correctly(IoU value is lower than
+                IoUThreshold
+                and/or Score value is higher than ScoreThreshold)
+            </div>
+            <div class="mt5">
+                <span style="color: #20a0ff"><i class="zmdi zmdi-plus-circle-o mr5"
+                                                style="width: 15px; display: inline-block"></i>NPOS</span>
+                - number of objects in GroundTruth annotation for given image
+            </div>
+            <div class="mt5">
+                <span style="color: #F39C12"><i class="zmdi zmdi-folder-outline mr5"
+                                                style="width: 15px; display: inline-block"></i>PRECISION</span>
+                - fraction of retrieved objects that are relevant to actual data
+            </div>
+            <div class="mt5">
+                <span style="color: #F39C12"><i class="zmdi zmdi-folder-outline mr5"
+                                                style="width: 15px; display: inline-block"></i>RECALL</span>
+                - fraction of the relevant objects that are successfully detected.
+            </div>
+            <div class="mt5">
+                <span style="color: #F39C12"><i class="zmdi zmdi-folder-outline mr5"
+                                                style="width: 15px; display: inline-block"></i>MAP</span>
+                - target metric: mean Average Precision
+            </div>
+        </sly-field>
+    </el-collapse-item>
+    <el-collapse-item title="Grid Gallery" name="grid_gallery">
+        <!--        <div v-if="data.CMShow3">{{data.CMGalleryTitle}}</div>-->
+        <div v-if="state.CMShow1 && !state.CMShow2">Please, select cell from Confusion Matrix</div>
+        <div v-if="state.CMShow1 && state.CMShow2 && !state.CMShow3">Please, select row from Image Statistic Table</div>
+
+        <sly-field v-if="state.selection.selectedColumnName && state.CMShow3"
+                   :title="data.CMGalleryTitle"
+                   description="Original annotations VS Detections">
+            <sly-grid-gallery :content="data.CMGallery.content"
+                              :options="data.CMGallery.options">
+                <template v-slot:card-footer="{ annotation }">
+                    <div class="mt5" style="text-align: center">
+                        <el-tag type="primary">{{annotation.title}}</el-tag>
+                    </div>
+                </template>
+            </sly-grid-gallery>
+        </sly-field>
+<!--        <div v-if="state.CMShow3">-->
+<!--            <sly-grid-gallery :content="data.CMGallery.content"-->
+<!--                              :options="data.CMGallery.options">-->
+<!--                <template v-slot:card-footer="{ annotation }">-->
+<!--                    <div class="mt5" style="text-align: center">-->
+<!--                        <el-tag type="primary">{{annotation.title}}</el-tag>-->
+<!--                    </div>-->
+<!--                </template>-->
+<!--            </sly-grid-gallery>-->
+<!--        </div>-->
+    </el-collapse-item>
+</el-collapse>

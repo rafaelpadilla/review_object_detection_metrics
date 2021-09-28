@@ -1,0 +1,12 @@
+secret_debug.env
+/notebooks/Без названия.ipynb
+/notebooks/sly_mAP2plt_format.ipynb
+/notebooks/calculate_mAP_overallClasses.ipynb
+/notebooks/confusion_matrix_class.ipynb
+/notebooks/confusion_matrix_data.ipynb
+/notebooks/confusion_matrix_explanation.ipynb
+/src/db
+/src/README.md
+/src/ui/templates/trash
+/src/ui/templates/
+/notebooks/

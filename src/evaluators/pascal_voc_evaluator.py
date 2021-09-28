@@ -41,7 +41,9 @@ def calculate_ap_11_point_interp(rec, prec, recall_vals=11):
     [mpre.append(e) for e in prec]
     # mpre.append(0)
     recallValues = np.linspace(0, 1, recall_vals)
+    # array([0. , 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1. ])
     recallValues = list(recallValues[::-1])
+    # [1.0, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0]
     rhoInterp = []
     recallValid = []
     # For each recallValues (0, 0.1, 0.2, ... , 1)
@@ -105,6 +107,9 @@ def get_pascalvoc_metrics(gt_boxes,
     # Get classes of all bounding boxes separating them by classes
     gt_classes_only = []
     classes_bbs = {}
+    if len(gt_boxes) == 0:
+        return
+
     for bb in gt_boxes:
         c = bb.get_class_id()
         gt_classes_only.append(c)
@@ -155,8 +160,6 @@ def get_pascalvoc_metrics(gt_boxes,
             iouMax = sys.float_info.min
             # Given the detection det, find ground-truth with the highest iou
             for j, g in enumerate(gt):
-                # print('Ground truth gt => %s' %
-                #       str(g.get_absolute_bounding_box(format=BBFormat.XYX2Y2)))
                 iou = BoundingBox.iou(det, g)
                 if iou > iouMax:
                     iouMax = iou
@@ -220,6 +223,7 @@ def get_pascalvoc_metrics(gt_boxes,
             'table': table
         }
     # For mAP, only the classes in the gt set should be considered
+    # print('gt_classes_only = ', gt_classes_only)
     mAP = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only)
     return {'per_class': ret, 'mAP': mAP}
 
