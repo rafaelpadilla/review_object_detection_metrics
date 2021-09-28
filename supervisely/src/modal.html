@@ -5,10 +5,10 @@
         </sly-icon>
         <div class="fflex">
             <sly-field title="GT project">
-                <sly-select-project v-model="state.gtProjectId" :workspace-id="context.workspaceId" :project-id.sync="state.projectId"></sly-select-project>
+                <sly-select-project v-model="state.gtProjectId" :workspace-id="context.workspaceId" :project-id.sync="state.gtProjectId"></sly-select-project>
             </sly-field>
             <sly-field title="Prediction project">
-                <sly-select-project v-model="state.predProjectId" :workspace-id="context.workspaceId" :project-id.sync="state.projectId"></sly-select-project>
+                <sly-select-project v-model="state.predProjectId" :workspace-id="context.workspaceId" :project-id.sync="state.predProjectId"></sly-select-project>
             </sly-field>
         </div>
     </sly-field>
