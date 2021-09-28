@@ -1,18 +1,18 @@
 {
-  "name": "Classes co-occurrence matrix",
+  "name": "Object detection metrics",
   "type": "app",
   "categories": [
     "report"
   ],
   "description": "Explore images for every combination of classes pairs in co-occurrence table",
-  "docker_image": "supervisely/base-py-sdk:6.1.80",
+  "docker_image": "supervisely/base-py-sdk:6.1.97",
   "main_script": "supervisely/src/main.py",
   "modal_template": "src/modal.html",
   "modal_template_state": {},
   "gui_template": "src/gui.html",
   "task_location": "workspace_tasks",
   "isolate": true,
-  "icon": "https://img.icons8.com/color/96/000000/attract-customers.png",
+  "icon": "",
   "icon_background": "#FFFFFF",
   "context_menu": {
     "target": ["images_project", "images_dataset"],
