@@ -9,7 +9,6 @@
   "main_script": "supervisely/src/main.py",
   "modal_template": "supervisely/src/modal.html",
   "modal_template_state": {
-
   },
   "gui_template": "supervisely/src/gui.html",
   "task_location": "workspace_tasks",
