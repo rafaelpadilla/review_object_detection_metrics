@@ -22,13 +22,10 @@ def main():
     g.my_app.run(data=data, state=state)
 
 
-# @TODO: Umar - скрол горизонтальный для confusion matrix - на стороне виджета? +
 # @TODO: DESCRIPTION 2 "bird" objects are not detected (bird <-> None) +
 # @TODO: DESCRIPTION Model predicted 77 "cat" objects that are not in GT (None <-> Bird) +
 # легенда для таблицы с изображениями +
-
 # dog FP 10 vs 7 BUG ?
-
 # @TODO: clear global unused requirements
 # @TODO: check plt2bb in utils.py for bugs
 
