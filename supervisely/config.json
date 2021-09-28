@@ -4,18 +4,16 @@
   "categories": [
     "report"
   ],
-  "description": "Explore images for every combination of classes pairs in co-occurrence table",
+  "description": "",
   "docker_image": "supervisely/base-py-sdk:6.1.97",
   "main_script": "supervisely/src/main.py",
-  "modal_template": "src/modal.html",
-  "modal_template_state": {},
-  "gui_template": "src/gui.html",
+  "modal_template": "supervisely/src/modal.html",
+  "modal_template_state": {
+
+  },
+  "gui_template": "supervisely/src/gui.html",
   "task_location": "workspace_tasks",
   "isolate": true,
   "icon": "",
-  "icon_background": "#FFFFFF",
-  "context_menu": {
-    "target": ["images_project", "images_dataset"],
-    "context_root": "Report"
-  }
+  "icon_background": "#FFFFFF"
 }
