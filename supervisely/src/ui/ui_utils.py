@@ -19,37 +19,56 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     # cm = dd.cm
     cm = settings.cm
     images_to_show = list(set(cm[col_class][row_class]))
+    dataset_names = {}
+    pred_images_names_list = []
+    # for prj_key, prj_value in settings.filtered_confidences.items():
+    #     for dataset_key, dataset_value in prj_value.items():
+    #         for element in dataset_value:
+    #             if element['dataset_id'] not in dataset_names:
+    #                 dataset_names[element['dataset_id']] = api.dataset.get_info_by_id(element['dataset_id']).name
+    #             if element['image_name'] in images_to_show:
+    #                 selected_image_infos[prj_key].append(element)
+    #                 if prj_key == 'pred_images':
+    #                     pred_images_names_list.append(element['image_name'])
 
-    selected_image_infos = dict(gt_images=[], pred_images=[])
-
-    for prj_key, prj_value in settings.filtered_confidences.items():
+    prepared_data = {'gt_images': settings.gts, 'pred_images': settings.pred}
+    selected_image_infos = {}
+    for prj_key, prj_value in prepared_data.items():
+        selected_image_infos.setdefault(prj_key, {})
         for dataset_key, dataset_value in prj_value.items():
+            selected_image_infos[prj_key].setdefault(dataset_key, [])
             for element in dataset_value:
-                if element['image_name'] in images_to_show:
-                    selected_image_infos[prj_key].append(element)
+                if element[1] in images_to_show:
+                    selected_image_infos[prj_key][dataset_key].append(element)
+                    if prj_key == 'pred_images':
+                        pred_images_names_list.append(element[1])
 
     encoder = BoundingBox
     gts = []
     pred = []
     assert len(selected_image_infos['gt_images']) == len(selected_image_infos['pred_images'])
-    dataset_names = {}
-    for gt, pr in zip(selected_image_infos['gt_images'], selected_image_infos['pred_images']):
-        assert gt['image_name'] == pr['image_name'], 'different images'
-        gt_boxes = utils.plt2bb(gt, encoder, bb_type=BBType.GROUND_TRUTH)
-        pred_boxes = utils.plt2bb(pr, encoder, bb_type=BBType.DETECTED)
 
-        if gt['dataset_id'] not in dataset_names:
-            dataset_names[gt['dataset_id']] = api.dataset.get_info_by_id(gt['dataset_id']).name
-        if pr['dataset_id'] not in dataset_names:
-            dataset_names[pr['dataset_id']] = api.dataset.get_info_by_id(pr['dataset_id']).name
-
-        gts.append([gt['image_id'], gt['image_name'], gt['full_storage_url'],
-                    dataset_names[gt['dataset_id']], gt_boxes])
-        pred.append([pr['image_id'], pr['image_name'], pr['full_storage_url'],
-                     dataset_names[pr['dataset_id']], pred_boxes])
-
+    # for gt_name, gt_val in selected_image_infos['gt_images'].items():
+    #     for gt in gt_val:
+    #         gt_boxes = utils.plt2bb(gt, encoder, bb_type=BBType.GROUND_TRUTH)
+    #         pr = selected_image_infos['pred_images'][gt_name][pred_images_names_list.index(gt['image_name'])]
+    #         pred_boxes = utils.plt2bb(pr, encoder, bb_type=BBType.DETECTED)
+    #
+    #         # gts.append([gt['image_id'], gt['image_name'], gt['full_storage_url'],
+    #         #             dataset_names[gt['dataset_id']], gt_boxes])
+    #         # pred.append([pr['image_id'], pr['image_name'], pr['full_storage_url'],
+    #         #              dataset_names[pr['dataset_id']], pred_boxes])
+    #
+    #         # break
+    gts, pred = selected_image_infos['gt_images'], selected_image_infos['pred_images']
     images_pd_data = metrics.calculate_image_mAP(gts, pred, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                                                  iou=iou_threshold, score=score_threshold)
+    new_list_src, new_list_dst = [], []
+    # for el in images_pd_data:
+    #     src_tmp = [i[0] for i in new_list_src] if new_list_src else []
+    #     dst_tmp = [i[0] for i in new_list_dst] if new_list_dst else []
+    #     if el[0] not in src_tmp and el[1] not in dst_tmp:
+
 
     text = '''Images for the selected cell in confusion matrix: "{}" (actual) <-> "{}" (predicted)'''.format(row_class,
                                                                                                              col_class)
