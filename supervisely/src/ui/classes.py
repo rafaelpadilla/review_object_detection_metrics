@@ -71,10 +71,15 @@ def _process_items(collection1, collection2, diff_msg="Automatic conversion to r
             missed.append(compare)
 
     table = []
+    if match:
+        match.sort(key=lambda x: x['name1'])
     table.extend(match)
+    if differ:
+        differ.sort(key=lambda x: x['name1'])
     table.extend(differ)
     table.extend(missed)
-    return table #, match, differ, missed
+
+    return table
 
 
 def init(data, state):
