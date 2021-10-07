@@ -13,7 +13,6 @@
         </sly-field>
     </el-collapse-item>
     <el-collapse-item title="Image Metrics Table" name="image_stat_table">
-        <!--        <div slot="description">-->
         <div v-if="!state.CMShow2">{{data.CMImageTableDescription1}}</div>
         <sly-field v-if="state.CMShow2"
                    :title="data.CMImageTableTitle"
@@ -68,31 +67,36 @@
         </sly-field>
     </el-collapse-item>
     <el-collapse-item title="Grid Gallery" name="grid_gallery">
-        <!--        <div v-if="data.CMShow3">{{data.CMGalleryTitle}}</div>-->
         <div v-if="state.CMShow1 && !state.CMShow2">Please, select cell from Confusion Matrix</div>
         <div v-if="state.CMShow1 && state.CMShow2 && !state.CMShow3">Please, select row from Image Statistic Table</div>
 
         <sly-field v-if="state.selection.selectedColumnName && state.CMShow3"
                    :title="data.CMGalleryTitle"
                    description="Original annotations VS Detections">
-            <sly-grid-gallery :content="data.CMGallery.content"
-                              :options="data.CMGallery.options">
+            <sly-grid-gallery
+                    :content="data.CMGallery.content"
+                    :options="data.CMGallery.options"
+                    :active-figure="state.activeFigure">
                 <template v-slot:card-footer="{ annotation }">
                     <div class="mt5" style="text-align: center">
                         <el-tag type="primary">{{annotation.title}}</el-tag>
+                        <div class="figures-list" >
+                            <b class="mb15">{{annotation.title}} figures</b>
+                            <ul>
+                                <li
+                                        v-for="f in data.CMGallery.content.annotations.left.figures"
+                                        :key="f.id"
+                                        :style="[state.activeFigure === f.id ? 'backgroundColor: red; color: white' : '' ]"
+                                        @mouseenter="state.activeFigure = f.id"
+                                        @mouseleave="state.activeFigure = null"
+                                >
+                                    Figure: {{f.classTitle}} (ID:{{ f.id }})
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </template>
             </sly-grid-gallery>
         </sly-field>
-<!--        <div v-if="state.CMShow3">-->
-<!--            <sly-grid-gallery :content="data.CMGallery.content"-->
-<!--                              :options="data.CMGallery.options">-->
-<!--                <template v-slot:card-footer="{ annotation }">-->
-<!--                    <div class="mt5" style="text-align: center">-->
-<!--                        <el-tag type="primary">{{annotation.title}}</el-tag>-->
-<!--                    </div>-->
-<!--                </template>-->
-<!--            </sly-grid-gallery>-->
-<!--        </div>-->
     </el-collapse-item>
 </el-collapse>
