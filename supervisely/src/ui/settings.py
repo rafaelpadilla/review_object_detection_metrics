@@ -71,8 +71,6 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.perClassShow3", "payload": False},
         {"field": "state.perClassActiveNames", "payload": []},
 
-
-
     ]
     api.app.set_fields(task_id, fields)
 
@@ -82,8 +80,10 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
                                                             confidence_threshold=score_threshold)
 
         if filtered_confidences['gt_images'] and filtered_confidences['pred_images']:
-            metrics.confusion_matrix.confusion_matrix.set_data(gt=filtered_confidences['gt_images'], det=filtered_confidences['pred_images'])
-            metrics.confusion_matrix.confusion_matrix.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
+            metrics.confusion_matrix.confusion_matrix.set_data(gt=filtered_confidences['gt_images'],
+                                                               det=filtered_confidences['pred_images'])
+            metrics.confusion_matrix.confusion_matrix.reset_thresholds(iou_threshold=iou_threshold,
+                                                                       score_threshold=score_threshold)
             metrics.confusion_matrix.confusion_matrix.update()
             cm = metrics.confusion_matrix.confusion_matrix.cm_dict
 
