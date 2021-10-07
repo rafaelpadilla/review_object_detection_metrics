@@ -86,28 +86,28 @@ def calculate_image_mAP(src_list, dst_list, method, target_class=None, iou=0.5, 
     full_logs = list()
     matched = 0
     print('target_class =', target_class)
-    for src_image_info in src_list:
-        for dst_image_info in dst_list:
-            if src_image_info[1] == dst_image_info[1]:
-                matched += 1
-                rez = calculate_mAP(src_image_info[-1], dst_image_info[-1], iou, score, method)
-                # print('rez = ', rez)
-                try:
-                    rez_d = dict2tuple(rez, target_class)
-                    src_image_image_id = src_image_info[0]
-                    dst_image_image_id = dst_image_info[0]
-                    src_image_image_name = src_image_info[1]
-                    src_image_link = src_image_info[2]
-                    dataset_name = src_image_info[3]
-                    per_image_data = [str(src_image_image_id), str(dst_image_image_id), dataset_name,
-                                      '<a href="{0}" rel="noopener noreferrer" target="_blank">{1}</a>'.format(
-                                          src_image_link,
-                                          src_image_image_name)]
-                    per_image_data.extend(rez_d)
-                    images_pd_data.append(per_image_data)
-                    full_logs.append(rez)
-                except:
-                    pass
+    for dataset_name in src_list:
+        for src_image_info in src_list[dataset_name]:
+            for dst_image_info in dst_list[dataset_name]:
+                if src_image_info[1] == dst_image_info[1]:
+                    matched += 1
+                    rez = calculate_mAP(src_image_info[-1], dst_image_info[-1], iou, score, method)
+                    try:
+                        rez_d = dict2tuple(rez, target_class)
+                        src_image_image_id = src_image_info[0]
+                        dst_image_image_id = dst_image_info[0]
+                        src_image_image_name = src_image_info[1]
+                        src_image_link = src_image_info[2]
+                        dataset_name = src_image_info[3]
+                        per_image_data = [str(src_image_image_id), str(dst_image_image_id), dataset_name,
+                                          '<a href="{0}" rel="noopener noreferrer" target="_blank">{1}</a>'.format(
+                                              src_image_link,
+                                              src_image_image_name)]
+                        per_image_data.extend(rez_d)
+                        images_pd_data.append(per_image_data)
+                        full_logs.append(rez)
+                    except:
+                        pass
     if show_logs:
         print('Lengths of sets =', len(src_list), len(dst_list))
         print('processed  {} of (src={}, dst={})'.format(matched, len(src_list), len(dst_list)))
@@ -120,13 +120,14 @@ def calculate_image_mAP(src_list, dst_list, method, target_class=None, iou=0.5, 
 def calculate_dataset_mAP(src_dict, dst_dict, method, target_class=None, iou=0.5, score=0.01):
     datasets_pd_data = list()
     dataset_results = []
-    key_list = list(set([el[-2] for el in src_dict]))
+    # key_list = list(set([el[-2] for el in src_dict]))
+    key_list = src_dict.keys()
 
     for dataset_key in key_list:
         src_set_list = []
-        [src_set_list.extend(el[-1]) for el in src_dict if el[-2] == dataset_key]
+        [src_set_list.extend(el[-1]) for el in src_dict[dataset_key] if el[-2] == dataset_key]
         dst_set_list = []
-        [dst_set_list.extend(el[-1]) for el in dst_dict if el[-2] == dataset_key]
+        [dst_set_list.extend(el[-1]) for el in dst_dict[dataset_key] if el[-2] == dataset_key]
 
         rez = calculate_mAP(src_set_list, dst_set_list, iou, score, method)
 
@@ -148,9 +149,14 @@ def calculate_dataset_mAP(src_dict, dst_dict, method, target_class=None, iou=0.5
 def calculate_project_mAP(src_list, dst_list, method, dst_project_name, target_class=None, iou=0.5, score=0.01):
     projects_pd_data = list()
     src_set_list = []
-    [src_set_list.extend(el[-1]) for el in src_list]
+    # [src_set_list.extend(el[-1]) for el in src_list.values()]
     dst_set_list = []
-    [dst_set_list.extend(el[-1]) for el in dst_list]
+    # [dst_set_list.extend(el[-1]) for el in dst_list.values()]
+
+    key_list = src_list.keys()
+    for dataset_key in key_list:
+        [src_set_list.extend(el[-1]) for el in src_list[dataset_key]]
+        [dst_set_list.extend(el[-1]) for el in dst_list[dataset_key]]
 
     prj_rez = calculate_mAP(src_set_list, dst_set_list, iou, score, method)
     rez_d = dict2tuple(prj_rez, target_class)
