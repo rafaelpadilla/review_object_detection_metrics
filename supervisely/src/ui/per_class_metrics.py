@@ -77,14 +77,16 @@ def expand_line(data, class_name):
 
 def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_project, iou_threshold, score_threshold):
     if class_name != 'ALL':
-        images_names_with_target_class = list(
-            set(expand_line(src_list, class_name) + expand_line(dst_list, class_name)))
-        row_indexes1 = [id_ for id_, line in enumerate(src_list) if line[1] in images_names_with_target_class]
-        row_indexes2 = [id_ for id_, line in enumerate(dst_list) if line[1] in images_names_with_target_class]
-        row_indexes = list(set(row_indexes1 + row_indexes2))
-        single_class_src_list_np = [src_list[id_] for id_ in row_indexes]
-        single_class_dst_list_np = [dst_list[id_] for id_ in row_indexes]
-
+        single_class_src_list_np = {}
+        single_class_dst_list_np = {}
+        for dataset_name, dataset_items in src_list.items():
+            images_names_with_target_class = list(
+                set(expand_line(src_list[dataset_name], class_name) + expand_line(dst_list[dataset_name], class_name)))
+            row_indexes1 = [id_ for id_, line in enumerate(src_list[dataset_name]) if line[1] in images_names_with_target_class]
+            row_indexes2 = [id_ for id_, line in enumerate(dst_list[dataset_name]) if line[1] in images_names_with_target_class]
+            row_indexes = list(set(row_indexes1 + row_indexes2))
+            single_class_src_list_np[dataset_name] = [src_list[dataset_name][id_] for id_ in row_indexes]
+            single_class_dst_list_np[dataset_name] = [dst_list[dataset_name][id_] for id_ in row_indexes]
     else:
         single_class_src_list_np = src_list
         single_class_dst_list_np = dst_list
