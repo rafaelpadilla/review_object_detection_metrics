@@ -87,7 +87,7 @@ def class_filtering(dataset, classes_names):
         # only_in = {'gt_images': only_in_gt, 'pred_images': only_in_pred}
         only_in = get_filtered_image_names(filtered_class, dataset_key)
         for key in ['gt_images', 'pred_images']:
-            reversed_key = 'gt_images' if key=='pred_images' else 'pred_images'
+            reversed_key = 'gt_images' if key == 'pred_images' else 'pred_images'
             additional_image_names[key] = [
                 image_info for image_info in dataset[key][dataset_key]
                 if image_info['image_name'] in only_in[reversed_key]
@@ -129,13 +129,13 @@ def confidence_filtering(dataset, confidence_threshold):
         indexes_ = {}
         only_in = get_filtered_image_names(filtered_confidence, dataset_key)
         for key in ['gt_images', 'pred_images']:
-            reversed_key = 'gt_images' if key=='pred_images' else 'pred_images'
+            reversed_key = 'gt_images' if key == 'pred_images' else 'pred_images'
             additional_image_names[key] = [
                 image_info for image_info in dataset[key][dataset_key]
                 if image_info['image_name'] in only_in[reversed_key]
             ]
             task_tuple = ('conf_filtering', confidence_threshold)
-            if key=='pred_images':
+            if key == 'pred_images':
                 additional_image_names[key] = get_additional_images(additional_image_names[key], task_tuple)
 
             filtered_confidence[key][dataset_key].extend(additional_image_names[key])
@@ -149,7 +149,7 @@ def confidence_filtering(dataset, confidence_threshold):
     return filtered_confidence
 
 
-def download(image_dict, percentage, cache, batch_size=10, show_info=False):
+def download(image_dict, percentage, cache, batch_size=5000, show_info=False):
     def get_intersected_datasets(img_dict):
         gt_images = set(list(img_dict['gt_images']))
         pred_images = set(list(img_dict['pred_images']))
@@ -194,7 +194,8 @@ def download(image_dict, percentage, cache, batch_size=10, show_info=False):
             for ix, batch in enumerate(sly.batched(slice_to_download, batch_size)):
                 image_ids = [image_info.id for image_info in batch]
                 ann_infos = g.api.annotation.download_batch(dataset_id, image_ids)
-                annotations = [sly.Annotation.from_json(ann_info.annotation, g.aggregated_meta) for ann_info in ann_infos]
+                annotations = [sly.Annotation.from_json(ann_info.annotation, g.aggregated_meta) for ann_info in
+                               ann_infos]
 
                 for batch_, annotation in zip(batch, annotations):
                     batch_image_id = batch_.id
@@ -222,12 +223,19 @@ def download_and_prepare_data(classes_names, percentage, confidence_threshold):
 
 
 def get_prepared_data(api: sly.Api, src_list, dst_list, encoder):
-    gts = []
-    pred = []
+    gts = {}
+    pred = {}
     dataset_names = {}
     for dataset_key in src_list:
-        for gt_image, pr_image in zip(src_list[dataset_key], dst_list[dataset_key]):
+        gts.setdefault(dataset_key, [])
+        pred.setdefault(dataset_key, [])
+        dst_list_image_names = [image['image_name'] for image in dst_list[dataset_key]]
+        for gt_image in src_list[dataset_key]:
             gt_boxes = plt2bb(gt_image, encoder, bb_type=BBType.GROUND_TRUTH)
+            try:
+                pr_image = dst_list[dataset_key][dst_list_image_names.index(gt_image['image_name'])]
+            except Exception as e:
+                raise NotImplementedError(e)
             pred_boxes = plt2bb(pr_image, encoder, bb_type=BBType.DETECTED)
 
             if gt_image['dataset_id'] not in dataset_names:
@@ -235,10 +243,10 @@ def get_prepared_data(api: sly.Api, src_list, dst_list, encoder):
             if pr_image['dataset_id'] not in dataset_names:
                 dataset_names[pr_image['dataset_id']] = api.dataset.get_info_by_id(pr_image['dataset_id']).name
 
-            gts.append([gt_image['image_id'], gt_image['image_name'], gt_image['full_storage_url'],
-                        dataset_names[gt_image['dataset_id']], gt_boxes])
-            pred.append([pr_image['image_id'], pr_image['image_name'], pr_image['full_storage_url'],
-                         dataset_names[pr_image['dataset_id']], pred_boxes])
+            gts[dataset_key].append([gt_image['image_id'], gt_image['image_name'], gt_image['full_storage_url'],
+                                     dataset_names[gt_image['dataset_id']], gt_boxes])
+            pred[dataset_key].append([pr_image['image_id'], pr_image['image_name'], pr_image['full_storage_url'],
+                                      dataset_names[pr_image['dataset_id']], pred_boxes])
     return gts, pred, dataset_names
 
 
