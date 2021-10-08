@@ -15,6 +15,7 @@ from src.utils.enumerators import MethodAveragePrecision
 
 
 def init(data, state):
+    state['activeFigure'] = None
     confusion_matrix.init(data, state)
     per_image_metrics.init(data, state)
     per_class_metrics.init(data, state)
