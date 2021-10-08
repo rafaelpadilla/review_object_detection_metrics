@@ -86,17 +86,20 @@ def init(data, state):
     classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
     data["classesTable"] = classes_table
     state["selectedClasses"] = []
-    state['GlobalClassesCollapsed'] = False
-    state['GlobalClassesDisabled'] = False
+    state['GlobalClassesCollapsed'] = True
+    state['GlobalClassesDisabled'] = True
+    state['GlobalClassesDone'] = False
 
 
 @g.my_app.callback("set_classes")
 @sly.timeit
 def set_classes(api: sly.Api, task_id, context, state, app_logger):
     fields = [
-        {"field": "state.activeName", "payload": 'Settings'},
-        {"field": "state.GlobalClassesCollapsed", "payload": True},
+        # {"field": "state.activeName", "payload": 'Settings'},
         {"field": "state.GlobalActiveStep", "payload": 2},
+        {"field": "state.GlobalClassesDone", "payload": True},
+
+        {"field": "state.GlobalClassesCollapsed", "payload": True},
         {"field": "state.GlobalSettingsCollapsed", "payload": False},
         {"field": "state.GlobalSettingsDisabled", "payload": False},
         {"field": "state.GlobalShowSettings", "payload": True},
