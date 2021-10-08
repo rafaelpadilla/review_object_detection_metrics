@@ -1,3 +1,5 @@
+import numpy as np
+
 from supervisely.src import download_data as dd
 from src.bounding_box import BoundingBox, BBType, BBFormat
 from supervisely.src import utils
@@ -69,7 +71,6 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     #     dst_tmp = [i[0] for i in new_list_dst] if new_list_dst else []
     #     if el[0] not in src_tmp and el[1] not in dst_tmp:
 
-
     text = '''Images for the selected cell in confusion matrix: "{}" (actual) <-> "{}" (predicted)'''.format(row_class,
                                                                                                              col_class)
 
@@ -136,11 +137,29 @@ def filter_classes(ann, selected_classes, score=None):
 def show_images_body(api, task_id, state, gallery_template, v_model, selected_image_classes=None):
     selected_classes = state['selectedClasses'] if selected_image_classes is None else selected_image_classes
     selected_row_data = state["selection"]["selectedRowData"]
-
+    dataset_name = selected_row_data['dataset_name']
     try:
         image_name = selected_row_data['name'].split('_blank">')[-1].split('</')[0]
     except:
         image_name = 'empty state'
+
+    image_map_ = settings.object_mapper[dataset_name][image_name]
+
+    dict_ = []
+    data = []
+    for key in image_map_:
+        data.append(image_map_[key])
+    data_np = np.asarray(data).transpose()
+
+    for line in data_np:
+        d = {
+            "GroundTruth": int(line[0]),
+            "IoU": line[4],
+            "Mark": line[2],
+            "Confidence": line[3],
+            "Prediction": int(line[1])
+        }
+        dict_.append(d)
 
     score = state['ScoreThreshold'] / 100
     if selected_row_data is not None and state["selection"]["selectedColumnName"] is not None:
@@ -164,5 +183,6 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
     text = 'Gallery for {}'.format(image_name)
     fields = [
         {"field": v_model, "payload": text},
+        {"field": 'data.GalleryTable', "payload": dict_},
     ]
     api.app.set_fields(task_id, fields)
