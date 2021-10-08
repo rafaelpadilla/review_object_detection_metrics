@@ -3,25 +3,27 @@
           :options="{collapsable: true}"
           :collapsed.sync="state.GlobalSettingsCollapsed"
           :disabled="{disabled: state.GlobalSettingsDisabled, message: 'Please, select classes'}"
-          ref="GlobalStep2"
+          ref="GlobalStep3"
 >
-    <sly-field
-            title="Sample percent"
-            description="Percent of images that will be sampled randomly for metrics evaluation">
+    <sly-field title="Sample percent"
+               description="Percent of images that will be sampled randomly for metrics evaluation">
         <div class="fflex">
             <el-slider class="ml10 mr10"
-                    style="width: 450px"
-                    :min="1"
-                    :max="100"
-                    v-model="state.samplePercent"
-                    show-input
-                    @change="state.samplePercent = $event;"
+                       style="width: 450px"
+                       :min="1"
+                       :max="100"
+                       v-model="state.samplePercent"
+                       show-input
+                       @change="state.samplePercent = $event;"
             >
             </el-slider>
-            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 * state.samplePercent)}}</div>
+            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 *
+                state.samplePercent)}} images
+            </div>
         </div>
     </sly-field>
-    <sly-field title="IoU threshold" description="intersection over union threshold values object to be positive selected">
+    <sly-field title="IoU threshold"
+               description="ground truth and prediction boxes are matched if boxes IoU >= selected threshold">
         <div class="fflex">
             <el-slider class="ml10 mr10"
                        style="width: 450px"
@@ -30,13 +32,13 @@
                        v-model="state.IoUThreshold"
                        show-input
                        @change="state.IoUThreshold = $event;"
-                       >
+            >
             </el-slider>
             <div class="mr10">{{state.IoUThreshold}}%</div>
         </div>
     </sly-field>
     <sly-field title="Confidence threshold"
-               description="confidence threshold values object to be positive selected"
+               description="prediction box is skipped if its confidence <= selected threshold"
                class="ml20 mr20"
     >
         <div class="fflex">
@@ -47,25 +49,42 @@
                        v-model="state.ScoreThreshold"
                        show-input
                        @change="state.ScoreThreshold = $event;"
-                       >
+            >
             </el-slider>
             <div class="mr10">{{state.ScoreThreshold}}%</div>
         </div>
     </sly-field>
-    <div class="fflex">
-        <el-button v-loading="state.loading"
-                   class="regular"
-                   type="primary"
-                   @click="command('evaluate_button_click')">
-            Download
+
+    <el-button v-loading="state.loading"
+               v-if="!state.GlobalSettingsLoaded"
+               class="regular"
+               type="primary"
+               @click="command('evaluate_button_click')">
+        Calculate metrics
+    </el-button>
+
+    <!--    <div v-if="state.loading" class="mt10">-->
+    <!--        <div style="color: #20a0ff">{{data.progress1}}: {{data.progressCurrent1}} / {{data.progressTotal}}</div>-->
+    <!--        <el-progress :percentage="data.progressPercent1"></el-progress>-->
+    <!--    </div>-->
+
+    <div v-if="state.GlobalSettingsLoaded" class="mt10">
+        <!--        <div>-->
+        <!--            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>-->
+        <!--            <span style="color: #5a6772;">-->
+        <!--                Splits have been successfully created: {{data.trainImagesCount}} images in train,-->
+        <!--                {{data.valImagesCount}} images in val-->
+        <!--            </span>-->
+        <!--        </div>-->
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 2;">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
         </el-button>
-<!--        <el-button class="regular"-->
-<!--                   :disabled="state.settingsDisableBackBtn"-->
-<!--                   type="warning"-->
-<!--                   :plain="true"-->
-<!--                   v-if="data.doneSettings && !state.loading"-->
-<!--                   @click="command('back_to_classes')">-->
-<!--            Previous step-->
-<!--        </el-button>-->
+        <div v-if="data.doneSettings">
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">Metrics calculation completed</span>
+        </div>
     </div>
+
+
 </sly-card>
