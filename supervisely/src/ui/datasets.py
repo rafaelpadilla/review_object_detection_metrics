@@ -91,6 +91,10 @@ def _get_all_images(api: sly.Api, project):
 
 def init(data, state):
     global image_dict, total_img_num
+    state['GlobalDatasetsCollapsed'] = False
+    state['GlobalDatasetsDisabled'] = False
+    state['doneDatasets'] = False
+    state['DatasetsInProgress'] = True
 
     ds_info1, ds_images1 = _get_all_images(g.api, g.gt_project_info)
     ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
@@ -109,3 +113,33 @@ def init(data, state):
                 if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
                     image_dict['gt_images'][intersected_key].append(gt_element)
                     image_dict['pred_images'][intersected_key].append(pred_element)
+
+
+def restart(data, state):
+    state['doneDatasets'] = False
+
+    # for stepper
+    state['GlobalActiveStep'] = 1
+    state['GlobalDatasetsCollapsed'] = False
+    state['GlobalDatasetsDisabled'] = False
+    state['GlobalClassesCollapsed'] = True
+    state['GlobalClassesDisabled'] = True
+    state['GlobalSettingsCollapsed'] = True
+    state['GlobalSettingsDisabled'] = True
+    state['GlobalMetricsCollapsed'] = True
+    state['GlobalMetricsDisabled'] = True
+
+
+@g.my_app.callback("next_step")
+@sly.timeit
+def next_step(api: sly.Api, task_id, context, state, app_logger):
+    fields = [
+        {"field": "state.GlobalDatasetsCollapsed", "payload": True},
+        {"field": "state.GlobalDatasetsDisabled", "payload": False},
+
+        {"field": "state.doneDatasets", "payload": True},
+
+        {"field": "state.GlobalClassesCollapsed", "payload": False},
+        {"field": "state.GlobalClassesDisabled", "payload": False}
+    ]
+    api.app.set_fields(task_id, fields)
