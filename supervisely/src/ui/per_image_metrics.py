@@ -15,6 +15,7 @@ def init(data, state):
     data['perImageTable'] = {}
     data['perImage'] = {}
     data['perImageGalleryTitle'] = 'Please, select row from ImageTable.'
+    state['activeFigure'] = None
 
 
 def calculate_per_image_metrics(api, task_id, gts, pred, method, iou_threshold, score_threshold):

@@ -37,6 +37,7 @@ def init(data, state):
     state['perClassShow1'] = False
     state['perClassShow2'] = False
     state['perClassShow3'] = False
+    state['activeFigure'] = None
 
 
 def calculate_per_classes_metrics(api, task_id, src_list, dst_list, dst_project_name, method,

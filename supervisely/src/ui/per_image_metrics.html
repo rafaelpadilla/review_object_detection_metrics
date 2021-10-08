@@ -10,11 +10,35 @@
            description="Original Ground Truth Annotations vs Detections">
     <sly-grid-gallery v-if="state.selection.selectedColumnName"
                       :content="data.perImage.content"
-                      :options="data.perImage.options">
+                      :options="data.perImage.options"
+                      :active-figure="state.activeFigure">
         <template v-slot:card-footer="{ annotation }">
             <div class="mt5" style="text-align: center">
                 <el-tag type="primary">{{annotation.title}}</el-tag>
+                </br>
+                </br>
+                <div v-for="f in annotation.figures"
+                     :key="f.id"
+                     :style="[state.activeFigure === f.id ? 'backgroundColor: red; color: white' : '' ]"
+                     @mouseenter="state.activeFigure = f.id"
+                     @mouseleave="state.activeFigure = null"
+                >
+                    Figure: {{f.classTitle}} (ID:{{ f.id }})
+                </div>
             </div>
         </template>
     </sly-grid-gallery>
+    <el-table :data="data.GalleryTable" border
+              @cell-mouse-enter="(row, column, cell, event) =>{
+                        state.activeFigure = { row: row, column: column, cell: cell };
+                        if (column.property != 'GroundTruth' && column.property != 'Prediction') return;
+                        state.activeFigure = row[column.property];
+                      }"
+              @cell-mouse-leave="state.activeFigure = null">
+        <el-table-column prop="GroundTruth" label="gt" align="center"></el-table-column>
+        <el-table-column prop="IoU" label="iou" :sortable="true"></el-table-column>
+        <el-table-column prop="Mark" label="mark"></el-table-column>
+        <el-table-column prop="Confidence" label="confidence" :sortable="true"></el-table-column>
+        <el-table-column prop="Prediction" label="prediction"></el-table-column>
+    </el-table>
 </sly-field>
