@@ -14,6 +14,14 @@ gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.CMGallery', g.aggre
 
 
 def init(data, state):
+    data['GalleryTable'] = {}
+    data['CMNotification'] = {
+        "options": {
+            "name": "Select cell in confusion matrix to preview images with original annotations and detections.",
+            "type": "info"
+        }
+    }
+    state['activeFigure'] = None
     state['selection'] = {}
     state['selected'] = {'rowClass': None, 'colClass': None}
     state['CMActiveStep'] = None
@@ -30,7 +38,9 @@ def init(data, state):
     state["CMDisabled3"] = True
     state["CMShow3"] = False
 
-    data['CMImageTableTitle'] = "Statistic Image Table"
+    state['selectedRow'] = None
+
+    data['CMImageTableTitle'] = "Statistic image table"
 
     conf_matrx_columns_v2 = []
     diagonal_max = 0
@@ -46,8 +56,8 @@ def init(data, state):
     data['slyConfusionMatrix'] = slyConfusionMatrix
     data['CMTableImages'] = {}
     data['CMGallery'] = {}
-    data['CMImageTableDescription'] = "Please, select Cell from Confusion Matrix."
-    data['CMGalleryTitle'] = 'Please, select row from Image Statistic Table.'
+    data['CMImageTableDescription'] = "Please, select cell from confusion matrix."
+    data['CMGalleryTitle'] = 'Please, select row from image statistic table.'
 
 
 def reset_cm_state_to_default(api, task_id):
@@ -67,8 +77,8 @@ def reset_cm_state_to_default(api, task_id):
         {"field": "state.CMActiveStep", "payload": 0},
 
         # {"field": "data.CMImageTableTitle", "payload": 'Cell is not selected.'},
-        {"field": "data.CMImageTableDescription1", "payload": 'Please, select Cell from Confusion Matrix.'},
-        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from Image Statistic Table.'},
+        {"field": "data.CMImageTableDescription1", "payload": 'Please, select cell from confusion matrix.'},
+        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from image statistic table.'},
     ]
     api.app.set_fields(task_id, fields)
 
@@ -88,8 +98,8 @@ def show_image_table(api: sly.Api, task_id, context, state, app_logger):
         # {"field": "state.CMDisabled3", "payload": True},
         {"field": "state.CMShow3", "payload": False},
 
-        {"field": "data.CMImageTableDescription1", "payload": 'Please, select cell from Confusion Matrix.'},
-        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from Image Statistic Table.'},
+        {"field": "data.CMImageTableDescription1", "payload": 'Please, select cell from confusion matrix.'},
+        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from image statistic table.'},
         {"field": "state.CMActiveNames", "payload": ['confusion_matrix', 'image_stat_table']},
     ]
     api.app.set_fields(task_id, fields)
