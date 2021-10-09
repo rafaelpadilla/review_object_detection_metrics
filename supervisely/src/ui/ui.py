@@ -38,10 +38,10 @@ def restart(api: sly.Api, task_id, context, state, app_logger):
     data = {}
     state = {}
 
-    if restart_from_step <= 2:
-        classes.init(data, state)
     if restart_from_step <= 3:
-        settings.init(data, state)
+        classes.init(data, state)
+    if restart_from_step <= 4:
+        settings.restart(data, state)
 
     # if restart_from_step <= 3:
     #     if restart_from_step == 3:
