@@ -1,8 +1,15 @@
 import os
 from pathlib import Path
 import sys
+from dotenv import load_dotenv
 import supervisely_lib as sly
 from collections import namedtuple
+
+# only for convenient debug
+debug_env_path = os.path.join(root_source_dir, "supervisely/train", "debug.env")
+secret_debug_env_path = os.path.join(root_source_dir, "supervisely/train", "secret_debug.env")
+load_dotenv(debug_env_path)
+load_dotenv(secret_debug_env_path, override=True)
 
 my_app = sly.AppService()
 team_id = int(os.environ['context.teamId'])
