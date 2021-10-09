@@ -137,29 +137,11 @@ def filter_classes(ann, selected_classes, score=None):
 def show_images_body(api, task_id, state, gallery_template, v_model, selected_image_classes=None):
     selected_classes = state['selectedClasses'] if selected_image_classes is None else selected_image_classes
     selected_row_data = state["selection"]["selectedRowData"]
-    dataset_name = selected_row_data['dataset_name']
+
     try:
         image_name = selected_row_data['name'].split('_blank">')[-1].split('</')[0]
     except:
         image_name = 'empty state'
-
-    image_map_ = settings.object_mapper[dataset_name][image_name]
-
-    dict_ = []
-    data = []
-    for key in image_map_:
-        data.append(image_map_[key])
-    data_np = np.asarray(data).transpose()
-
-    for line in data_np:
-        d = {
-            "GroundTruth": int(line[0]),
-            "IoU": line[4],
-            "Mark": line[2],
-            "Confidence": line[3],
-            "Prediction": int(line[1])
-        }
-        dict_.append(d)
 
     score = state['ScoreThreshold'] / 100
     if selected_row_data is not None and state["selection"]["selectedColumnName"] is not None:
@@ -174,6 +156,46 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
     ann_1 = filter_classes(api.annotation.download(image_id_1), selected_classes)
     ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes, score)
 
+    dataset_name = selected_row_data['dataset_name']
+    image_map_ = settings.object_mapper[dataset_name][image_name]
+
+    dict_ = []
+    ddict_ = []
+    data = []
+    for key in image_map_:
+        data.append(image_map_[key])
+    data_np = np.asarray(data).transpose()
+
+    for line in data_np:
+        for l in ann_1.labels:
+            if int(line[0]) == l.geometry.sly_id:
+                l_name = l.obj_class.name
+        for r in ann_2.labels:
+            if int(line[1]) == r.geometry.sly_id:
+                r_name = r.obj_class.name
+
+        gt = int(line[0]) if int(line[0]) != 0 else 0
+        pr = int(line[1]) if int(line[1]) != 0 else 0
+
+        dd = {
+            "gt": {"id": gt, "class": l_name, "color": "#FBAD00"},
+            "pr": {"id": pr, "class": r_name, "color": "#3F00FF"},
+            "mark": line[2],
+            "iou": round(float(line[4]), 3) if float(line[4]) != 0 else None,
+            "conf": round(float(line[3]), 3) if float(line[3]) != 0 else None,
+            "id_pair": [gt, pr]
+        }
+
+        d = {
+            "GroundTruth": int(line[0]),
+            "IoU": line[4],
+            "Mark": line[2],
+            "Confidence": line[3],
+            "Prediction": int(line[1])
+        }
+        dict_.append(d)
+        ddict_.append(dd)
+
     gallery_template.set_left(title='original', ann=ann_1,
                               image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
     gallery_template.set_right(title='detection', ann=ann_2,
@@ -184,5 +206,6 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
     fields = [
         {"field": v_model, "payload": text},
         {"field": 'data.GalleryTable', "payload": dict_},
+        {"field": 'data.GalleryTable1', "payload": ddict_},
     ]
     api.app.set_fields(task_id, fields)
