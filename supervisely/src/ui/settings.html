@@ -17,8 +17,7 @@
                        @change="state.samplePercent = $event;"
             >
             </el-slider>
-            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 *
-                state.samplePercent)}} images
+            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 * state.samplePercent)}} images
             </div>
         </div>
     </sly-field>
@@ -54,37 +53,25 @@
             <div class="mr10">{{state.ScoreThreshold}}%</div>
         </div>
     </sly-field>
-
     <el-button v-loading="state.loading"
-               v-if="!state.GlobalSettingsLoaded"
+               v-if="!data.doneSettings"
                class="regular"
                type="primary"
                @click="command('evaluate_button_click')">
         Calculate metrics
     </el-button>
-
     <!--    <div v-if="state.loading" class="mt10">-->
     <!--        <div style="color: #20a0ff">{{data.progress1}}: {{data.progressCurrent1}} / {{data.progressTotal}}</div>-->
     <!--        <el-progress :percentage="data.progressPercent1"></el-progress>-->
     <!--    </div>-->
-
-    <div v-if="state.GlobalSettingsLoaded" class="mt10">
-        <!--        <div>-->
-        <!--            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>-->
-        <!--            <span style="color: #5a6772;">-->
-        <!--                Splits have been successfully created: {{data.trainImagesCount}} images in train,-->
-        <!--                {{data.valImagesCount}} images in val-->
-        <!--            </span>-->
-        <!--        </div>-->
-        <el-button type="warning" class="regular mt10" :plain="true"
-                   @click="state.restartFrom = 2;">
-            <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
-        </el-button>
+    <div v-if="data.doneSettings" class="mt10">
         <div v-if="data.doneSettings">
             <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
             <span style="color: #5a6772;">Metrics calculation completed</span>
         </div>
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 4;">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
+        </el-button>
     </div>
-
-
 </sly-card>
