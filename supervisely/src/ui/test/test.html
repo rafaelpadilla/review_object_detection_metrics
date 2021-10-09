@@ -1,0 +1,46 @@
+<el-table class="mb15 ultra-table" :data="data.demoData"
+          @cell-mouse-enter="(row, column, cell, event) =>{
+                        state.activeFigure = row['id_pair'];
+                      }"
+          @cell-mouse-leave="state.activeFigure = null">
+
+    <el-table-column prop="gt" label="Ground Truth Object">
+        <template scope="scope">
+            <div v-if="scope.row.gt">
+                <i class="zmdi zmdi-circle" :style="{color: scope.row.gt.color}"></i>
+                <span class="ml5 mr10">{{ scope.row.gt.class }}</span>
+                <span style="color: #7f858e;">
+                        <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.gt.id }}
+                    </span>
+            </div>
+        </template>
+    </el-table-column>
+    <el-table-column sortable prop="iou" label="IoU">
+        <template scope="scope">
+            <div v-if="scope.row.gt && scope.row.pred">
+                <span>{{ scope.row.iou }}</span>
+            </div>
+        </template>
+    </el-table-column>
+    <el-table-column sortable prop="pred" label="Prediction Confidence">
+        <template scope="scope">
+            <div v-if="scope.row.pred">
+                <span>{{ scope.row.conf }}</span>
+            </div>
+        </template>
+    </el-table-column>
+    <el-table-column prop="pr" label="Prediction object">
+        <template scope="scope">
+            <div v-if="scope.row.pred">
+                <i class="zmdi zmdi-circle" :style="{color: scope.row.pred.color}"></i>
+                <span class="ml5 mr10">{{ scope.row.pred.class }}</span>
+                <span style="color: #7f858e;">
+                        <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.pred.id }}
+                    </span>
+            </div>
+        </template>
+    </el-table-column>
+</el-table>
+
+
+{{ state.activeFigure }}
