@@ -25,26 +25,14 @@ def init(data, state):
     state['IoUThreshold'] = 45
     state['ScoreThreshold'] = 25
 
-    data['totalImagesCount'] = None
     state['loading'] = False
 
 
-@g.my_app.callback("back_to_classes")
-@sly.timeit
-def back_to_classes(api: sly.Api, task_id, context, state, app_logger):
+def restart(data, state):
     fields = [
         {"field": "data.doneSettings", "payload": False},
-        {"field": "state.GlobalActiveStep", "payload": 1},
-        {"field": "state.GlobalClassesCollapsed", "payload": False},
-        {"field": "state.GlobalSettingsCollapsed", "payload": True},
-        {"field": "state.GlobalSettingsDisabled", "payload": True},
-        {"field": "state.GlobalMetricsCollapsed", "payload": True},
-        {"field": "state.GlobalMetricsDisabled", "payload": True},
-        {"field": "state.CMActiveNames", "payload": []},
-        # @TODO: disable metrics collapse/stepper
     ]
-    api.app.set_fields(task_id, fields)
-    metrics.confusion_matrix.reset_cm_state_to_default(api, task_id)
+    g.api.app.set_fields(g.task_id, fields)
 
 
 @g.my_app.callback("evaluate_button_click")
@@ -60,7 +48,7 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
     fields = [
         {"field": "state.loading", "payload": True},
 
-        {"field": "state.GlobalActiveStep", "payload": 2},
+        {"field": "state.GlobalActiveStep", "payload": 5},
         {"field": "state.GlobalClassesCollapsed", "payload": True},
         {"field": "state.GlobalMetricsCollapsed", "payload": True},
         {"field": "state.GlobalMetricsDisabled", "payload": True},
@@ -113,7 +101,7 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
 
         {"field": "state.loading", "payload": False},
 
-        {"field": "state.GlobalActiveStep", "payload": 3},
+        {"field": "state.GlobalActiveStep", "payload": 5},
         {"field": "state.GlobalClassesCollapsed", "payload": True},
         {"field": "state.GlobalSettingsCollapsed", "payload": True},
         {"field": "state.GlobalMetricsCollapsed", "payload": False},
