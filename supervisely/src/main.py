@@ -18,27 +18,57 @@ def main():
     state = {}
 
     # demo data
+    # ??? sort with empty cells
     data["demoData"] = [
         {
-            "date": '2016-05-03',
-            "name": 'Tom',
-            "address": 'No. 189, Grove St, Los Angeles'
+            "gt": {
+                "class": "car",
+                "color": "#3F00FF",
+                "id": 777
+            },
+            "iou": 0.7,
+            "conf": 0.9999,
+            "pred": {
+                "class": "person",
+                "color": "#FBAD00",
+                "id": 888
+            },
         },
         {
-            "date": '2016-05-02',
-            "name": 'Tom',
-            "address": 'No. 189, Grove St, Los Angeles'
+            "gt": {
+                "class": "dog",
+                "color": "#3F00FF",
+                "id": 111
+            },
+            "iou": 0,
+            "conf": 0,
         },
         {
-            "date": '2016-05-04',
-            "name": 'Tom',
-            "address": 'No. 189, Grove St, Los Angeles'
+            "iou": 0,
+            "conf": 0.1,
+            "pred": {
+                "class": "cat",
+                "color": "#FBAD00",
+                "id": 222
+            },
         },
-        {
-            "date": '2016-05-01',
-            "name": 'Tom',
-            "address": 'No. 189, Grove St, Los Angeles'
-        }
+
+        # },
+        # {
+        #     "date": '2016-05-02',
+        #     "name": 'Tom',
+        #     "address": 'No. 189, Grove St, Los Angeles'
+        # },
+        # {
+        #     "date": '2016-05-04',
+        #     "name": 'Tom',
+        #     "address": 'No. 189, Grove St, Los Angeles'
+        # },
+        # {
+        #     "date": '2016-05-01',
+        #     "name": 'Tom',
+        #     "address": 'No. 189, Grove St, Los Angeles'
+        # }
     ]
 
     # init data for UI widgets
