@@ -23,21 +23,6 @@ def init(data, state):
     g.my_app.compile_template(g.root_source_dir)
 
 
-@g.my_app.callback("back_to_settings")
-@sly.timeit
-def back_to_settings(api: sly.Api, task_id, context, state, app_logger):
-    fields = [
-        # {"field": "state.activeName", "payload": 'Settings'}
-        {"field": "state.GlobalActiveStep", "payload": 2},
-        {"field": "state.GlobalSettingsCollapsed", "payload": False},
-        {"field": "state.GlobalMetricsCollapsed", "payload": True},
-        {"field": "state.GlobalMetricsDisabled", "payload": True},
-        {"field": "state.CMActiveNames", "payload": []},
-    ]
-    api.app.set_fields(task_id, fields)
-    confusion_matrix.reset_cm_state_to_default(api, task_id)
-
-
 def dict2tuple(dictionary, target_class, round_level=4):
     false_positive, true__positive, num__positives = 0, 0, 0
     if target_class and target_class != 'ALL':
