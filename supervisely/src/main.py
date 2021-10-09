@@ -16,21 +16,44 @@ def main():
 
     data = {}
     state = {}
+
+    # demo data
+    data["demoData"] = [
+        {
+            "date": '2016-05-03',
+            "name": 'Tom',
+            "address": 'No. 189, Grove St, Los Angeles'
+        },
+        {
+            "date": '2016-05-02',
+            "name": 'Tom',
+            "address": 'No. 189, Grove St, Los Angeles'
+        },
+        {
+            "date": '2016-05-04',
+            "name": 'Tom',
+            "address": 'No. 189, Grove St, Los Angeles'
+        },
+        {
+            "date": '2016-05-01',
+            "name": 'Tom',
+            "address": 'No. 189, Grove St, Los Angeles'
+        }
+    ]
+
     # init data for UI widgets
     ui.init(data, state)
     g.my_app.compile_template(g.root_source_dir)
     g.my_app.run(data=data, state=state)
 
+    # @TODO: DESCRIPTION 2 "bird" objects are not detected (bird <-> None) +
+    # @TODO: DESCRIPTION Model predicted 77 "cat" objects that are not in GT (None <-> Bird) +
+    # легенда для таблицы с изображениями +
+    # dog FP 10 vs 7 BUG ?
+    # @TODO: clear global unused requirements
+    # @TODO: check plt2bb in utils.py for bugs
 
-# @TODO: DESCRIPTION 2 "bird" objects are not detected (bird <-> None) +
-# @TODO: DESCRIPTION Model predicted 77 "cat" objects that are not in GT (None <-> Bird) +
-# легенда для таблицы с изображениями +
-# dog FP 10 vs 7 BUG ?
-# @TODO: clear global unused requirements
-# @TODO: check plt2bb in utils.py for bugs
-
-# @TODO: Umar - настройка толщины прямоугольников и полигонов в grid gallery - связаться с Антоном
-
+    # @TODO: Umar - настройка толщины прямоугольников и полигонов в grid gallery - связаться с Антоном
 
 if __name__ == "__main__":
     sly.main_wrapper("main", main)
