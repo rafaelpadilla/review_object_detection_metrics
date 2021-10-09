@@ -95,10 +95,8 @@ def init(data, state):
 @sly.timeit
 def set_classes(api: sly.Api, task_id, context, state, app_logger):
     fields = [
-        # {"field": "state.activeName", "payload": 'Settings'},
-        {"field": "state.GlobalActiveStep", "payload": 2},
+        {"field": "state.GlobalActiveStep", "payload": 4},
         {"field": "state.GlobalClassesDone", "payload": True},
-
         {"field": "state.GlobalClassesCollapsed", "payload": True},
         {"field": "state.GlobalSettingsCollapsed", "payload": False},
         {"field": "state.GlobalSettingsDisabled", "payload": False},
