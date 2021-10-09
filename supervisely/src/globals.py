@@ -5,9 +5,21 @@ from dotenv import load_dotenv
 import supervisely_lib as sly
 from collections import namedtuple
 
+root_source_dir = str(Path(sys.argv[0]).parents[2])
+sly.logger.info(f"Root source directory: {root_source_dir}")
+sys.path.append(root_source_dir)
+
+source_path = str(Path(sys.argv[0]).parents[0])
+sly.logger.info(f"Source directory: {source_path}")
+sys.path.append(source_path)
+
+ui_sources_dir = os.path.join(source_path, "ui")
+sys.path.append(ui_sources_dir)
+sly.logger.info(f"Added to sys.path: {ui_sources_dir}")
+
 # only for convenient debug
-debug_env_path = os.path.join(root_source_dir, "supervisely/train", "debug.env")
-secret_debug_env_path = os.path.join(root_source_dir, "supervisely/train", "secret_debug.env")
+debug_env_path = os.path.join(root_source_dir, "supervisely", "debug.env")
+secret_debug_env_path = os.path.join(root_source_dir, "supervisely", "secret_debug.env")
 load_dotenv(debug_env_path)
 load_dotenv(secret_debug_env_path, override=True)
 
@@ -36,19 +48,6 @@ for i in _gt_meta_['classes']:
             aggregated_meta['classes'].append(i)
 
 aggregated_meta = sly.ProjectMeta.from_json(aggregated_meta)
-
-root_source_dir = str(Path(sys.argv[0]).parents[2])
-sly.logger.info(f"Root source directory: {root_source_dir}")
-sys.path.append(root_source_dir)
-
-source_path = str(Path(sys.argv[0]).parents[0])
-sly.logger.info(f"Source directory: {source_path}")
-sys.path.append(source_path)
-
-ui_sources_dir = os.path.join(source_path, "ui")
-sys.path.append(ui_sources_dir)
-sly.logger.info(f"Added to sys.path: {ui_sources_dir}")
-
 
 result = namedtuple('Result', ['TP', 'FP', 'NPOS', 'Precision', 'Recall', 'AP'])
 table_classes_columns = ['className', 'TP', 'FP', 'npos', 'Recall', 'Precision', 'AP']
