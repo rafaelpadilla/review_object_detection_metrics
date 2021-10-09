@@ -119,7 +119,7 @@ def restart(data, state):
     state['doneDatasets'] = False
 
     # for stepper
-    state['GlobalActiveStep'] = 1
+    state['GlobalActiveStep'] = 2
     state['GlobalDatasetsCollapsed'] = False
     state['GlobalDatasetsDisabled'] = False
     state['GlobalClassesCollapsed'] = True
@@ -136,7 +136,7 @@ def next_step(api: sly.Api, task_id, context, state, app_logger):
     fields = [
         {"field": "state.GlobalDatasetsCollapsed", "payload": True},
         {"field": "state.GlobalDatasetsDisabled", "payload": False},
-
+        {"field": "state.GlobalActiveStep", "payload": 3},
         {"field": "state.doneDatasets", "payload": True},
 
         {"field": "state.GlobalClassesCollapsed", "payload": False},
