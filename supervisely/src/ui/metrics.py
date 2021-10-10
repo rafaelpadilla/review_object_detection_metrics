@@ -14,13 +14,15 @@ from src.utils.enumerators import MethodAveragePrecision
 # from src.bounding_box import BoundingBox, BBType, BBFormat
 
 
-def init(data, state):
+@sly.timeit
+def init(data, state, reconstruct=False):
     state['activeFigure'] = None
     confusion_matrix.init(data, state)
     per_image_metrics.init(data, state)
     per_class_metrics.init(data, state)
     overall_metrics.init(data, state)
-    g.my_app.compile_template(g.root_source_dir)
+    if reconstruct:
+        g.my_app.compile_template(g.root_source_dir)
 
 
 def dict2tuple(dictionary, target_class, round_level=4):
