@@ -20,8 +20,8 @@ def init(data, state):
     state['activeName'] = "Datasets"
     # for stepper
     state['GlobalActiveStep'] = 1
-    state['GlobalDatasetsCollapsed'] = False
-    state['GlobalDatasetsDisabled'] = False
+    state['GlobalDatasetsCollapsed'] = True
+    state['GlobalDatasetsDisabled'] = True
     state['GlobalClassesCollapsed'] = True
     state['GlobalClassesDisabled'] = True
     state['GlobalSettingsCollapsed'] = True
@@ -38,6 +38,8 @@ def restart(api: sly.Api, task_id, context, state, app_logger):
     data = {}
     state = {}
 
+    if restart_from_step == 1:
+        input.restart(data, state)
     if restart_from_step <= 3:
         classes.init(data, state)
     if restart_from_step <= 4:

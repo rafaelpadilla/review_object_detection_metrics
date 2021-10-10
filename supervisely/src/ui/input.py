@@ -1,5 +1,9 @@
 import supervisely_lib as sly
 import globals as g
+import datasets
+import classes
+import settings
+import metrics
 
 
 def init(data, state):
@@ -18,8 +22,16 @@ def init(data, state):
 
 
 def restart(data, state):
-    data = None
-    state = None
+    state['GlobalInputCollapsed'] = False
+    state['GlobalInputDisabled'] = False
+    state['doneInput'] = False
+    state['InputInProgress'] = True
+
+    datasets.init(data, state)
+    classes.init(data, state)
+    settings.init(data, state)
+    metrics.init(data, state)
+    state['GlobalActiveStep'] = 1
 
 
 @g.my_app.callback("set_projects")
