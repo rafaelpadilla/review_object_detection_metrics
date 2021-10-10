@@ -7,11 +7,11 @@
             <sly-select-project v-model="state.gtProjectId" :workspace-id="state.GTworkspaceId"
                                 :project-id.sync="state.gtProjectId"></sly-select-project>
         </sly-field>
-        <sly-field v-if="data.gtProjectName"
+        <sly-field v-if="state.gtProjectName"
                    title="" description="Project">
             <a slot="title" target="_blank"
-               :href="`/projects/${data.gtProjectId}/datasets`">{{data.gtProjectName}}</a>
-            <sly-icon slot="icon" :options="{ imageUrl: `${data.gtProjectPreviewUrl}` }"/>
+               :href="`/projects/${state.gtProjectId}/datasets`">{{state.gtProjectName}}</a>
+            <sly-icon slot="icon" :options="{ imageUrl: `${state.gtProjectPreviewUrl}` }"/>
         </sly-field>
     </sly-card>
 
@@ -22,11 +22,11 @@
             <sly-select-project v-model="state.predProjectId" :workspace-id="state.PRworkspaceId"
                                 :project-id.sync="state.predProjectId"></sly-select-project>
         </sly-field>
-        <sly-field v-if="data.predProjectName"
+        <sly-field v-if="state.predProjectName"
                    title="" description="Project">
             <a slot="title" target="_blank"
-               :href="`/projects/${data.predProjectId}/datasets`">{{data.predProjectName}}</a>
-            <sly-icon slot="icon" :options="{ imageUrl: `${data.predProjectPreviewUrl}` }"/>
+               :href="`/projects/${state.predProjectId}/datasets`">{{state.predProjectName}}</a>
+            <sly-icon slot="icon" :options="{ imageUrl: `${state.predProjectPreviewUrl}` }"/>
         </sly-field>
     </sly-card>
 </div>
@@ -36,14 +36,12 @@
            class="regular" type="primary" @click="command('set_projects')" >
     Set projects
 </el-button>
-
 <div v-if="state.doneInput">
     <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
     <span style="color: #5a6772;">
                 Projects selected.
         </span>
 </div>
-
 <el-button type="warning" class="regular mt10" :plain="true"
            @click="state.restartFrom = 1; state.doneInput = false; command('restart')"
            v-if="state.doneInput">
