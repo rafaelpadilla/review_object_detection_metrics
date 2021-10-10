@@ -4,7 +4,7 @@ import globals as g
 global RESULTS, RESULTS_DATA, image_dict, total_img_num
 RESULTS = None
 RESULTS_DATA = None
-image_dict = {}
+image_dict = {'gt_images': {}, 'pred_images': {}}
 
 
 def process_items(ds_info1, collection1, ds_info2, collection2):
@@ -90,36 +90,16 @@ def _get_all_images(api: sly.Api, project):
 
 
 def init(data, state, reconstruct=False):
-    global image_dict, total_img_num
+
     state['GlobalDatasetsCollapsed'] = True
     state['GlobalDatasetsDisabled'] = True
     state['doneDatasets'] = False
     state['DatasetsInProgress'] = False
-
-    if reconstruct:
-        ds_info1, ds_images1 = _get_all_images(g.api, g.gt_project_info)
-        ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
-        result = process_items(ds_info1, ds_images1, ds_info2, ds_images2)
-        data['table'] = result
-
-        intersected_keys = list(set(list(ds_images1)) & set(list(ds_images2)))
-        image_dict = {'gt_images': {}, 'pred_images': {}}
-
-        for intersected_key in intersected_keys:
-            image_dict['gt_images'][intersected_key] = []
-            image_dict['pred_images'][intersected_key] = []
-
-            for gt_element in ds_images1[intersected_key]:
-                for pred_element in ds_images2[intersected_key]:
-                    if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
-                        image_dict['gt_images'][intersected_key].append(gt_element)
-                        image_dict['pred_images'][intersected_key].append(pred_element)
+    state['datasetReconstruct'] = False
 
 
 def restart(data, state):
     state['doneDatasets'] = False
-
-    # for stepper
     state['GlobalActiveStep'] = 2
     state['GlobalDatasetsCollapsed'] = False
     state['GlobalDatasetsDisabled'] = False
@@ -129,6 +109,46 @@ def restart(data, state):
     state['GlobalSettingsDisabled'] = True
     state['GlobalMetricsCollapsed'] = True
     state['GlobalMetricsDisabled'] = True
+
+
+@g.my_app.callback("get_datasets_statistic")
+@sly.timeit
+def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
+    global image_dict, total_img_num
+
+    g.api.app.set_field(g.task_id, "state.DatasetsInProgress", True)
+
+    g.gt_project_info = api.project.get_info_by_id(state['gtProjectId'], raise_error=True)
+    g._gt_meta_ = api.project.get_meta(state['gtProjectId'])
+    g.gt_meta = sly.ProjectMeta.from_json(g._gt_meta_)
+
+    g.pred_project_info = api.project.get_info_by_id(state['predProjectId'], raise_error=True)
+    g._pred_meta_ = api.project.get_meta(state['predProjectId'])
+    g.pred_meta = sly.ProjectMeta.from_json(g._pred_meta_)
+    g.generate_meta()
+
+    ds_info1, ds_images1 = _get_all_images(g.api, g.gt_project_info)
+    ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
+    result = process_items(ds_info1, ds_images1, ds_info2, ds_images2)
+    intersected_keys = list(set(list(ds_images1)) & set(list(ds_images2)))
+    # image_dict = {'gt_images': {}, 'pred_images': {}}
+
+    for intersected_key in intersected_keys:
+        image_dict['gt_images'][intersected_key] = []
+        image_dict['pred_images'][intersected_key] = []
+
+        for gt_element in ds_images1[intersected_key]:
+            for pred_element in ds_images2[intersected_key]:
+                if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
+                    image_dict['gt_images'][intersected_key].append(gt_element)
+                    image_dict['pred_images'][intersected_key].append(pred_element)
+
+    fields = [
+        {"field": "data.table", "payload": result},
+        {"field": "state.DatasetsInProgress", "payload": False},
+        {"field": "state.doneDatasets", "payload": True},
+    ]
+    g.api.app.set_fields(g.task_id, fields)
 
 
 @g.my_app.callback("next_step")
