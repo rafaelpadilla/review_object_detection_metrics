@@ -1,6 +1,7 @@
 import supervisely_lib as sly
 import globals as g
 import confusion_matrix
+import datasets
 import settings
 import metrics
 
@@ -86,20 +87,57 @@ def _process_items(collection1, collection2, diff_msg="Automatic conversion to r
 
 def init(data, state, reconstruct=False):
     global classes_table
-    if reconstruct:
+    try:
+        if g.aggregated_meta is None:
+            g.generate_meta()
         classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
-    data["classesTable"] = classes_table
+        data["classesTable"] = classes_table
+    except:
+        pass
     state["selectedClasses"] = []
-    state['GlobalClassesCollapsed'] = True
+    state['GlobalClassesCollapsed'] = False
     state['GlobalClassesDisabled'] = True
     state['GlobalClassesDone'] = False
+    state['classesDone'] = False
     settings.restart(data, state)
     metrics.init(data, state)
+
+
+def restart(data, state):
+    state['GlobalClassesCollapsed'] = False
+    state['GlobalClassesDisabled'] = False
+    state['GlobalClassesDone'] = False
+    state['classesDone'] = False
+    state['GlobalActiveStep'] = 3
+
+    state['GlobalSettingsCollapsed'] = True
+    state['GlobalSettingsDisabled'] = True
+    state['GlobalMetricsCollapsed'] = True
+    state['GlobalMetricsDisabled'] = True
+
+    settings.restart(data, state)
+    metrics.init(data, state)
+
+
+@g.my_app.callback("get_classes")
+@sly.timeit
+def get_classes(api: sly.Api, task_id, context, state, app_logger):
+    global classes_table
+    classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
+    fields = [
+        {"field": "state.classesDone", "payload": True},
+        {"field": "data.classesTable", "payload": classes_table},
+    ]
+    api.app.set_fields(task_id, fields)
 
 
 @g.my_app.callback("set_classes")
 @sly.timeit
 def set_classes(api: sly.Api, task_id, context, state, app_logger):
+    total_img_num = 0
+    for k, v in datasets.image_dict['gt_images'].items():
+        total_img_num += len(v)
+
     fields = [
         {"field": "state.GlobalActiveStep", "payload": 4},
         {"field": "state.GlobalClassesDone", "payload": True},
@@ -111,6 +149,8 @@ def set_classes(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.GlobalMetricsCollapsed", "payload": True},
         {"field": "state.GlobalMetricsDisabled", "payload": True},
         {"field": "state.GlobalShowMetrics", "payload": False},
+        {"field": "data.totalImagesCount", "payload": total_img_num},
+
     ]
     api.app.set_fields(task_id, fields)
     confusion_matrix.reset_cm_state_to_default(api, task_id)
