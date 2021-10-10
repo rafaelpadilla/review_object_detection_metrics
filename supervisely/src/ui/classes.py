@@ -82,8 +82,10 @@ def _process_items(collection1, collection2, diff_msg="Automatic conversion to r
     return table
 
 
-def init(data, state):
-    classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
+def init(data, state, reconstruct=False):
+    global classes_table
+    if reconstruct:
+        classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
     data["classesTable"] = classes_table
     state["selectedClasses"] = []
     state['GlobalClassesCollapsed'] = True
@@ -108,3 +110,7 @@ def set_classes(api: sly.Api, task_id, context, state, app_logger):
     ]
     api.app.set_fields(task_id, fields)
     confusion_matrix.reset_cm_state_to_default(api, task_id)
+
+
+
+classes_table = []
