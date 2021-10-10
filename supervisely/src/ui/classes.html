@@ -5,63 +5,69 @@
           :disabled="{disabled: state.GlobalClassesDisabled, message: 'Smthg wrong'}"
           ref="GlobalStep2"
 >
-    <el-table
-            class="ultra-table"
-            :data="data.classesTable"
-            @selection-change="
-                (val) => {
-                    state.selectedClasses = val.map(x => x.name1);
-                }
-                "
-    >
-        <el-table-column type="selection" width="55"></el-table-column>
-        <el-table-column sortable prop="name1" label="Classes in GT project">
-            <template scope="scope">
-                <div v-if="scope.row.name1">
-                    <i class="zmdi zmdi-circle" :style="{color: scope.row.color1}"></i>
-                    <span class="mr10 ml10">{{ scope.row.name1 }}</span>
-                    <span style="color: #7f858e;"><i
-                            :class="scope.row.shapeIcon1"></i> {{ scope.row.shape1 }}</span>
-                </div>
-            </template>
-        </el-table-column>
-        <el-table-column prop="info" label="Compare">
-            <template scope="scope">
-                <div :style="{color: scope.row.infoColor}">
-                        <span style="width: 25px; display: inline-block">
-                                <i v-for="icon in scope.row.infoIcon" :class="icon"></i>
-                        </span>
-                    <span class="mr10 ml10">{{ scope.row.infoMessage }}</span>
-                </div>
-            </template>
-        </el-table-column>
-        <el-table-column sortable prop="name2" label="Classes in PRED project">
-            <template scope="scope">
-                <div v-if="scope.row.name2">
-                    <i class="zmdi zmdi-circle" :style="{color: scope.row.color2}"></i>
-                    <span class="mr10 ml10">{{ scope.row.name2 }}</span>
-                    <span style="color: #7f858e;"><i
-                            :class="scope.row.shapeIcon2"></i> {{ scope.row.shape2 }}</span>
-                </div>
-            </template>
-        </el-table-column>
-    </el-table>
-    <el-button v-if="!state.GlobalClassesDone"
-               class="regular"
-               type="primary"
-               @click="command('set_classes')">Set classes
+    <el-button v-if="!state.classesDone"
+               class="regular" type="primary" @click="command('get_classes')">
+        Get dataset statistics
     </el-button>
 
-    <div v-if="state.GlobalClassesDone">
-        <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
-        <span style="color: #5a6772;">
-                Classes selected.
-        </span>
+    <div v-if="state.classesDone">
+        <el-table class="ultra-table"
+                  :data="data.classesTable"
+                  @selection-change="
+                    (val) => {
+                        state.selectedClasses = val.map(x => x.name1);
+                    }
+                    "
+        >
+            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column sortable prop="name1" label="Classes in GT project">
+                <template scope="scope">
+                    <div v-if="scope.row.name1">
+                        <i class="zmdi zmdi-circle" :style="{color: scope.row.color1}"></i>
+                        <span class="mr10 ml10">{{ scope.row.name1 }}</span>
+                        <span style="color: #7f858e;"><i
+                                :class="scope.row.shapeIcon1"></i> {{ scope.row.shape1 }}</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="info" label="Compare">
+                <template scope="scope">
+                    <div :style="{color: scope.row.infoColor}">
+                            <span style="width: 25px; display: inline-block">
+                                    <i v-for="icon in scope.row.infoIcon" :class="icon"></i>
+                            </span>
+                        <span class="mr10 ml10">{{ scope.row.infoMessage }}</span>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column sortable prop="name2" label="Classes in PRED project">
+                <template scope="scope">
+                    <div v-if="scope.row.name2">
+                        <i class="zmdi zmdi-circle" :style="{color: scope.row.color2}"></i>
+                        <span class="mr10 ml10">{{ scope.row.name2 }}</span>
+                        <span style="color: #7f858e;"><i
+                                :class="scope.row.shapeIcon2"></i> {{ scope.row.shape2 }}</span>
+                    </div>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-button v-if="!state.GlobalClassesDone"
+                   class="regular"
+                   type="primary"
+                   @click="command('set_classes')">Set classes
+        </el-button>
+
+        <div v-if="state.GlobalClassesDone">
+            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+            <span style="color: #5a6772;">
+                    Classes selected.
+            </span>
+        </div>
+
+        <el-button type="warning" class="regular mt10" :plain="true"
+                   @click="state.restartFrom = 3; state.GlobalClassesDone = false; command('restart')"
+                   v-if="state.GlobalClassesDone">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
+        </el-button>
     </div>
-
-    <el-button type="warning" class="regular mt10" :plain="true"
-               @click="state.restartFrom = 3; state.GlobalClassesDone = false; command('restart')"
-               v-if="state.GlobalClassesDone">
-        <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
-    </el-button>
 </sly-card>
