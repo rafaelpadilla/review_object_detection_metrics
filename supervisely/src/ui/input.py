@@ -30,7 +30,7 @@ def restart(data, state):
     datasets.init(data, state)
     classes.init(data, state)
     settings.init(data, state)
-    metrics.init(data, state)
+    metrics.init(data, state, reconstruct=False)
     state['GlobalActiveStep'] = 1
 
 
