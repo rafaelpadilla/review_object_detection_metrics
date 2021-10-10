@@ -28,4 +28,5 @@ def calculate_per_image_metrics(api, task_id, gts, pred, method, iou_threshold, 
 @g.my_app.callback("show_images_per_image")
 @sly.timeit
 def show_images_per_image(api: sly.Api, task_id, context, state, app_logger):
-    ui_utils.show_images_body(api, task_id, state, gallery_per_image, "data.perImageGalleryTitle")
+    ui_utils.show_images_body(api, task_id, state, gallery_per_image, "data.perImageGalleryTitle",
+                              gallery_table='data.GalleryTable3')

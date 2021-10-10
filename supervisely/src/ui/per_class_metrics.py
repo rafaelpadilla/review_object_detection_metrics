@@ -83,8 +83,10 @@ def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_pro
         for dataset_name, dataset_items in src_list.items():
             images_names_with_target_class = list(
                 set(expand_line(src_list[dataset_name], class_name) + expand_line(dst_list[dataset_name], class_name)))
-            row_indexes1 = [id_ for id_, line in enumerate(src_list[dataset_name]) if line[1] in images_names_with_target_class]
-            row_indexes2 = [id_ for id_, line in enumerate(dst_list[dataset_name]) if line[1] in images_names_with_target_class]
+            row_indexes1 = [id_ for id_, line in enumerate(src_list[dataset_name]) if
+                            line[1] in images_names_with_target_class]
+            row_indexes2 = [id_ for id_, line in enumerate(dst_list[dataset_name]) if
+                            line[1] in images_names_with_target_class]
             row_indexes = list(set(row_indexes1 + row_indexes2))
             single_class_src_list_np[dataset_name] = [src_list[dataset_name][id_] for id_ in row_indexes]
             single_class_dst_list_np[dataset_name] = [dst_list[dataset_name][id_] for id_ in row_indexes]
@@ -141,7 +143,8 @@ def view_class(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.perClassShow2", "payload": True},
         {"field": "state.perClassShow3", "payload": False},
 
-        {"field": "data.perClassImageStatTableInfo", "payload": "Image Metrics Table and Line Chart for selected class: {}".format(class_name)},
+        {"field": "data.perClassImageStatTableInfo",
+         "payload": "Image Metrics Table and Line Chart for selected class: {}".format(class_name)},
     ]
     api.app.set_fields(task_id, fields)
 
@@ -151,7 +154,7 @@ def view_class(api: sly.Api, task_id, context, state, app_logger):
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
     selected_image_classes = state['selectedClassName']
     ui_utils.show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle",
-                              selected_image_classes)
+                              selected_image_classes=selected_image_classes, gallery_table="data.GalleryTable2")
     fields = [
         {"field": "state.perClassActiveStep", "payload": 3},
         {"field": "state.perClassActiveNames",
