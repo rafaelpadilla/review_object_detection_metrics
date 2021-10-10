@@ -37,20 +37,21 @@ def restart(data, state):
 @g.my_app.callback("set_projects")
 @sly.timeit
 def set_projects(api: sly.Api, task_id, context, state, app_logger):
-    state['GlobalInputCollapsed'] = True
-    state['GlobalInputDisabled'] = False
-    state['doneInput'] = True
-    state['InputInProgress'] = False
-
-    state['GlobalDatasetsCollapsed'] = True
-    state['GlobalDatasetsDisabled'] = True
-    state['doneDatasets'] = False
-    state['DatasetsInProgress'] = True
 
     gt_project_info = api.project.get_info_by_id(state['gtProjectId'], raise_error=True)
     pr_project_info = api.project.get_info_by_id(state['predProjectId'], raise_error=True)
 
     fields = [
+        {"field": "state.GlobalInputCollapsed", "payload": True},
+        {"field": "state.GlobalInputDisabled", "payload": False},
+        {"field": "state.doneInput", "payload": True},
+        {"field": "state.InputInProgress", "payload": False},
+
+        {"field": "state.GlobalDatasetsCollapsed", "payload": False},
+        {"field": "state.GlobalDatasetsDisabled", "payload": False},
+        {"field": "state.doneDatasets", "payload": False},
+        {"field": "state.DatasetsInProgress", "payload": True},
+
         {"field": "state.GlobalActiveStep", "payload": 2},
         {"field": "data.gtProjectId", "payload": gt_project_info.id},
         {"field": "data.gtProjectName", "payload": gt_project_info.name},
