@@ -89,30 +89,31 @@ def _get_all_images(api: sly.Api, project):
     return ds_info, ds_images,
 
 
-def init(data, state):
+def init(data, state, reconstruct=False):
     global image_dict, total_img_num
     state['GlobalDatasetsCollapsed'] = True
     state['GlobalDatasetsDisabled'] = True
     state['doneDatasets'] = False
     state['DatasetsInProgress'] = False
 
-    ds_info1, ds_images1 = _get_all_images(g.api, g.gt_project_info)
-    ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
-    result = process_items(ds_info1, ds_images1, ds_info2, ds_images2)
-    data['table'] = result
+    if reconstruct:
+        ds_info1, ds_images1 = _get_all_images(g.api, g.gt_project_info)
+        ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
+        result = process_items(ds_info1, ds_images1, ds_info2, ds_images2)
+        data['table'] = result
 
-    intersected_keys = list(set(list(ds_images1)) & set(list(ds_images2)))
-    image_dict = {'gt_images': {}, 'pred_images': {}}
+        intersected_keys = list(set(list(ds_images1)) & set(list(ds_images2)))
+        image_dict = {'gt_images': {}, 'pred_images': {}}
 
-    for intersected_key in intersected_keys:
-        image_dict['gt_images'][intersected_key] = []
-        image_dict['pred_images'][intersected_key] = []
+        for intersected_key in intersected_keys:
+            image_dict['gt_images'][intersected_key] = []
+            image_dict['pred_images'][intersected_key] = []
 
-        for gt_element in ds_images1[intersected_key]:
-            for pred_element in ds_images2[intersected_key]:
-                if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
-                    image_dict['gt_images'][intersected_key].append(gt_element)
-                    image_dict['pred_images'][intersected_key].append(pred_element)
+            for gt_element in ds_images1[intersected_key]:
+                for pred_element in ds_images2[intersected_key]:
+                    if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
+                        image_dict['gt_images'][intersected_key].append(gt_element)
+                        image_dict['pred_images'][intersected_key].append(pred_element)
 
 
 def restart(data, state):
