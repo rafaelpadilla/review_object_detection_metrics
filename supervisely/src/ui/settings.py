@@ -25,14 +25,24 @@ def init(data, state):
     state['IoUThreshold'] = 45
     state['ScoreThreshold'] = 25
 
-    state['loading'] = False
+    state['settingsLoading'] = False
 
+    state['DownLoadAnnotations'] = False
+
+    '''     {{state.progressDownLoadAnnotations}}: {{state.progressCurrentDownLoadAnnotations}} / {{state.progressTotalDownLoadAnnotations}}
+        </div>
+        <el-progress :percentage="data.progressPercentUploadDir"></el-progress>
+    </div>'''
 
 def restart(data, state):
-    fields = [
-        {"field": "data.doneSettings", "payload": False},
-    ]
-    g.api.app.set_fields(g.task_id, fields)
+    state['GlobalActiveStep'] = 4
+
+    state['GlobalSettingsCollapsed'] = False
+    state['GlobalSettingsDisabled'] = False
+    state['GlobalMetricsCollapsed'] = True
+    state['GlobalMetricsDisabled'] = True
+    data['doneSettings'] = False
+    metrics.init(data, state)
 
 
 @g.my_app.callback("evaluate_button_click")
