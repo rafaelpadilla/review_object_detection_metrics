@@ -63,6 +63,12 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     #
     #         # break
     gts, pred = selected_image_infos['gt_images'], selected_image_infos['pred_images']
+    # project_pd_data = metrics.calculate_project_mAP(src_list=gts,
+    #                                                 dst_list=pred,
+    #                                                 method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+    #                                                 dst_project_name=g.pred_project_info.name,
+    #                                                 iou=iou_threshold, score=score_threshold)
+
     images_pd_data = metrics.calculate_image_mAP(gts, pred, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                                                  iou=iou_threshold, score=score_threshold)
     new_list_src, new_list_dst = [], []
@@ -134,7 +140,7 @@ def filter_classes(ann, selected_classes, score=None):
     return ann
 
 
-def show_images_body(api, task_id, state, gallery_template, v_model, selected_image_classes=None):
+def show_images_body(api, task_id, state, gallery_template, v_model, gallery_table, selected_image_classes=None):
     selected_classes = state['selectedClasses'] if selected_image_classes is None else selected_image_classes
     selected_row_data = state["selection"]["selectedRowData"]
 
@@ -153,8 +159,11 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
     else:
         return
 
-    ann_1 = filter_classes(api.annotation.download(image_id_1), selected_classes)
-    ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes, score)
+    # ann_1 = filter_classes(api.annotation.download(image_id_1), selected_classes)
+    # ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes, score)
+
+    ann_1 = sly.Annotation.from_json(api.annotation.download(image_id_1).annotation, g.aggregated_meta)
+    ann_2 = sly.Annotation.from_json(api.annotation.download(image_id_2).annotation, g.aggregated_meta)
 
     dataset_name = selected_row_data['dataset_name']
     image_map_ = settings.object_mapper[dataset_name][image_name]
@@ -168,44 +177,58 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
 
     for line in data_np:
         for l in ann_1.labels:
-            if int(line[0]) == l.geometry.sly_id:
-                l_name = l.obj_class.name
+            try:
+                if int(line[0]) == l.geometry.sly_id:
+                    gt = int(line[0]) if int(line[0]) is not None else None
+                    l_name = l.obj_class.name
+                    l_color = l.obj_class.to_json()['color']
+                    break
+            except:
+                gt = None
+                l_name = None
+                l_color = None
+
         for r in ann_2.labels:
-            if int(line[1]) == r.geometry.sly_id:
-                r_name = r.obj_class.name
 
-        gt = int(line[0]) if int(line[0]) != 0 else 0
-        pr = int(line[1]) if int(line[1]) != 0 else 0
-
+            try:
+                if int(line[1]) == r.geometry.sly_id:
+                    pr = int(line[1]) if int(line[1]) is not None else None
+                    r_name = r.obj_class.name
+                    r_color = r.obj_class.to_json()['color']
+                    break
+            except:
+                pr = None
+                r_name = None
+                r_color = None
         dd = {
-            "gt": {"id": gt, "class": l_name, "color": "#FBAD00"},
-            "pr": {"id": pr, "class": r_name, "color": "#3F00FF"},
+            "gt": {"id": gt, "class": l_name, "color": l_color},
+            "pr": {"id": pr, "class": r_name, "color": r_color},
             "mark": line[2],
-            "iou": round(float(line[4]), 3) if float(line[4]) != 0 else None,
-            "conf": round(float(line[3]), 3) if float(line[3]) != 0 else None,
+            "iou": round(float(line[4]), 3) if line[4] is not None else None,
+            "conf": round(float(line[3]), 3) if line[3] is not None else None,
             "id_pair": [gt, pr]
         }
 
-        d = {
-            "GroundTruth": int(line[0]),
-            "IoU": line[4],
-            "Mark": line[2],
-            "Confidence": line[3],
-            "Prediction": int(line[1])
-        }
-        dict_.append(d)
+        # d = {
+        #     "GroundTruth": int(line[0]),
+        #     "IoU": line[4],
+        #     "Mark": line[2],
+        #     "Confidence": line[3],
+        #     "Prediction": int(line[1])
+        # }
+        # dict_.append(d)
         ddict_.append(dd)
 
-    gallery_template.set_left(title='original', ann=ann_1,
+    gallery_template.set_left(title='ground truth', ann=ann_1,
                               image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
-    gallery_template.set_right(title='detection', ann=ann_2,
+    gallery_template.set_right(title='predictions', ann=ann_2,
                                image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
     gallery_template.update()
 
-    text = 'Gallery for {}'.format(image_name)
+    text = 'Labels preview for {}'.format(image_name)
     fields = [
         {"field": v_model, "payload": text},
         {"field": 'data.GalleryTable', "payload": dict_},
-        {"field": 'data.GalleryTable1', "payload": ddict_},
+        {"field": gallery_table, "payload": ddict_},
     ]
     api.app.set_fields(task_id, fields)
