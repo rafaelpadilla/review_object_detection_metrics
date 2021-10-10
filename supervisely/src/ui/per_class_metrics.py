@@ -8,8 +8,9 @@ import ui_utils
 
 # from supervisely_lib.app.widgets.sly_table import SlyTable
 
-image_sly_table = SlyTable(g.api, g.task_id, "data.perClassTable", g.image_columns)
-gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
+# gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
+image_sly_table = None  # SlyTable(g.api, g.task_id, "data.perClassTable", g.image_columns)
+gallery_per_class = None  # CompareGallery(g.task_id, g.api, 'data.perImage', g.aggregated_meta)
 
 
 def init(data, state):

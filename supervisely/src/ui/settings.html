@@ -8,7 +8,8 @@
     <sly-field title="Sample percent"
                description="Percent of images that will be sampled randomly for metrics evaluation">
         <div class="fflex">
-            <el-slider class="ml10 mr10"
+            <el-slider :disablead="data.doneSettings"
+                       class="ml10 mr10"
                        style="width: 450px"
                        :min="1"
                        :max="100"
@@ -17,7 +18,8 @@
                        @change="state.samplePercent = $event;"
             >
             </el-slider>
-            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 * state.samplePercent)}} images
+            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 *
+                state.samplePercent)}} images
             </div>
         </div>
     </sly-field>
@@ -60,18 +62,21 @@
                @click="command('evaluate_button_click')">
         Calculate metrics
     </el-button>
-    <!--    <div v-if="state.loading" class="mt10">-->
-    <!--        <div style="color: #20a0ff">{{data.progress1}}: {{data.progressCurrent1}} / {{data.progressTotal}}</div>-->
-    <!--        <el-progress :percentage="data.progressPercent1"></el-progress>-->
-    <!--    </div>-->
+    <div v-if="state.DownLoadAnnotations" class="mt10">
+        <div style="color: #20a0ff">
+            {{state.progressDownLoadAnnotations}}: {{state.progressCurrentDownLoadAnnotations}} /
+            {{state.progressTotalDownLoadAnnotations}}
+        </div>
+        <el-progress :percentage="data.progressPercentUploadDir"></el-progress>
+    </div>
     <div v-if="data.doneSettings" class="mt10">
         <div v-if="data.doneSettings">
             <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
             <span style="color: #5a6772;">Metrics calculation completed</span>
         </div>
         <el-button type="warning" class="regular mt10" :plain="true"
-                   @click="state.restartFrom = 4;">
-            <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
+                   @click="state.restartFrom = 4; command('restart')">
+            <i class="zmdi zmdi-rotate-left mr5"></i> Reset settings
         </el-button>
     </div>
 </sly-card>
