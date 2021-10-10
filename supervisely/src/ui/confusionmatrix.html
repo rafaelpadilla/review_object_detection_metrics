@@ -102,13 +102,14 @@
             </div>
         </sly-field>
     </el-collapse-item>
-    <el-collapse-item title="Labels preview" name="grid_gallery">
+    <el-collapse-item :title="data.CMGalleryTitle" name="grid_gallery">
+<!--        title="Labels preview"-->
         <div v-if="state.CMShow1 && !state.CMShow2">Please, select cell from Confusion Matrix</div>
         <div v-if="state.CMShow1 && state.CMShow2 && !state.CMShow3">Please, select row from Image Statistic Table</div>
 
         <sly-field v-if="state.selection.selectedColumnName && state.CMShow3"
-                   :title="data.CMGalleryTitle"
-                   description="Original annotations VS Detections">
+                   title=""
+                   description="Ground Truth VS Predictions">
             <sly-grid-gallery
                     :content="data.CMGallery.content"
                     :options="data.CMGallery.options"
@@ -124,10 +125,12 @@
                       @cell-mouse-enter="(row, column, cell, event) =>{
                         state.activeFigure = row['id_pair'];
                       }"
-                      @cell-mouse-leave="state.activeFigure = null">
-                <el-table-column label="Ground Truth" align="center" :sortable="true">
+                      @cell-mouse-leave="state.activeFigure = null"
+                      max-height="250">
+                <!--                :sortable="true"-->
+                <el-table-column label="Ground Truth" align="center" sortable>
                     <template scope="scope">
-                        <div v-if="scope.row.gt">
+                        <div v-if="scope.row.gt.class">
                             <i class="zmdi zmdi-circle" :style="{color: scope.row.gt.color}"></i>
                             <span class="ml5 mr10">{{ scope.row.gt.class }}</span>
                             <span style="color: #7f858e;">
@@ -158,7 +161,7 @@
                 </el-table-column>
                 <el-table-column label="Prediction" align="center" :sortable="true">
                     <template scope="scope">
-                        <div v-if="scope.row.pr">
+                        <div v-if="scope.row.pr.class">
                             <i class="zmdi zmdi-circle" :style="{color: scope.row.pr.color}"></i>
                             <span class="ml5 mr10">{{ scope.row.pr.class }}</span>
                             <span style="color: #7f858e;">
