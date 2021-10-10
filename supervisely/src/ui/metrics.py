@@ -16,6 +16,9 @@ from src.utils.enumerators import MethodAveragePrecision
 
 @sly.timeit
 def init(data, state, reconstruct=False):
+    state['GlobalMetricsCollapsed'] = True
+    state['GlobalMetricsDisabled'] = True
+
     state['activeFigure'] = None
     confusion_matrix.init(data, state)
     per_image_metrics.init(data, state)

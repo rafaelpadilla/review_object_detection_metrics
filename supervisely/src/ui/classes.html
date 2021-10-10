@@ -60,7 +60,7 @@
     </div>
 
     <el-button type="warning" class="regular mt10" :plain="true"
-               @click="state.restartFrom = 3; state.GlobalClassesDone = false"
+               @click="state.restartFrom = 3; state.GlobalClassesDone = false; command('restart')"
                v-if="state.GlobalClassesDone">
         <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
     </el-button>

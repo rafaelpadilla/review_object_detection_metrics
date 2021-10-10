@@ -1,6 +1,8 @@
 import supervisely_lib as sly
 import globals as g
 import confusion_matrix
+import settings
+import metrics
 
 
 def _process_items(collection1, collection2, diff_msg="Automatic conversion to rectangle format"):
@@ -91,6 +93,8 @@ def init(data, state, reconstruct=False):
     state['GlobalClassesCollapsed'] = True
     state['GlobalClassesDisabled'] = True
     state['GlobalClassesDone'] = False
+    settings.restart(data, state)
+    metrics.init(data, state)
 
 
 @g.my_app.callback("set_classes")
@@ -110,7 +114,6 @@ def set_classes(api: sly.Api, task_id, context, state, app_logger):
     ]
     api.app.set_fields(task_id, fields)
     confusion_matrix.reset_cm_state_to_default(api, task_id)
-
 
 
 classes_table = []
