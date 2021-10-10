@@ -10,10 +10,10 @@ import metrics
 
 def init(data, state):
     input.init(data, state)
-    datasets.init(data, state)
-    classes.init(data, state)
+    datasets.init(data, state, reconstruct=True)
+    classes.init(data, state, reconstruct=True)
     settings.init(data, state)
-    metrics.init(data, state)
+    metrics.init(data, state, reconstruct=True)
 
     state["restartFrom"] = None
     # for collapses
