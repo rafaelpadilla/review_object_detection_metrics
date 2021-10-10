@@ -124,7 +124,7 @@ class ConfusionMatrix:
                 anns = data['gt']
                 dets = data['det']
                 dets = [a for a in sorted(dets, key=lambda bb: bb.get_confidence(), reverse=True)]
-                print(len(anns), len(dets))
+                # print(len(anns), len(dets))
                 if len(anns) != 0:   # annotations - yes
                     if len(dets) != 0:  # annotations - yes, detections - yes:
                         iou_matrix = np.zeros((len(dets), len(anns)))
