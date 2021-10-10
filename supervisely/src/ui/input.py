@@ -12,11 +12,11 @@ def init(data, state):
     state['doneInput'] = False
     state['InputInProgress'] = True
 
-    # data["gtProjectId"] = g.gt_project_info.id
+    state["gtProjectId"] = None
     # data["gtProjectName"] = g.gt_project_info.name
     # data["gtProjectPreviewUrl"] = g.api.image.preview_url(g.gt_project_info.reference_image_url, 100, 100)
     #
-    # data["predProjectId"] = g.pred_project_info.id
+    state["predProjectId"] = None
     # data["predProjectName"] = g.pred_project_info.name
     # data["predProjectPreviewUrl"] = g.api.image.preview_url(g.pred_project_info.reference_image_url, 100, 100)
 
@@ -38,8 +38,8 @@ def restart(data, state):
 @sly.timeit
 def set_projects(api: sly.Api, task_id, context, state, app_logger):
 
-    gt_project_info = api.project.get_info_by_id(state['gtProjectId'], raise_error=True)
-    pr_project_info = api.project.get_info_by_id(state['predProjectId'], raise_error=True)
+    g.gt_project_info = api.project.get_info_by_id(state['gtProjectId'], raise_error=True)
+    g.pr_project_info = api.project.get_info_by_id(state['predProjectId'], raise_error=True)
 
     fields = [
         {"field": "state.GlobalInputCollapsed", "payload": True},
@@ -50,18 +50,26 @@ def set_projects(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.GlobalDatasetsCollapsed", "payload": False},
         {"field": "state.GlobalDatasetsDisabled", "payload": False},
         {"field": "state.doneDatasets", "payload": False},
-        {"field": "state.DatasetsInProgress", "payload": True},
+
+        {"field": "state.GlobalClassesCollapsed", "payload": True},
+        {"field": "state.GlobalClassesDisabled", "payload": True},
+        {"field": "state.doneClasses", "payload": False},
+
+        {"field": "state.GlobalSettingsCollapsed", "payload": True},
+        {"field": "state.GlobalSettingsDisabled", "payload": True},
+        {"field": "state.doneDatasets", "payload": False},
 
         {"field": "state.GlobalActiveStep", "payload": 2},
-        {"field": "data.gtProjectId", "payload": gt_project_info.id},
-        {"field": "data.gtProjectName", "payload": gt_project_info.name},
-        {"field": "data.gtProjectPreviewUrl",
-         "payload": g.api.image.preview_url(gt_project_info.reference_image_url, 100, 100)},
 
-        {"field": "data.predProjectId", "payload": pr_project_info.id},
-        {"field": "data.predProjectName", "payload": pr_project_info.name},
-        {"field": "data.predProjectPreviewUrl",
-         "payload": g.api.image.preview_url(pr_project_info.reference_image_url, 100, 100)},
+        {"field": "state.gtProjectId", "payload": g.gt_project_info.id},
+        {"field": "state.gtProjectName", "payload": g.gt_project_info.name},
+        {"field": "state.gtProjectPreviewUrl",
+         "payload": g.api.image.preview_url(g.gt_project_info.reference_image_url, 100, 100)},
+
+        {"field": "state.predProjectId", "payload": g.pr_project_info.id},
+        {"field": "state.predProjectName", "payload": g.pr_project_info.name},
+        {"field": "state.predProjectPreviewUrl",
+         "payload": g.api.image.preview_url(g.pr_project_info.reference_image_url, 100, 100)},
 
         {"field": "state.doneInput", "payload": True},
 
