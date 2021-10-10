@@ -30,25 +30,30 @@ workspace_id = int(os.environ['context.workspaceId'])
 api: sly.Api = my_app.public_api
 task_id = my_app.task_id
 
-gt_project_id = int(os.environ['modal.state.gtProjectId'])
-gt_project_info = api.project.get_info_by_id(gt_project_id, raise_error=True)
-_gt_meta_ = api.project.get_meta(gt_project_id)
-gt_meta = sly.ProjectMeta.from_json(_gt_meta_)
+# gt_project_id = int(os.environ['modal.state.gtProjectId'])
+gt_project_info = None  # api.project.get_info_by_id(gt_project_id, raise_error=True)
+_gt_meta_ = None  # api.project.get_meta(gt_project_id)
+gt_meta = None  # sly.ProjectMeta.from_json(_gt_meta_)
 
-pred_project_id = int(os.environ['modal.state.predProjectId'])
-pred_project_info = api.project.get_info_by_id(pred_project_id, raise_error=True)
-_pred_meta_ = api.project.get_meta(pred_project_id)
-pred_meta = sly.ProjectMeta.from_json(_pred_meta_)
+# pred_project_id = int(os.environ['modal.state.predProjectId'])
+pred_project_info = None  # api.project.get_info_by_id(pred_project_id, raise_error=True)
+_pred_meta_ = None  # api.project.get_meta(pred_project_id)
+pred_meta = None  # sly.ProjectMeta.from_json(_pred_meta_)
 
-# @TODO: get supervisely format meta to
-aggregated_meta = {'classes': [], 'tags': _pred_meta_['tags'], 'projectType': 'images'}
-for i in _gt_meta_['classes']:
-    for j in _pred_meta_['classes']:
-        if i['title'] == j['title'] and i['shape'] == j['shape']:
-            aggregated_meta['classes'].append(i)
 
-aggregated_meta = sly.ProjectMeta.from_json(aggregated_meta)
+def generate_meta():
+    global aggregated_meta
+    # @TODO: get supervisely format meta to
+    aggregated_meta = {'classes': [], 'tags': _pred_meta_['tags'], 'projectType': 'images'}
+    for i in _gt_meta_['classes']:
+        for j in _pred_meta_['classes']:
+            if i['title'] == j['title'] and i['shape'] == j['shape']:
+                aggregated_meta['classes'].append(i)
 
+    aggregated_meta = sly.ProjectMeta.from_json(aggregated_meta)
+
+
+aggregated_meta = None
 result = namedtuple('Result', ['TP', 'FP', 'NPOS', 'Precision', 'Recall', 'AP'])
 table_classes_columns = ['className', 'TP', 'FP', 'npos', 'Recall', 'Precision', 'AP']
 image_columns = ['SRC_ID', 'DST_ID', "dataset_name", "name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
