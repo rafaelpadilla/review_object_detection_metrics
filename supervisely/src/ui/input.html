@@ -3,31 +3,49 @@
         <sly-select-team-workspace
                 :team-id.sync="state.GTteamId"
                 :workspace-id.sync="state.GTworkspaceId"></sly-select-team-workspace>
-        <sly-field title="GT project">
+        <sly-field title="">
             <sly-select-project v-model="state.gtProjectId" :workspace-id="state.GTworkspaceId"
                                 :project-id.sync="state.gtProjectId"></sly-select-project>
         </sly-field>
-        <sly-field title="" description="Project">
+        <sly-field v-if="data.gtProjectName"
+                   title="" description="Project">
             <a slot="title" target="_blank"
                :href="`/projects/${data.gtProjectId}/datasets`">{{data.gtProjectName}}</a>
             <sly-icon slot="icon" :options="{ imageUrl: `${data.gtProjectPreviewUrl}` }"/>
         </sly-field>
     </sly-card>
 
-    <sly-card title="Prediction project" style="width: 50%">
+    <sly-card title="Prediction Project" style="width: 50%">
         <sly-select-team-workspace :team-id.sync="state.PRteamId"
                                    :workspace-id.sync="state.PRworkspaceId"></sly-select-team-workspace>
-        <sly-field title="Prediction project">
+        <sly-field title="">
             <sly-select-project v-model="state.predProjectId" :workspace-id="state.PRworkspaceId"
                                 :project-id.sync="state.predProjectId"></sly-select-project>
         </sly-field>
-        <sly-field title="" description="Project">
+        <sly-field v-if="data.predProjectName"
+                   title="" description="Project">
             <a slot="title" target="_blank"
                :href="`/projects/${data.predProjectId}/datasets`">{{data.predProjectName}}</a>
             <sly-icon slot="icon" :options="{ imageUrl: `${data.predProjectPreviewUrl}` }"/>
         </sly-field>
     </sly-card>
 </div>
-<el-button>
-    BUTTON
+
+<el-button v-if="!state.doneInput"
+           :disabled="!state.gtProjectId || !state.predProjectId"
+           class="regular" type="primary" @click="command('set_projects')" >
+    Set projects
+</el-button>
+
+<div v-if="state.doneInput">
+    <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+    <span style="color: #5a6772;">
+                Projects selected.
+        </span>
+</div>
+
+<el-button type="warning" class="regular mt10" :plain="true"
+           @click="state.restartFrom = 3; state.doneInput = false"
+           v-if="state.doneInput">
+    <i class="zmdi zmdi-rotate-left mr5"></i> Reset projects
 </el-button>
