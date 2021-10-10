@@ -119,4 +119,5 @@ def show_images_gallery(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.CMActiveNames", "payload": ['confusion_matrix', 'image_stat_table', 'grid_gallery']},
     ]
     api.app.set_fields(task_id, fields)
-    ui_utils.show_images_body(api, task_id, state, gallery_conf_matrix, "data.CMGalleryTitle")
+    ui_utils.show_images_body(api, task_id, state, gallery_conf_matrix, "data.CMGalleryTitle",
+                              gallery_table='data.GalleryTable1')
