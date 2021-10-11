@@ -153,7 +153,10 @@ def view_class(api: sly.Api, task_id, context, state, app_logger):
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
+    global gallery_per_class
     selected_image_classes = state['selectedClassName']
+    if gallery_per_class is None:
+        gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
     ui_utils.show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle",
                               selected_image_classes=selected_image_classes, gallery_table="data.GalleryTable2")
     fields = [

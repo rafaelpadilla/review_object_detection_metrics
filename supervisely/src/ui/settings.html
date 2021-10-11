@@ -1,14 +1,14 @@
 <sly-card title="Configure settings"
           subtitle="Base settings: Percentage, IoUThreshold, ScoreThreshold"
           :options="{collapsable: true}"
-          :collapsed.sync="state.GlobalSettingsCollapsed"
-          :disabled="{disabled: state.GlobalSettingsDisabled, message: 'Please, select classes'}"
-          ref="GlobalStep3"
+          :collapsed.sync="state.collapsed4"
+          :disabled="{disabled: state.disabled4, message: 'Please, select classes'}"
+          ref="step4"
 >
     <sly-field title="Sample percent"
                description="Percent of images that will be sampled randomly for metrics evaluation">
         <div class="fflex">
-            <el-slider :disablead="data.doneSettings"
+            <el-slider :disablead="data.done4"
                        class="ml10 mr10"
                        style="width: 450px"
                        :min="1"
@@ -55,22 +55,24 @@
             <div class="mr10">{{state.ScoreThreshold}}%</div>
         </div>
     </sly-field>
-    <el-button v-loading="state.loading"
-               v-if="!data.doneSettings"
+    <el-button v-loading="state.loading4"
+               v-if="!state.done4"
                class="regular"
                type="primary"
                @click="command('evaluate_button_click')">
         Calculate metrics
     </el-button>
-    <div v-if="state.DownLoadAnnotations" class="mt10">
-        <div style="color: #20a0ff">
-            {{state.progressDownLoadAnnotations}}: {{state.progressCurrentDownLoadAnnotations}} /
-            {{state.progressTotalDownLoadAnnotations}}
-        </div>
-        <el-progress :percentage="data.progressPercentUploadDir"></el-progress>
-    </div>
-    <div v-if="data.doneSettings" class="mt10">
-        <div v-if="data.doneSettings">
+
+<!--    <div v-if="state.DownLoadAnnotations" class="mt10">-->
+<!--        <div style="color: #20a0ff">-->
+<!--            {{state.progressDownLoadAnnotations}}: {{state.progressCurrentDownLoadAnnotations}} /-->
+<!--            {{state.progressTotalDownLoadAnnotations}}-->
+<!--        </div>-->
+<!--        <el-progress :percentage="data.progressPercentUploadDir"></el-progress>-->
+<!--    </div>-->
+
+    <div v-if="state.done4" class="mt10">
+        <div>
             <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
             <span style="color: #5a6772;">Metrics calculation completed</span>
         </div>

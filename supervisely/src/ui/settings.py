@@ -7,49 +7,41 @@ import download_data as dd
 from sly_progress import init_progress
 
 
-def init(data, state):
-
+def get_image_count():
     total_img_num = 0
     for k, v in ds.image_dict['gt_images'].items():
         total_img_num += len(v)
+    return total_img_num
 
-    data['totalImagesCount'] = total_img_num
-    data['doneSettings'] = False
 
-    state['GlobalSettingsCollapsed'] = True
-    state['GlobalSettingsDisabled'] = True
-    state['GlobalShowSettings'] = False
-    state['GlobalSettingsLoaded'] = False
+def init(data, state):
+    data['totalImagesCount'] = get_image_count()
+
+    state['collapsed4'] = True
+    state['disabled4'] = True
+    state['done4'] = False
+    state['loading4'] = False
 
     state["samplePercent"] = 5
     state['IoUThreshold'] = 45
     state['ScoreThreshold'] = 25
 
-    state['settingsLoading'] = False
-
     state['DownLoadAnnotations'] = False
-
-    '''     {{state.progressDownLoadAnnotations}}: {{state.progressCurrentDownLoadAnnotations}} / {{state.progressTotalDownLoadAnnotations}}
-        </div>
-        <el-progress :percentage="data.progressPercentUploadDir"></el-progress>
-    </div>'''
+    state['GlobalShowSettings'] = False
+    state['GlobalSettingsLoaded'] = False
 
 
 def restart(data, state):
-    state['GlobalActiveStep'] = 4
-
-    state['GlobalSettingsCollapsed'] = False
-    state['GlobalSettingsDisabled'] = False
-    state['GlobalMetricsCollapsed'] = True
-    state['GlobalMetricsDisabled'] = True
-    data['doneSettings'] = False
-    metrics.init(data, state)
+    state['collapsed4'] = False
+    state['disabled4'] = False
+    state['done4'] = False
+    state['loading4'] = False
 
 
 @g.my_app.callback("evaluate_button_click")
 @sly.timeit
 def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
-    global cm, object_mapper, filtered_confidences, gts, pred  #  , dataset_names, previous_percentage
+    global cm, object_mapper, filtered_confidences, gts, pred  # , dataset_names, previous_percentage
     selected_classes = state['selectedClasses']
     percentage = state['samplePercent']
     iou_threshold = state['IoUThreshold'] / 100
@@ -57,12 +49,7 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
 
     metrics.confusion_matrix.reset_cm_state_to_default(api, task_id)
     fields = [
-        {"field": "state.loading", "payload": True},
-
-        {"field": "state.GlobalActiveStep", "payload": 5},
-        {"field": "state.GlobalClassesCollapsed", "payload": True},
-        {"field": "state.GlobalMetricsCollapsed", "payload": True},
-        {"field": "state.GlobalMetricsDisabled", "payload": True},
+        {"field": "state.loading4", "payload": True},
 
         {"field": "state.CMShow1", "payload": False},
         {"field": "state.CMShow2", "payload": False},
@@ -108,15 +95,15 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
                                                                     method,
                                                                     iou_threshold, score_threshold)
     fields = [
-        {"field": "data.doneSettings", "payload": True},
+        {"field": "state.activeStep", "payload": 5},
+        {"field": "state.loading4", "payload": False},
+        {"field": "state.done4", "payload": True},
 
-        {"field": "state.loading", "payload": False},
+        {"field": "state.collapsed4", "payload": True},
+        {"field": "state.disabled4", "payload": False},
+        {"field": "state.collapsed5", "payload": False},
+        {"field": "state.disabled5", "payload": False},
 
-        {"field": "state.GlobalActiveStep", "payload": 5},
-        {"field": "state.GlobalClassesCollapsed", "payload": True},
-        {"field": "state.GlobalSettingsCollapsed", "payload": True},
-        {"field": "state.GlobalMetricsCollapsed", "payload": False},
-        {"field": "state.GlobalMetricsDisabled", "payload": False},
 
         {"field": "state.CMShow1", "payload": True},
         {"field": "state.CMActiveNames", "payload": ['confusion_matrix']},

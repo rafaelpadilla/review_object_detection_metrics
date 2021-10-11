@@ -1,9 +1,9 @@
 <sly-card title="Object detection metrics"
           subtitle="Confusion Matrix, Per Image Statistics, Per Class Statistics, Overall Statistics"
           :options="{collapsable: true}"
-          :collapsed.sync="state.GlobalMetricsCollapsed"
-          :disabled="{disabled: state.GlobalMetricsDisabled, message: 'Please, select classes and define settings'}"
-          ref="GlobalStep4"
+          :collapsed.sync="state.collapsed5"
+          :disabled="{disabled: state.disabled5, message: 'Please, select classes and define settings'}"
+          ref="step5"
 >
     <el-tabs type="card" class="mt10">
         <el-tab-pane label="Confusion Matrix">

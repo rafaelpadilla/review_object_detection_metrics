@@ -89,25 +89,20 @@ def _get_all_images(api: sly.Api, project):
     return ds_info, ds_images,
 
 
-def init(data, state, reconstruct=False):
-    state['GlobalDatasetsCollapsed'] = True
-    state['GlobalDatasetsDisabled'] = True
-    state['doneDatasets'] = False
-    state['DatasetsInProgress'] = False
-    state['datasetReconstruct'] = False
+def init(data, state):
+    state['collapsed2'] = True
+    state['disabled2'] = True
+    state['disabled2Btn'] = False
+    state['done2'] = False
+    state['loading2'] = False
 
 
 def restart(data, state):
-    state['doneDatasets'] = False
-    state['GlobalActiveStep'] = 2
-    state['GlobalDatasetsCollapsed'] = False
-    state['GlobalDatasetsDisabled'] = False
-    state['GlobalClassesCollapsed'] = True
-    state['GlobalClassesDisabled'] = True
-    state['GlobalSettingsCollapsed'] = True
-    state['GlobalSettingsDisabled'] = True
-    state['GlobalMetricsCollapsed'] = True
-    state['GlobalMetricsDisabled'] = True
+    state['collapsed2'] = False
+    state['disabled2'] = False
+    state['disabled2Btn'] = False
+    state['done2'] = False
+    state['loading2'] = False
 
 
 @g.my_app.callback("get_datasets_statistic")
@@ -115,7 +110,7 @@ def restart(data, state):
 def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
     global image_dict, total_img_num
 
-    g.api.app.set_field(g.task_id, "state.DatasetsInProgress", True)
+    g.api.app.set_field(g.task_id, "state.loading2", True)
 
     g.gt_project_info = api.project.get_info_by_id(state['gtProjectId'], raise_error=True)
     g._gt_meta_ = api.project.get_meta(state['gtProjectId'])
@@ -130,7 +125,6 @@ def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
     ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
     result = process_items(ds_info1, ds_images1, ds_info2, ds_images2)
     intersected_keys = list(set(list(ds_images1)) & set(list(ds_images2)))
-    # image_dict = {'gt_images': {}, 'pred_images': {}}
 
     for intersected_key in intersected_keys:
         image_dict['gt_images'][intersected_key] = []
@@ -144,8 +138,8 @@ def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
 
     fields = [
         {"field": "data.table", "payload": result},
-        {"field": "state.DatasetsInProgress", "payload": False},
-        {"field": "state.doneDatasets", "payload": True},
+        {"field": "state.loading2", "payload": False},
+        {"field": "state.done2", "payload": True},
     ]
     g.api.app.set_fields(g.task_id, fields)
 
@@ -153,12 +147,16 @@ def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
 @g.my_app.callback("next_step")
 @sly.timeit
 def next_step(api: sly.Api, task_id, context, state, app_logger):
-    fields = [
-        # {"field": "state.GlobalDatasetsCollapsed", "payload": True},
-        {"field": "state.GlobalDatasetsDisabled", "payload": False}, #@TODO: ?
-        {"field": "state.GlobalActiveStep", "payload": 3},
-        {"field": "state.doneDatasets", "payload": True},
-        {"field": "state.GlobalClassesCollapsed", "payload": False},
-        {"field": "state.GlobalClassesDisabled", "payload": False}
-    ]
+    fields = []
+    for i in range(1, 6):
+        collapsed = True if i != 3 else False
+        disabled = True if i not in [2, 3] else False
+        done = True if i < 4 else False
+        fields.append({"field": f"state.collapsed{i}", "payload": collapsed})
+        fields.append({"field": f"state.disabled{i}", "payload": disabled})
+        fields.append({"field": f"state.done{i}", "payload": done})
+
+    fields.append({"field": "state.activeStep", "payload": 3})
+    fields.append({"field": "state.disabled2Btn", "payload": True})
+
     api.app.set_fields(task_id, fields)

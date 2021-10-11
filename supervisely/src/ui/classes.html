@@ -1,17 +1,13 @@
 <sly-card title="Compare and select classes"
           subtitle="Choose classes that will be used for performance analysis"
           :options="{collapsable: true}"
-          :collapsed.sync="state.GlobalClassesCollapsed"
-          :disabled="{disabled: state.GlobalClassesDisabled, message: 'Complete previous steps'}"
-          ref="GlobalStep2"
->
-<!--    <el-button v-if="!state.classesDone"-->
-<!--               class="regular" type="primary" @click="command('get_classes')">-->
-<!--        Compare classes-->
-<!--    </el-button>-->
-
-    <div v-if="state.classesDone">
-        <el-table class="ultra-table"
+          :collapsed.sync="state.collapsed3"
+          :disabled="{disabled: state.disabled3, message: 'Complete previous steps'}"
+          ref="step3">
+    done3 -> {{state.done3}} disabled3Btn -> {{state.disabled3Btn}}
+    <div v-if="state.done3">
+        <el-table :disablead="data.done3"
+                  class="ultra-table"
                   :data="data.classesTable"
                   @selection-change="
                     (val) => {
@@ -19,7 +15,7 @@
                     }
                     "
         >
-            <el-table-column type="selection" width="55"></el-table-column>
+            <el-table-column :disablead="data.done3" type="selection" width="55"></el-table-column>
             <el-table-column sortable prop="name1" label="Classes in GT project">
                 <template scope="scope">
                     <div v-if="scope.row.name1">
@@ -51,23 +47,22 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-button v-if="!state.GlobalClassesDone"
+        <el-button v-if="state.done3 && !state.disabled3Btn"
                    class="regular"
                    type="primary"
                    @click="command('set_classes')">Set classes
         </el-button>
-
-        <div v-if="state.GlobalClassesDone">
-            <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
-            <span style="color: #5a6772;">
+        <div v-if="state.done3 && state.disabled3Btn">
+            <div>
+                <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+                <span style="color: #5a6772;">
                     Classes selected.
-            </span>
+                </span>
+            </div>
+            <el-button type="warning" class="regular mt10" :plain="true"
+                       @click="state.restartFrom = 3; state.done3 = false; command('restart')">
+                <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
+            </el-button>
         </div>
-
-        <el-button type="warning" class="regular mt10" :plain="true"
-                   @click="state.restartFrom = 3; state.GlobalClassesDone = false; command('restart')"
-                   v-if="state.GlobalClassesDone">
-            <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
-        </el-button>
     </div>
 </sly-card>

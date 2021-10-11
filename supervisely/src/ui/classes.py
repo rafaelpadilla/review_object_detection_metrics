@@ -2,8 +2,6 @@ import supervisely_lib as sly
 import globals as g
 import confusion_matrix
 import datasets
-import settings
-import metrics
 
 
 def _process_items(collection1, collection2, diff_msg="Automatic conversion to rectangle format"):
@@ -85,7 +83,7 @@ def _process_items(collection1, collection2, diff_msg="Automatic conversion to r
     return table
 
 
-def init(data, state, reconstruct=False):
+def init(data, state):
     global classes_table
     try:
         if g.aggregated_meta is None:
@@ -95,28 +93,18 @@ def init(data, state, reconstruct=False):
     except:
         pass
     state["selectedClasses"] = []
-    state['GlobalClassesCollapsed'] = False
-    state['GlobalClassesDisabled'] = True
-    state['GlobalClassesDone'] = False
-    state['classesDone'] = False
-    settings.restart(data, state)
-    metrics.init(data, state)
+    state['collapsed3'] = True
+    state['disabled3'] = True
+    state['disabled3Btn'] = False
+    state['done3'] = False
 
 
 def restart(data, state):
-    state['GlobalClassesCollapsed'] = True
-    state['GlobalClassesDisabled'] = True
-    state['GlobalClassesDone'] = False
-    state['classesDone'] = False
-    state['GlobalActiveStep'] = 3
-
-    state['GlobalSettingsCollapsed'] = True
-    state['GlobalSettingsDisabled'] = True
-    state['GlobalMetricsCollapsed'] = True
-    state['GlobalMetricsDisabled'] = True
-
-    settings.restart(data, state)
-    metrics.init(data, state)
+    state['collapsed3'] = False
+    state['disabled3'] = False
+    state['disabled3Btn'] = False
+    state['done3'] = True
+    state["selectedClasses"] = []
 
 
 @g.my_app.callback("get_classes")
@@ -125,7 +113,7 @@ def get_classes(api: sly.Api, task_id, context, state, app_logger):
     global classes_table
     classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
     fields = [
-        {"field": "state.classesDone", "payload": True},
+        {"field": "state.done3", "payload": True},
         {"field": "data.classesTable", "payload": classes_table},
     ]
     api.app.set_fields(task_id, fields)
@@ -138,20 +126,25 @@ def set_classes(api: sly.Api, task_id, context, state, app_logger):
     for k, v in datasets.image_dict['gt_images'].items():
         total_img_num += len(v)
 
-    fields = [
-        {"field": "state.GlobalActiveStep", "payload": 4},
-        {"field": "state.GlobalClassesDone", "payload": True},
-        {"field": "state.GlobalClassesCollapsed", "payload": True},
-        {"field": "state.GlobalSettingsCollapsed", "payload": False},
-        {"field": "state.GlobalSettingsDisabled", "payload": False},
+    fields = []
+    for i in range(1, 6):
+        collapsed = True if i != 4 else False
+        disabled = True if i not in [2, 3, 4] else False
+        done = True if i < 4 else False
+        fields.append({"field": f"state.collapsed{i}", "payload": collapsed})
+        fields.append({"field": f"state.disabled{i}", "payload": disabled})
+        fields.append({"field": f"state.done{i}", "payload": done})
+
+    extra_fields = [
+        {"field": "state.disabled3Btn", "payload": True},
+        {"field": "state.activeStep", "payload": 4},
         {"field": "state.GlobalShowSettings", "payload": True},
 
-        {"field": "state.GlobalMetricsCollapsed", "payload": True},
-        {"field": "state.GlobalMetricsDisabled", "payload": True},
         {"field": "state.GlobalShowMetrics", "payload": False},
         {"field": "data.totalImagesCount", "payload": total_img_num},
-
     ]
+    fields.extend(extra_fields)
+
     api.app.set_fields(task_id, fields)
     confusion_matrix.reset_cm_state_to_default(api, task_id)
 

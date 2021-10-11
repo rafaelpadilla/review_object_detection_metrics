@@ -10,14 +10,11 @@ sys.path.append('../../')
 from src.evaluators.pascal_voc_evaluator import get_pascalvoc_metrics
 from src.utils.enumerators import MethodAveragePrecision
 
-# import utils
-# from src.bounding_box import BoundingBox, BBType, BBFormat
-
 
 @sly.timeit
 def init(data, state, reconstruct=False):
-    state['GlobalMetricsCollapsed'] = True
-    state['GlobalMetricsDisabled'] = True
+    state['collapsed5'] = True
+    state['disabled5'] = True
 
     state['activeFigure'] = None
     confusion_matrix.init(data, state)
@@ -26,6 +23,8 @@ def init(data, state, reconstruct=False):
     overall_metrics.init(data, state)
     if reconstruct:
         g.my_app.compile_template(g.root_source_dir)
+
+
 
 
 def dict2tuple(dictionary, target_class, round_level=4):

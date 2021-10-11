@@ -8,26 +8,21 @@ import settings
 import metrics
 
 
+# input    1
+# datasets 2
+# classes  3
+# settings 4
+# metrics  5
+
 def init(data, state):
+    state["activeStep"] = 1
+    state["restartFrom"] = None
+
     input.init(data, state)
-    datasets.init(data, state, reconstruct=True)
-    classes.init(data, state, reconstruct=True)
+    datasets.init(data, state)
+    classes.init(data, state)
     settings.init(data, state)
     metrics.init(data, state, reconstruct=True)
-
-    state["restartFrom"] = None
-    # for collapses
-    state['activeName'] = "Datasets"
-    # for stepper
-    state['GlobalActiveStep'] = 1
-    state['GlobalDatasetsCollapsed'] = True
-    state['GlobalDatasetsDisabled'] = True
-    state['GlobalClassesCollapsed'] = True
-    state['GlobalClassesDisabled'] = True
-    state['GlobalSettingsCollapsed'] = True
-    state['GlobalSettingsDisabled'] = True
-    state['GlobalMetricsCollapsed'] = True
-    state['GlobalMetricsDisabled'] = True
 
 
 @g.my_app.callback("restart")
@@ -40,43 +35,39 @@ def restart(api: sly.Api, task_id, context, state, app_logger):
     if restart_from_step == 1:
         input.restart(data, state)
 
-    # if restart_from_step <= 2:
-    #     train_val_split.init(g.project_info, g.project_meta, data, state)
-    # if restart_from_step <= 3:
-    #     if restart_from_step == 3:
-    #         tags.restart(data, state)
-    #     else:
-    #         tags.init(data, state)
-    # if restart_from_step <= 4:
-    #     validate_training_data.init(data, state)
-    # if restart_from_step <= 5:
-    #     if restart_from_step == 5:
-    #         augs.restart(data, state)
-    #     else:
-    #         augs.init(data, state)
-    # if restart_from_step <= 6:
-    #     if restart_from_step == 6:
-    #         model_architectures.restart(data, state)
-    #     else:
-    #         model_architectures.init(data, state)
-    # if restart_from_step <= 7:
-    #     if restart_from_step == 7:
-    #         hyperparameters.restart(data, state)
-    #     else:
-    #         hyperparameters.init(data, state)
-    # if restart_from_step <= 8:
-    #     if restart_from_step == 8:
-    #         hyperparameters_python.restart(data, state)
-    #     else:
-    #         hyperparameters_python.init(data, state)
+    if restart_from_step <= 2:
+        if restart_from_step == 2:
+            datasets.restart(data, state)
+        else:
+            datasets.init(data, state)
+
+    if restart_from_step <= 3:
+        if restart_from_step == 3:
+            classes.restart(data, state)
+        else:
+            classes.init(data, state)
+
+    if restart_from_step <= 4:
+        if restart_from_step == 4:
+            settings.restart(data, state)
+        else:
+            settings.init(data, state)
+
+    if restart_from_step <= 5:
+        metrics.init(data, state)
+
+        # if restart_from_step == 5:
+        #     metrics.restart(data, state)
+        # else:
+        #     metrics.init(data, state)
 
     fields = [
         {"field": "data", "payload": data, "append": True, "recursive": False},
         {"field": "state", "payload": state, "append": True, "recursive": False},
         {"field": "state.restartFrom", "payload": None},
-        {"field": f"state.collapsed{restart_from_step}", "payload": False},
-        {"field": f"state.disabled{restart_from_step}", "payload": False},
-        {"field": "state.GlobalActiveStep", "payload": restart_from_step},
+        # {"field": f"state.collapsed{restart_from_step}", "payload": False},
+        # {"field": f"state.disabled{restart_from_step}", "payload": False},
+        {"field": "state.activeStep", "payload": restart_from_step},
     ]
     g.api.app.set_fields(g.task_id, fields)
     g.api.app.set_field(task_id, "data.scrollIntoView", f"step{restart_from_step}")
