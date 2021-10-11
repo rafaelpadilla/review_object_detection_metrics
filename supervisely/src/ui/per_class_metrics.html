@@ -61,91 +61,69 @@
         <sly-field v-if="state.selection.selectedColumnName && state.perClassShow3"
                    :title="data.perClassGalleryTitle"
                    description="Original annotations VS Detections">
-            <sly-grid-gallery v-if="state.selection.selectedColumnName && state.perClassShow3"
-                              :content="data.perClass.content"
-                              :options="data.perClass.options"
-                              :active-figure="state.activeFigure">
-                <template v-slot:card-footer="{ annotation }">
-                    <div class="mt5" style="text-align: center">
-                        <el-tag type="primary">{{annotation.title}}</el-tag>
-                        <!--                        </br>-->
-                        <!--                        </br>-->
-                        <!--                        <div v-for="f in annotation.figures"-->
-                        <!--                             :key="f.id"-->
-                        <!--                             :style="[state.activeFigure === f.id ? 'backgroundColor: red; color: white' : '' ]"-->
-                        <!--                             @mouseenter="state.activeFigure = f.id"-->
-                        <!--                             @mouseleave="state.activeFigure = null"-->
-                        <!--                        >-->
-                        <!--                            Figure: {{f.classTitle}} (ID:{{ f.id }})-->
-                        <!--                        </div>-->
-                    </div>
-                </template>
-            </sly-grid-gallery>
+            <div class="fflex">
+                <sly-grid-gallery v-if="state.selection.selectedColumnName && state.perClassShow3"
+                                  :content="data.perClass.content"
+                                  :options="data.perClass.options"
+                                  :active-figure="state.activeFigure"
+                                  style="width: 50%">
+                    <template v-slot:card-footer="{ annotation }">
+                        <div class="mt5" style="text-align: center">
+                            <el-tag type="primary">{{annotation.title}}</el-tag>
+                        </div>
+                    </template>
+                </sly-grid-gallery>
 
-            </br>
-            <el-table class="mb15 ultra-table" :data="data.GalleryTable2"
-                      @cell-mouse-enter="(row, column, cell, event) =>{
-                        state.activeFigure = row['id_pair'];
-                      }"
-                      @cell-mouse-leave="state.activeFigure = null"
-                      max-height="250">
-                <!--                :sortable="true"-->
-                <el-table-column label="Ground Truth" align="center" sortable>
-                    <template scope="scope">
-                        <div v-if="scope.row.gt.class">
-                            <i class="zmdi zmdi-circle" :style="{color: scope.row.gt.color}"></i>
-                            <span class="ml5 mr10">{{ scope.row.gt.class }}</span>
-                            <span style="color: #7f858e;">
-                            <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.gt.id }}</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="IoU" align="center" :sortable="true">
-                    <template scope="scope">
-                        <div v-if="scope.row.iou">
-                            <span class="ml5 mr10">{{ scope.row.iou }}</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="Result" align="center" :sortable="true">
-                    <template scope="scope">
-                        <div v-if="scope.row.mark">
-                            <span class="ml5 mr10">{{ scope.row.mark }}</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="Confidence" align="center" :sortable="true">
-                    <template scope="scope">
-                        <div v-if="scope.row.conf">
-                            <span class="ml5 mr10">{{ scope.row.conf }}</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <el-table-column label="Prediction" align="center" :sortable="true">
-                    <template scope="scope">
-                        <div v-if="scope.row.pr.class">
-                            <i class="zmdi zmdi-circle" :style="{color: scope.row.pr.color}"></i>
-                            <span class="ml5 mr10">{{ scope.row.pr.class }}</span>
-                            <span style="color: #7f858e;">
-                            <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.pr.id }}</span>
-                        </div>
-                    </template>
-                </el-table-column>
-                <!--            </el-table>-->
-                <!--            <el-table :data="data.GalleryTable" border-->
-                <!--                      @cell-mouse-enter="(row, column, cell, event) =>{-->
-                <!--                        state.activeFigure = { row: row, column: column, cell: cell };-->
-                <!--                        if (column.property != 'GroundTruth' && column.property != 'Prediction') return;-->
-                <!--                        state.activeFigure = row[column.property];-->
-                <!--                      }"-->
-                <!--                      @cell-mouse-leave="state.activeFigure = null">-->
-                <!--                <el-table-column prop="GroundTruth" label="gt" align="center"></el-table-column>-->
-                <!--                <el-table-column prop="IoU" label="iou" :sortable="true" align="center"></el-table-column>-->
-                <!--                <el-table-column prop="Mark" label="mark" align="center"></el-table-column>-->
-                <!--                <el-table-column prop="Confidence" label="confidence" :sortable="true" align="center"></el-table-column>-->
-                <!--                <el-table-column prop="Prediction" label="prediction" align="center"></el-table-column>-->
-                <!--            </el-table>-->
-
+                </br>
+                <el-table class="mb15 ultra-table" :data="data.GalleryTable2"
+                          @cell-mouse-enter="(row, column, cell, event) =>{
+                            state.activeFigure = row['id_pair'];
+                          }"
+                          @cell-mouse-leave="state.activeFigure = null"
+                          max-height="250" style="width: 50%">
+                    <el-table-column label="Ground Truth" align="center" sortable>
+                        <template scope="scope">
+                            <div v-if="scope.row.gt.class">
+                                <i class="zmdi zmdi-circle" :style="{color: scope.row.gt.color}"></i>
+                                <span class="ml5 mr10">{{ scope.row.gt.class }}</span>
+                                <span style="color: #7f858e;">
+                                <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.gt.id }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="IoU" align="center" :sortable="true">
+                        <template scope="scope">
+                            <div v-if="scope.row.iou">
+                                <span class="ml5 mr10">{{ scope.row.iou }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Result" align="center" :sortable="true">
+                        <template scope="scope">
+                            <div v-if="scope.row.mark">
+                                <span class="ml5 mr10">{{ scope.row.mark }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Confidence" align="center" :sortable="true">
+                        <template scope="scope">
+                            <div v-if="scope.row.conf">
+                                <span class="ml5 mr10">{{ scope.row.conf }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="Prediction" align="center" :sortable="true">
+                        <template scope="scope">
+                            <div v-if="scope.row.pr.class">
+                                <i class="zmdi zmdi-circle" :style="{color: scope.row.pr.color}"></i>
+                                <span class="ml5 mr10">{{ scope.row.pr.class }}</span>
+                                <span style="color: #7f858e;">
+                                <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.pr.id }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
         </sly-field>
     </el-collapse-item>
 </el-collapse>
