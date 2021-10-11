@@ -6,6 +6,12 @@ import metrics
 import download_data as dd
 from sly_progress import init_progress
 
+cm = {}
+object_mapper = {}
+gts = {}
+pred = {}
+filtered_confidences = {}
+
 
 def get_image_count():
     total_img_num = 0
@@ -67,7 +73,7 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
     ]
     api.app.set_fields(task_id, fields)
 
-    if selected_classes:
+    if len(selected_classes) > 0:
         filtered_confidences = dd.download_and_prepare_data(selected_classes,
                                                             percentage=percentage,
                                                             confidence_threshold=score_threshold)
@@ -112,10 +118,3 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.perClassActiveNames", "payload": ['per_class_table']},
     ]
     api.app.set_fields(task_id, fields)
-
-
-cm = {}
-object_mapper = {}
-gts = {}
-pred = {}
-filtered_confidences = {}

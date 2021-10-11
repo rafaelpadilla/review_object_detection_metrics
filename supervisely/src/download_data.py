@@ -149,7 +149,7 @@ def confidence_filtering(dataset, confidence_threshold):
     return filtered_confidence
 
 
-def download(image_dict, percentage, cache, batch_size=5000, show_info=False):
+def download(image_dict, percentage, cache, batch_size=200, show_info=False):
     def get_intersected_datasets(img_dict):
         gt_images = set(list(img_dict['gt_images']))
         pred_images = set(list(img_dict['pred_images']))
@@ -205,7 +205,7 @@ def download(image_dict, percentage, cache, batch_size=5000, show_info=False):
                                  dataset_id=batch_.dataset_id,
                                  annotation=annotation,
                                  full_storage_url=batch_.full_storage_url)
-                    cache[str(batch_image_id)] = dict_
+                    #cache[str(batch_image_id)] = dict_
                     sample[project_key][dataset_key].append(dict_)
             image_names = [d['image_name'] for d in sample[project_key][dataset_key]]
             indexes_to_sort = np.argsort(image_names)

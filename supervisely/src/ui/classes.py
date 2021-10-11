@@ -4,6 +4,9 @@ import confusion_matrix
 import datasets
 
 
+classes_table = []
+
+
 def _process_items(collection1, collection2, diff_msg="Automatic conversion to rectangle format"):
     items1 = {item.name: 1 for item in collection1}
     items2 = {item.name: 1 for item in collection2}
@@ -153,5 +156,3 @@ def set_classes(api: sly.Api, task_id, context, state, app_logger):
     api.app.set_fields(task_id, fields)
     confusion_matrix.reset_cm_state_to_default(api, task_id)
 
-
-classes_table = []

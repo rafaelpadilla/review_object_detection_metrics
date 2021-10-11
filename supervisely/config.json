@@ -11,5 +11,6 @@
   "task_location": "workspace_tasks",
   "isolate": true,
   "icon": "https://i.imgur.com/N0doZD9.png",
-  "icon_background": "#FFFFFF"
+  "icon_background": "#FFFFFF",
+  "instance_version": "6.4.29"
 }
