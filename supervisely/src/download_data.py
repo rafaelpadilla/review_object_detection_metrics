@@ -184,12 +184,13 @@ def download(image_dict, percentage, cache, batch_size=200, show_info=False):
             sample[project_key][dataset_key] = list()
             dataset_id = dataset_info[0].dataset_id
 
-            sample[project_key][dataset_key] = [
-                cache[str(dataset_info[index].id)]
-                for index in indexes[dataset_key]
-                if str(dataset_info[index].id) in cache
-            ]
-            to_download_indexes = [index for index in indexes[dataset_key] if str(dataset_info[index].id) not in cache]
+            sample[project_key][dataset_key] = []
+            # [
+            #     cache[str(dataset_info[index].id)]
+            #     for index in indexes[dataset_key]
+            #     if str(dataset_info[index].id) in cache
+            # ]
+            to_download_indexes = [index for index in indexes[dataset_key]]  # if str(dataset_info[index].id) not in cache
             slice_to_download = [dataset_info[index] for index in to_download_indexes]
             for ix, batch in enumerate(sly.batched(slice_to_download, batch_size)):
                 image_ids = [image_info.id for image_info in batch]
@@ -205,7 +206,7 @@ def download(image_dict, percentage, cache, batch_size=200, show_info=False):
                                  dataset_id=batch_.dataset_id,
                                  annotation=annotation,
                                  full_storage_url=batch_.full_storage_url)
-                    #cache[str(batch_image_id)] = dict_
+                    # cache[str(batch_image_id)] = dict_
                     sample[project_key][dataset_key].append(dict_)
             image_names = [d['image_name'] for d in sample[project_key][dataset_key]]
             indexes_to_sort = np.argsort(image_names)
