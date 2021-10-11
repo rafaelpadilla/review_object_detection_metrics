@@ -105,7 +105,7 @@ def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.loading4", "payload": False},
         {"field": "state.done4", "payload": True},
 
-        {"field": "state.collapsed4", "payload": True},
+        {"field": "state.collapsed4", "payload": False},
         {"field": "state.disabled4", "payload": False},
         {"field": "state.collapsed5", "payload": False},
         {"field": "state.disabled5", "payload": False},
