@@ -77,8 +77,7 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     #     dst_tmp = [i[0] for i in new_list_dst] if new_list_dst else []
     #     if el[0] not in src_tmp and el[1] not in dst_tmp:
 
-    text = '''Images for the selected cell in confusion matrix: "{}" (actual) <-> "{}" (predicted)'''.format(row_class,
-                                                                                                             col_class)
+    text = '''Images for the selected cell in confusion matrix: "{}" (ground truth) <-> "{}" (prediction)'''.format(row_class, col_class)
 
     if col_class != 'None' and row_class != 'None':
         if len(list(cm[col_class][row_class])) == 1:
@@ -102,10 +101,10 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
 
     if len(list(cm[col_class]['None'])) != 0:
         if len(list(cm[col_class]['None'])) == 1:
-            description_3 = '''Model predicted {} "{}" object that is not in GT (None <-> {})"'''.format(
+            description_3 = '''Model predicted {} "{}" object that is not in ground truth (None <-> {})"'''.format(
                 len(list(cm[col_class]['None'])), col_class, col_class)
         else:
-            description_3 = '''Model predicted {} "{}" objects that are not in GT (None <-> {})'''.format(
+            description_3 = '''Model predicted {} "{}" objects that are not in ground truth (None <-> {})'''.format(
                 len(list(cm[col_class]['None'])), col_class, col_class)
     else:
         description_3 = None

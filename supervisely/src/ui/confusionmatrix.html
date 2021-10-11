@@ -14,10 +14,10 @@
 
 
 <el-collapse v-model="state.CMActiveNames">
-    <el-collapse-item title="Select cell from confusion matrix to preview "
+    <el-collapse-item title="Select cell in confusion matrix to preview images"
                       name="confusion_matrix">
 
-        <div v-if="!state.CMShow1">Please, select Classes and define Settings.</div>
+        <div v-if="!state.CMShow1">Please, select classes and define settings.</div>
         <div v-if="state.CMShow1"
              title="Confusion Matrix for selected classes and current settings"
              description="Select cell to get additional info about image's statistics.">
@@ -42,8 +42,6 @@
     <el-collapse-item v-if="state.CMShow2"
                       :title="data.CMImageTableTitle" name="image_stat_table">
         <sly-field v-if="state.CMShow2">
-            <!--            :title="data.CMImageTableTitle"-->
-            <!--            title="Images for selected cell in confusion matrix"-->
             <div slot="description">
                 <div v-if="data.CMImageTableDescription1">{{data.CMImageTableDescription1}}</div>
                 <div v-if="data.CMImageTableDescription2">{{data.CMImageTableDescription2}}</div>
@@ -90,7 +88,7 @@
                        style="width: 15px; display: inline-block"></i>
                     RECALL
                 </span>
-                - fraction of the relevant objects that are successfully detected.
+                - fraction of the relevant objects that are successfully detected
             </div>
             <div class="mt5">
                 <span style="color: #F39C12">
@@ -126,21 +124,21 @@
                         </div>
                     </template>
                 </sly-grid-gallery>
-                <el-table class="mb15 ultra-table"
+                <el-table class="mb15"
                           :data="data.GalleryTable1"
                           @cell-mouse-enter="(row, column, cell, event) =>{
                                 state.activeFigure = row['id_pair'];
                               }"
                           @cell-mouse-leave="state.activeFigure = null"
                           max-height="300"
-                          style="width: 40%">
+                          style="width: 50%">
                     <el-table-column sortable prop="gt.class" label="GT" align="center">
                         <template scope="scope">
                             <div v-if="scope.row.gt.class">
                                 <i class="zmdi zmdi-circle" :style="{color: scope.row.gt.color}"></i>
                                 <span class="ml5 mr10">{{ scope.row.gt.class }}</span>
-                                <span style="color: #7f858e;">
-                                    <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.gt.id }}</span>
+<!--                                <span style="color: #7f858e;">-->
+<!--                                    <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.gt.id }}</span>-->
                             </div>
                         </template>
                     </el-table-column>
@@ -170,8 +168,8 @@
                             <div v-if="scope.row.pr.class">
                                 <i class="zmdi zmdi-circle" :style="{color: scope.row.pr.color}"></i>
                                 <span class="ml5 mr10">{{ scope.row.pr.class }}</span>
-                                <span style="color: #7f858e;">
-                                    <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.pr.id }}</span>
+<!--                                <span style="color: #7f858e;">-->
+<!--                                    <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.pr.id }}</span>-->
                             </div>
                         </template>
                     </el-table-column>
