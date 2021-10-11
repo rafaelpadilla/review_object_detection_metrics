@@ -2,7 +2,7 @@
   "name": "Object detection metrics",
   "type": "app",
   "categories": [
-    "report"
+    "performance"
   ],
   "description": "",
   "docker_image": "supervisely/base-py-sdk:6.1.97",
