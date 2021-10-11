@@ -175,6 +175,13 @@ def show_images_body(api, task_id, state, gallery_template, v_model, gallery_tab
     data_np = np.asarray(data).transpose()
 
     for line in data_np:
+        gt = None
+        l_name = None
+        l_color = None
+        pr = None
+        r_name = None
+        r_color = None
+
         for l in ann_1.labels:
             try:
                 if int(line[0]) == l.geometry.sly_id:
