@@ -25,14 +25,8 @@ def main():
     g.my_app.compile_template(g.root_source_dir)
     g.my_app.run(data=data, state=state)
 
-    # @TODO: DESCRIPTION 2 "bird" objects are not detected (bird <-> None) +
-    # @TODO: DESCRIPTION Model predicted 77 "cat" objects that are not in GT (None <-> Bird) +
-    # легенда для таблицы с изображениями +
-    # dog FP 10 vs 7 BUG ?
-    # @TODO: clear global unused requirements
-    # @TODO: check plt2bb in utils.py for bugs
-
-    # @TODO: Umar - настройка толщины прямоугольников и полигонов в grid gallery - связаться с Антоном
+    #@TODO: GTteamId - gtProjectId - нужно сделать именования везде однородные, начинаем с маленькой буквы
+    #@TODO:
 
 
 if __name__ == "__main__":

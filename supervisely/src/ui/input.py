@@ -12,13 +12,12 @@ def init(data, state):
     state['doneInput'] = False
     state['InputInProgress'] = True
 
+    state["GTteamId"] = g.team_id
+    state["GTworkspaceId"] = g.workspace_id
+    state["PRteamId"] = g.team_id
+    state["PRworkspaceId"] = g.workspace_id
     state["gtProjectId"] = None
-    # data["gtProjectName"] = g.gt_project_info.name
-    # data["gtProjectPreviewUrl"] = g.api.image.preview_url(g.gt_project_info.reference_image_url, 100, 100)
-    #
     state["predProjectId"] = None
-    # data["predProjectName"] = g.pred_project_info.name
-    # data["predProjectPreviewUrl"] = g.api.image.preview_url(g.pred_project_info.reference_image_url, 100, 100)
 
 
 def restart(data, state):

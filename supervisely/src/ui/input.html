@@ -1,13 +1,24 @@
 <div class="fflex" style="align-items: stretch">
-    <sly-card title="Ground Truth Project" style="width: 50%" class="mr15">
+    <sly-card title="Ground Truth Project"
+              subtitle="Select project with ground truth labels"
+              style="width: 50%"
+              class="mr15"
+    >
         <sly-select-team-workspace
                 :team-id.sync="state.GTteamId"
-                :workspace-id.sync="state.GTworkspaceId"></sly-select-team-workspace>
-        <sly-field title="">
-            <sly-select-project v-model="state.gtProjectId" :workspace-id="state.GTworkspaceId"
-                                :project-id.sync="state.gtProjectId"></sly-select-project>
-        </sly-field>
-        <sly-field v-if="state.gtProjectName"
+                :workspace-id.sync="state.GTworkspaceId"
+                :disabled="state.doneInput"
+        >
+        </sly-select-team-workspace>
+        <sly-select-project
+                v-model="state.gtProjectId"
+                :workspace-id="state.GTworkspaceId"
+                :project-id.sync="state.gtProjectId"
+                :disabled="state.doneInput"
+                class="mb10"
+        >
+        </sly-select-project>
+        <sly-field v-if="state.doneInput"
                    title="" description="Project">
             <a slot="title" target="_blank"
                :href="`/projects/${state.gtProjectId}/datasets`">{{state.gtProjectName}}</a>
@@ -15,14 +26,25 @@
         </sly-field>
     </sly-card>
 
-    <sly-card title="Prediction Project" style="width: 50%">
-        <sly-select-team-workspace :team-id.sync="state.PRteamId"
-                                   :workspace-id.sync="state.PRworkspaceId"></sly-select-team-workspace>
-        <sly-field title="">
-            <sly-select-project v-model="state.predProjectId" :workspace-id="state.PRworkspaceId"
-                                :project-id.sync="state.predProjectId"></sly-select-project>
-        </sly-field>
-        <sly-field v-if="state.predProjectName"
+    <sly-card title="Prediction Project"
+              style="width: 50%"
+              subtitle="Select project with predicted labels"
+    >
+        <sly-select-team-workspace
+                :team-id.sync="state.PRteamId"
+                :workspace-id.sync="state.PRworkspaceId"
+                :disabled="state.doneInput"
+        >
+        </sly-select-team-workspace>
+        <sly-select-project
+                v-model="state.predProjectId"
+                :workspace-id="state.PRworkspaceId"
+                :project-id.sync="state.predProjectId"
+                :disabled="state.doneInput"
+                class="mb10"
+        >
+        </sly-select-project>
+        <sly-field v-if="state.doneInput"
                    title="" description="Project">
             <a slot="title" target="_blank"
                :href="`/projects/${state.predProjectId}/datasets`">{{state.predProjectName}}</a>
@@ -33,15 +55,15 @@
 
 <el-button v-if="!state.doneInput"
            :disabled="!state.gtProjectId || !state.predProjectId"
-           class="regular" type="primary" @click="command('set_projects')" >
+           class="regular mt10" type="primary" @click="command('set_projects')" >
     Set projects
 </el-button>
-<div v-if="state.doneInput">
+
+<div v-if="state.doneInput" class="mt10">
     <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
-    <span style="color: #5a6772;">
-                Projects selected.
-        </span>
+    <span style="color: #5a6772;">Projects selected</span>
 </div>
+
 <el-button type="warning" class="regular mt10" :plain="true"
            @click="state.restartFrom = 1; state.doneInput = false; command('restart')"
            v-if="state.doneInput">
