@@ -9,11 +9,19 @@ from widgets.sly_table import SlyTable
 # from supervisely_lib.app.widgets.confusion_matrix import ConfusionMatrix
 
 confusion_matrix = ConfusionMatrix(api=g.api, task_id=g.task_id, v_model='data.slyConfusionMatrix')
-cm_image_table = SlyTable(g.api, g.task_id, 'data.CMTableImages', g.image_columns)
-gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.CMGallery', g.aggregated_meta)
+cm_image_table = None  # SlyTable(g.api, g.task_id, 'data.CMTableImages', g.image_columns)
+gallery_conf_matrix = None  # CompareGallery(g.task_id, g.api, 'data.CMGallery', g.aggregated_meta)
 
 
 def init(data, state):
+    data['GalleryTable'] = {}
+    data['CMNotification'] = {
+        "options": {
+            "name": "Select cell in confusion matrix to preview images with original annotations and detections.",
+            "type": "info"
+        }
+    }
+    state['activeFigure'] = None
     state['selection'] = {}
     state['selected'] = {'rowClass': None, 'colClass': None}
     state['CMActiveStep'] = None
@@ -30,7 +38,9 @@ def init(data, state):
     state["CMDisabled3"] = True
     state["CMShow3"] = False
 
-    data['CMImageTableTitle'] = "Statistic Image Table"
+    state['selectedRow'] = None
+
+    data['CMImageTableTitle'] = "Statistic image table"
 
     conf_matrx_columns_v2 = []
     diagonal_max = 0
@@ -46,8 +56,8 @@ def init(data, state):
     data['slyConfusionMatrix'] = slyConfusionMatrix
     data['CMTableImages'] = {}
     data['CMGallery'] = {}
-    data['CMImageTableDescription'] = "Please, select Cell from Confusion Matrix."
-    data['CMGalleryTitle'] = 'Please, select row from Image Statistic Table.'
+    data['CMImageTableDescription'] = "Please, select cell from confusion matrix."
+    data['CMGalleryTitle'] = 'Please, select row from image statistic table.'
 
 
 def reset_cm_state_to_default(api, task_id):
@@ -67,8 +77,8 @@ def reset_cm_state_to_default(api, task_id):
         {"field": "state.CMActiveStep", "payload": 0},
 
         # {"field": "data.CMImageTableTitle", "payload": 'Cell is not selected.'},
-        {"field": "data.CMImageTableDescription1", "payload": 'Please, select Cell from Confusion Matrix.'},
-        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from Image Statistic Table.'},
+        {"field": "data.CMImageTableDescription1", "payload": 'Please, select cell from confusion matrix.'},
+        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from image statistic table.'},
     ]
     api.app.set_fields(task_id, fields)
 
@@ -77,6 +87,7 @@ def reset_cm_state_to_default(api, task_id):
 @g.my_app.callback("show_image_table")
 @sly.timeit
 def show_image_table(api: sly.Api, task_id, context, state, app_logger):
+    global cm_image_table
     v_model = "data.CMTableImages"
 
     fields = [
@@ -88,19 +99,22 @@ def show_image_table(api: sly.Api, task_id, context, state, app_logger):
         # {"field": "state.CMDisabled3", "payload": True},
         {"field": "state.CMShow3", "payload": False},
 
-        {"field": "data.CMImageTableDescription1", "payload": 'Please, select cell from Confusion Matrix.'},
-        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from Image Statistic Table.'},
+        {"field": "data.CMImageTableDescription1", "payload": 'Please, select cell from confusion matrix.'},
+        {"field": "data.CMGalleryTitle", "payload": 'Please, select row from image statistic table.'},
         {"field": "state.CMActiveNames", "payload": ['confusion_matrix', 'image_stat_table']},
     ]
     api.app.set_fields(task_id, fields)
     # print('selected row =', state['selected']['rowClass'])
     # print('selected col =', state['selected']['colClass'])
+    if cm_image_table is None:
+        cm_image_table = SlyTable(g.api, g.task_id, 'data.CMTableImages', g.image_columns)
     ui_utils.show_image_table_body(api, task_id, state, v_model, cm_image_table)
 
 
 @g.my_app.callback("show_images_gallery")
 @sly.timeit
 def show_images_gallery(api: sly.Api, task_id, context, state, app_logger):
+    global gallery_conf_matrix
     fields = [
         # {"field": "state.CMActiveStep", "payload": 3},
         # {"field": "state.CMCollapsed3", "payload": False},
@@ -109,4 +123,7 @@ def show_images_gallery(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.CMActiveNames", "payload": ['confusion_matrix', 'image_stat_table', 'grid_gallery']},
     ]
     api.app.set_fields(task_id, fields)
-    ui_utils.show_images_body(api, task_id, state, gallery_conf_matrix, "data.CMGalleryTitle")
+    if gallery_conf_matrix is None:
+        gallery_conf_matrix = CompareGallery(g.task_id, g.api, 'data.CMGallery', g.aggregated_meta)
+    ui_utils.show_images_body(api, task_id, state, gallery_conf_matrix, "data.CMGalleryTitle",
+                              gallery_table='data.GalleryTable1')

@@ -1,7 +1,12 @@
 <div>
-    {% include 'supervisely/src/ui/input.html' %}
-    {% include 'supervisely/src/ui/datasets.html' %}
-    <sly-stepper :active="state.GlobalActiveStep" class="mt10">
+<!--    {% include 'supervisely/src/ui/test/test.html' %}-->
+    <sly-stepper :active="state.activeStep" class="mt10">
+        <sly-stepper-item>
+            {% include 'supervisely/src/ui/input.html' %}
+        </sly-stepper-item>
+        <sly-stepper-item>
+            {% include 'supervisely/src/ui/datasets.html' %}
+        </sly-stepper-item>
         <sly-stepper-item>
             {% include 'supervisely/src/ui/classes.html' %}
         </sly-stepper-item>
@@ -9,7 +14,22 @@
             {% include 'supervisely/src/ui/settings.html' %}
         </sly-stepper-item>
         <sly-stepper-item>
-           {% include 'supervisely/src/ui/metrics.html' %}
+            {% include 'supervisely/src/ui/metrics.html' %}
         </sly-stepper-item>
     </sly-stepper>
+
+    <el-dialog
+            title="Restart from this step"
+            :visible.sync="state.restartFrom"
+            size="tiny">
+        <span>This step and all next steps will be reseted</span>
+        <span slot="footer" class="dialog-footer">
+            <el-button @click="state.restartFrom = null">Cancel</el-button>
+            <!--        $nextTick(() => { $refs['card3'].$el.scrollIntoView({behavior: 'smooth', block: 'center'}); });-->
+            <el-button type="primary" class="regular"
+                       @click="command('restart');">
+                Confirm
+            </el-button>
+        </span>
+    </el-dialog>
 </div>

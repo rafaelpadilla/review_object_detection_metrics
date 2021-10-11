@@ -40,16 +40,18 @@ def plt2bb(batch_element, encoder, type_coordinates=CoordinatesType.ABSOLUTE,
         bb = encoder(image_name=batch_element['image_name'], class_id=class_title,
                      coordinates=(x1, y1, x2, y2), type_coordinates=type_coordinates,
                      img_size=(width, height), confidence=confidence, bb_type=bb_type, format=_format)
+        bb.sly_id = ann.geometry.sly_id
         ret.append(bb)
     return ret
 
 
 def convert_to_bbs(project_data, bb_type=BBType.GROUND_TRUTH):
-    plt_boxes = []
+    plt_boxes = {}
     for dataset_key, dataset_value in project_data.items():
+        plt_boxes[dataset_key] = []
         for element in dataset_value:
             boxes = plt2bb(batch_element=element, encoder=BoundingBox, bb_type=bb_type)
-            plt_boxes.extend(boxes)
+            plt_boxes[dataset_key].extend(boxes)
     return plt_boxes
 
 
@@ -83,30 +85,23 @@ class ConfusionMatrix:
         self.set_det(det)
 
     def collect_data(self):
-        _gt_boxes = self._gt
-        _det_boxes = list()
-        for box in self._det:
-            if box.get_confidence() >= self._score_threshold:
-                _det_boxes.append(box)
 
         gt_images_only = []
         classes_bbs = {}
-        if len(self._gt) == 0:
-            pass  # return
 
-        for bb in _gt_boxes:
-            image_name = bb.get_image_name()
-            gt_images_only.append(image_name)
-            classes_bbs.setdefault(image_name, {'gt': [], 'det': []})
-            classes_bbs[image_name]['gt'].append(bb)
-
-        for bb in _det_boxes:
-            image_name = bb.get_image_name()
-            classes_bbs.setdefault(image_name, {'gt': [], 'det': []})
-            classes_bbs[image_name]['det'].append(bb)
-
-        classes = [item.get_class_id() for item in _gt_boxes] + [item.get_class_id() for item in _det_boxes]
-        classes = list(set(classes))
+        classes = []
+        projects = {'gt': self._gt, 'det': self._det}
+        for prj_type, project in projects.items():
+            for dataset, boxes in project.items():
+                classes_bbs.setdefault(dataset, {})
+                for bb in boxes:
+                    image_name = bb.get_image_name()
+                    class_name = bb.get_class_id()
+                    if class_name not in classes:
+                        classes.append(class_name)
+                    gt_images_only.append(image_name)
+                    classes_bbs[dataset].setdefault(image_name, {'gt': [], 'det': []})
+                    classes_bbs[dataset][image_name][prj_type].append(bb)
         classes.sort()
         classes.append('None')
 
@@ -115,62 +110,124 @@ class ConfusionMatrix:
             conf_matrix[class_row] = {}
             for class_col in classes:
                 conf_matrix[class_row][class_col] = list()
-        return _gt_boxes, _det_boxes, conf_matrix, classes_bbs
+        return conf_matrix, classes_bbs  # self._gt, self._det, conf_matrix, classes_bbs
 
     def confusion_matrix(self, iou_threshold=0.5, score_threshold=0.01):
         self.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
-        _gt_boxes, _det_boxes, conf_matrix, classes_bbs = self.collect_data()
-        for image, data in classes_bbs.items():
-            anns = data['gt']
-            dets = data['det']
-            dets = [a for a in sorted(dets, key=lambda bb: bb.get_confidence(), reverse=True)]
-            if len(anns) != 0:
-                if len(dets) != 0:  # annotations - yes, detections - yes:
-                    iou_matrix = np.zeros((len(dets), len(anns)))
-                    for det_id, det in enumerate(dets):
-                        for ann_id, ann in enumerate(anns):
-                            iou_matrix[det_id, ann_id] = BoundingBox.iou(det, ann)
-                    detected_gt_per_image = np.zeros(len(anns))
-                    for det_idx in range(iou_matrix.shape[0]):
-                        ann_idx = np.argmax(iou_matrix[det_idx])
-                        iou_value = iou_matrix[det_idx, ann_idx]
-                        if iou_value >= iou_threshold:
-                            if detected_gt_per_image[ann_idx] == 0:
-                                detected_gt_per_image[ann_idx] = 1
-                                ann_box = anns[ann_idx]
-                                det_box = dets[det_idx]
-                            else:
-                                if np.sum(detected_gt_per_image) < detected_gt_per_image.shape[0]:
-                                    ann_box = anns[ann_idx]
-                                    det_box = 'None'
+        # _gt_boxes, _det_boxes, \
+        conf_matrix, classes_bbs = self.collect_data()
+        object_mapping = {}
+        for dataset, images in classes_bbs.items():
+            object_mapping[dataset] = {}
+            for image, data in images.items():
+                object_mapping[dataset][image] = {'gt': [], 'det': [], 'mark': [], 'conf': [], 'iou': []}
+                anns = data['gt']
+                dets = data['det']
+                dets = [a for a in sorted(dets, key=lambda bb: bb.get_confidence(), reverse=True)]
+                # print(len(anns), len(dets))
+                if len(anns) != 0:   # annotations - yes
+                    if len(dets) != 0:  # annotations - yes, detections - yes:
+                        iou_matrix = np.zeros((len(dets), len(anns)))
+                        for det_id, det in enumerate(dets):
+                            for ann_id, ann in enumerate(anns):
+                                iou_matrix[det_id, ann_id] = BoundingBox.iou(det, ann)
+                        detected_gt_per_image = np.zeros(len(anns))
+                        for det_idx in range(iou_matrix.shape[0]):
+                            ann_idx = np.argmax(iou_matrix[det_idx])
+                            iou_value = iou_matrix[det_idx, ann_idx]
+                            if iou_value >= iou_threshold:
+                                # если не сматчен - мэтчится
+                                # CASE 1
+                                if detected_gt_per_image[ann_idx] == 0:
+                                    if anns[ann_idx].get_class_id() == dets[det_idx].get_class_id():
+                                        mark = 'TP'
+                                        detected_gt_per_image[ann_idx] = 1
+                                        ann_box = anns[ann_idx]
+                                        det_box = dets[det_idx]
+                                        object_mapping[dataset][image]['gt'].append(anns[ann_idx].sly_id)
+                                    else:
+                                        mark = 'FP'
+                                        ann_box = anns[ann_idx]  #'None'
+                                        det_box = dets[det_idx]
+                                        object_mapping[dataset][image]['gt'].append(None)
+
+                                    object_mapping[dataset][image]['det'].append(dets[det_idx].sly_id)
+                                    object_mapping[dataset][image]['conf'].append(dets[det_idx].get_confidence())
+                                    object_mapping[dataset][image]['iou'].append(iou_value)
+                                    object_mapping[dataset][image]['mark'].append(mark)
                                 else:
-                                    ann_box = 'None'
-                                    det_box = dets[ann_idx]
-                        else:
-                            ann_box = 'None'  # anns[ann_idx]
-                            det_box = dets[det_idx]
-                        ann_cls = ann_box.get_class_id() if not isinstance(ann_box, str) else 'None'
-                        det_cls = det_box.get_class_id() if not isinstance(det_box, str) else 'None'
-                        conf_matrix[det_cls][ann_cls].append(image)
-                    if np.sum(detected_gt_per_image) < detected_gt_per_image.shape[0]:
-                        for annotation in np.array(anns)[detected_gt_per_image == 0]:
-                            ann_cls = annotation.get_class_id()
-                            conf_matrix['None'][ann_cls].append(image)
-                else:  # annotations - yes, detections - no : FN
-                    # записать все данные по аннотациям в правый столбец None
-                    detection = 'None'
-                    for ann in anns:
-                        actual_class = ann.get_class_id()
-                        conf_matrix[detection][actual_class].append(image)
-            else:
-                if len(dets) != 0:  # annotattions - no, detections- yes : FP
-                    actual_class = 'None'
-                    for det in dets:
-                        detection = det.get_class_id()
-                        conf_matrix[detection][actual_class].append(image)
-                else:  # annotations - no, detections - no : ????
-                    pass
-        return conf_matrix
+                                    #  если аннотаций больше чем детекций
+                                    # CASE 1
+                                    if np.sum(detected_gt_per_image) < detected_gt_per_image.shape[0]:
+                                        object_mapping[dataset][image]['gt'].append(None)  # anns[ann_idx].sly_id
+                                        object_mapping[dataset][image]['det'].append(dets[det_idx].sly_id)  # None
+                                        object_mapping[dataset][image]['mark'].append('FP')
+                                        object_mapping[dataset][image]['conf'].append(None)  # dets[det_idx].get_confidence()
+                                        object_mapping[dataset][image]['iou'].append(None)  # None iou_value
+                                        ann_box = 'None'  # anns[ann_idx]
+                                        det_box = dets[det_idx]  # 'None'
+                                    # если детекций больше чем аннотаций
+                                    else:
+                                        object_mapping[dataset][image]['gt'].append(None)  # None anns[ann_idx].sly_id
+                                        object_mapping[dataset][image]['det'].append(dets[det_idx].sly_id)  # None
+                                        object_mapping[dataset][image]['mark'].append('FP')
+                                        object_mapping[dataset][image]['conf'].append(None)  # dets[det_idx].get_confidence()
+                                        object_mapping[dataset][image]['iou'].append(None)  # None iou_value
+                                        ann_box = 'None'
+                                        det_box = dets[ann_idx]
+                            else:
+
+                                object_mapping[dataset][image]['gt'].append(None)  # anns[ann_idx].sly_id
+                                object_mapping[dataset][image]['det'].append(dets[det_idx].sly_id)
+                                object_mapping[dataset][image]['mark'].append('FP')
+                                object_mapping[dataset][image]['conf'].append(None)  # dets[det_idx].get_confidence()
+                                object_mapping[dataset][image]['iou'].append(None)  # iou_value
+
+                                ann_box = 'None'  # anns[ann_idx]
+                                det_box = dets[det_idx]  # 'None'
+
+                            ann_cls = ann_box.get_class_id() if not isinstance(ann_box, str) else 'None'
+                            det_cls = det_box.get_class_id() if not isinstance(det_box, str) else 'None'
+                            conf_matrix[det_cls][ann_cls].append(image)
+
+                        if np.sum(detected_gt_per_image) < detected_gt_per_image.shape[0]:
+                            zeros = np.where(detected_gt_per_image == 0)[0]
+                            for ann_idx, annotation in enumerate(np.array(anns)[detected_gt_per_image == 0]):
+                                ann_cls = annotation.get_class_id()
+                                conf_matrix['None'][ann_cls].append(image)
+
+                                object_mapping[dataset][image]['gt'].append(annotation.sly_id)
+                                object_mapping[dataset][image]['det'].append(None)
+                                object_mapping[dataset][image]['mark'].append('FN')
+                                object_mapping[dataset][image]['conf'].append(None)
+                                object_mapping[dataset][image]['iou'].append(None)
+                    else:  # annotations - yes, detections - no : FN
+                        # записать все данные по аннотациям в правый столбец None
+                        detection = 'None'
+                        for ann_idx, ann in enumerate(anns):
+                            object_mapping[dataset][image]['gt'].append(ann.sly_id)
+                            object_mapping[dataset][image]['det'].append(None)
+                            object_mapping[dataset][image]['mark'].append('FN')
+                            object_mapping[dataset][image]['conf'].append(None)
+                            object_mapping[dataset][image]['iou'].append(None)
+                            actual_class = ann.get_class_id()
+                            conf_matrix[detection][actual_class].append(image)
+
+                else:  # annotattions - no
+                    if len(dets) != 0:  # annotattions - no, detections- yes : FP
+                        actual_class = 'None'
+                        for det_idx, det in enumerate(dets):
+                            detection = det.get_class_id()
+                            conf_matrix[detection][actual_class].append(image)
+
+                            object_mapping[dataset][image]['gt'].append(None)
+                            object_mapping[dataset][image]['det'].append(det.sly_id)
+                            object_mapping[dataset][image]['mark'].append('FP')
+                            object_mapping[dataset][image]['conf'].append(None)  # det.get_confidence()
+                            object_mapping[dataset][image]['iou'].append(None)
+                    else:  # annotations - no, detections - no : ????
+                        pass
+        return conf_matrix, object_mapping
 
     @staticmethod
     def convert_to_numbers(conf_matrix):
@@ -211,7 +268,7 @@ class ConfusionMatrix:
             self.set_det(det)
         self.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
 
-        self.cm_dict = self.confusion_matrix()
+        self.cm_dict, self.object_maps = self.confusion_matrix()
 
         conf_matrx_columns_v2, conf_matrx_data_v2 = self.convert_confusion_matrix_to_plt_format_v2(self.cm_dict)
         diagonal_max = 0
@@ -229,7 +286,11 @@ class ConfusionMatrix:
         for i1, row in enumerate(conf_matrx_data_v2_extended):
             tmp = []
             for i2, col in enumerate(row):
-                tmp.append(dict(value=int(col)))
+                try:
+                    description = f"actual - {conf_matrx_columns_v2[i1]}\n predicted -  {conf_matrx_columns_v2[i2]}"
+                except:
+                    description = None
+                tmp.append(dict(value=int(col), description=description))
                 if i1 == i2 and col > diagonal_max:
                     diagonal_max = col
                 if i1 != i2 and col > max_value:

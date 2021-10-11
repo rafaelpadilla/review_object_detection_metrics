@@ -1,19 +1,71 @@
-<div>
-    <div class="fflex" style="align-items: stretch">
-        <sly-card title="Ground Truth Project" style="width: 50%" class="mr15">
-            <sly-field title="" description="Project">
-                <a slot="title" target="_blank"
-                   :href="`/projects/${data.gtProjectId}/datasets`">{{data.gtProjectName}}</a>
-                <sly-icon slot="icon" :options="{ imageUrl: `${data.gtProjectPreviewUrl}` }"/>
-            </sly-field>
-        </sly-card>
+<div class="fflex" style="align-items: stretch">
+    <sly-card title="Ground Truth Project"
+              subtitle="Select project with ground truth labels"
+              style="width: 50%"
+              class="mr15"
+    >
+        <sly-select-team-workspace
+                :team-id.sync="state.GTteamId"
+                :workspace-id.sync="state.GTworkspaceId"
+                :disabled="state.done1"
+        >
+        </sly-select-team-workspace>
+        <sly-select-project
+                v-model="state.gtProjectId"
+                :workspace-id="state.GTworkspaceId"
+                :project-id.sync="state.gtProjectId"
+                :disabled="state.done1"
+                class="mb10"
+        >
+        </sly-select-project>
+        <sly-field v-if="state.done1"
+                   title="" description="Project">
+            <a slot="title" target="_blank"
+               :href="`/projects/${state.gtProjectId}/datasets`">{{state.gtProjectName}}</a>
+            <sly-icon slot="icon" :options="{ imageUrl: `${state.gtProjectPreviewUrl}` }"/>
+        </sly-field>
+    </sly-card>
 
-        <sly-card title="Prediction project" style="width: 50%">
-            <sly-field title="" description="Project">
-                <a slot="title" target="_blank"
-                   :href="`/projects/${data.predProjectId}/datasets`">{{data.predProjectName}}</a>
-                <sly-icon slot="icon" :options="{ imageUrl: `${data.predProjectPreviewUrl}` }"/>
-            </sly-field>
-        </sly-card>
+    <sly-card title="Prediction Project"
+              style="width: 50%"
+              subtitle="Select project with predicted labels"
+    >
+        <sly-select-team-workspace
+                :team-id.sync="state.PRteamId"
+                :workspace-id.sync="state.PRworkspaceId"
+                :disabled="state.done1"
+        >
+        </sly-select-team-workspace>
+        <sly-select-project
+                v-model="state.predProjectId"
+                :workspace-id="state.PRworkspaceId"
+                :project-id.sync="state.predProjectId"
+                :disabled="state.done1"
+                class="mb10"
+        >
+        </sly-select-project>
+        <sly-field v-if="state.done1"
+                   title="" description="Project">
+            <a slot="title" target="_blank"
+               :href="`/projects/${state.predProjectId}/datasets`">{{state.predProjectName}}</a>
+            <sly-icon slot="icon" :options="{ imageUrl: `${state.predProjectPreviewUrl}` }"/>
+        </sly-field>
+    </sly-card>
+</div>
+
+<el-button v-if="!state.done1"
+           :disabled="!state.gtProjectId || !state.predProjectId"
+           class="regular mt10" type="primary" @click="command('set_projects')">
+    Set projects
+</el-button>
+
+<div v-if="state.done1">
+    <div class="mt10">
+        <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
+        <span style="color: #5a6772;">Projects selected</span>
     </div>
+    <el-button type="warning" class="regular mt10" :plain="true"
+               @click="state.restartFrom = 1">
+        <i class="zmdi zmdi-rotate-left mr5"></i> Reset projects
+    </el-button>
 </div>

@@ -4,7 +4,7 @@ import globals as g
 global RESULTS, RESULTS_DATA, image_dict, total_img_num
 RESULTS = None
 RESULTS_DATA = None
-image_dict = {}
+image_dict = {'gt_images': {}, 'pred_images': {}}
 
 
 def process_items(ds_info1, collection1, ds_info2, collection2):
@@ -90,15 +90,41 @@ def _get_all_images(api: sly.Api, project):
 
 
 def init(data, state):
+    state['collapsed2'] = True
+    state['disabled2'] = True
+    state['disabled2Btn'] = False
+    state['done2'] = False
+    state['loading2'] = False
+
+
+def restart(data, state):
+    state['collapsed2'] = False
+    state['disabled2'] = False
+    state['disabled2Btn'] = False
+    state['done2'] = False
+    state['loading2'] = False
+
+
+@g.my_app.callback("get_datasets_statistic")
+@sly.timeit
+def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
     global image_dict, total_img_num
+
+    g.api.app.set_field(g.task_id, "state.loading2", True)
+
+    g.gt_project_info = api.project.get_info_by_id(state['gtProjectId'], raise_error=True)
+    g._gt_meta_ = api.project.get_meta(state['gtProjectId'])
+    g.gt_meta = sly.ProjectMeta.from_json(g._gt_meta_)
+
+    g.pred_project_info = api.project.get_info_by_id(state['predProjectId'], raise_error=True)
+    g._pred_meta_ = api.project.get_meta(state['predProjectId'])
+    g.pred_meta = sly.ProjectMeta.from_json(g._pred_meta_)
+    g.generate_meta()
 
     ds_info1, ds_images1 = _get_all_images(g.api, g.gt_project_info)
     ds_info2, ds_images2 = _get_all_images(g.api, g.pred_project_info)
     result = process_items(ds_info1, ds_images1, ds_info2, ds_images2)
-    data['table'] = result
-
     intersected_keys = list(set(list(ds_images1)) & set(list(ds_images2)))
-    image_dict = {'gt_images': {}, 'pred_images': {}}
 
     for intersected_key in intersected_keys:
         image_dict['gt_images'][intersected_key] = []
@@ -109,3 +135,32 @@ def init(data, state):
                 if gt_element.hash == pred_element.hash and gt_element.name == pred_element.name:
                     image_dict['gt_images'][intersected_key].append(gt_element)
                     image_dict['pred_images'][intersected_key].append(pred_element)
+
+    fields = [
+        {"field": "data.table", "payload": result},
+        {"field": "state.loading2", "payload": False},
+        {"field": "state.done2", "payload": True},
+    ]
+    g.api.app.set_fields(g.task_id, fields)
+
+
+@g.my_app.callback("next_step")
+@sly.timeit
+def next_step(api: sly.Api, task_id, context, state, app_logger):
+    fields = []
+    fields.append({"field": f"state.collapsed3", "payload": False})
+    fields.append({"field": f"state.disabled3", "payload": False})
+    fields.append({"field": f"state.done2", "payload": True})
+
+    # for i in range(1, 6):
+    #     collapsed = True if i != 3 else False
+    #     disabled = True if i not in [2, 3] else False
+    #     done = True if i < 4 else False
+    #     fields.append({"field": f"state.collapsed{i}", "payload": collapsed})
+    #     fields.append({"field": f"state.disabled{i}", "payload": disabled})
+    #     fields.append({"field": f"state.done{i}", "payload": done})
+
+    fields.append({"field": "state.activeStep", "payload": 3})
+    fields.append({"field": "state.disabled2Btn", "payload": True})
+
+    api.app.set_fields(task_id, fields)

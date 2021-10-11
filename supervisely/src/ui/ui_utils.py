@@ -1,3 +1,5 @@
+import numpy as np
+
 from supervisely.src import download_data as dd
 from src.bounding_box import BoundingBox, BBType, BBFormat
 from supervisely.src import utils
@@ -19,40 +21,63 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     # cm = dd.cm
     cm = settings.cm
     images_to_show = list(set(cm[col_class][row_class]))
+    dataset_names = {}
+    pred_images_names_list = []
+    # for prj_key, prj_value in settings.filtered_confidences.items():
+    #     for dataset_key, dataset_value in prj_value.items():
+    #         for element in dataset_value:
+    #             if element['dataset_id'] not in dataset_names:
+    #                 dataset_names[element['dataset_id']] = api.dataset.get_info_by_id(element['dataset_id']).name
+    #             if element['image_name'] in images_to_show:
+    #                 selected_image_infos[prj_key].append(element)
+    #                 if prj_key == 'pred_images':
+    #                     pred_images_names_list.append(element['image_name'])
 
-    selected_image_infos = dict(gt_images=[], pred_images=[])
-
-    for prj_key, prj_value in settings.filtered_confidences.items():
+    prepared_data = {'gt_images': settings.gts, 'pred_images': settings.pred}
+    selected_image_infos = {}
+    for prj_key, prj_value in prepared_data.items():
+        selected_image_infos.setdefault(prj_key, {})
         for dataset_key, dataset_value in prj_value.items():
+            selected_image_infos[prj_key].setdefault(dataset_key, [])
             for element in dataset_value:
-                if element['image_name'] in images_to_show:
-                    selected_image_infos[prj_key].append(element)
+                if element[1] in images_to_show:
+                    selected_image_infos[prj_key][dataset_key].append(element)
+                    if prj_key == 'pred_images':
+                        pred_images_names_list.append(element[1])
 
     encoder = BoundingBox
     gts = []
     pred = []
     assert len(selected_image_infos['gt_images']) == len(selected_image_infos['pred_images'])
-    dataset_names = {}
-    for gt, pr in zip(selected_image_infos['gt_images'], selected_image_infos['pred_images']):
-        assert gt['image_name'] == pr['image_name'], 'different images'
-        gt_boxes = utils.plt2bb(gt, encoder, bb_type=BBType.GROUND_TRUTH)
-        pred_boxes = utils.plt2bb(pr, encoder, bb_type=BBType.DETECTED)
 
-        if gt['dataset_id'] not in dataset_names:
-            dataset_names[gt['dataset_id']] = api.dataset.get_info_by_id(gt['dataset_id']).name
-        if pr['dataset_id'] not in dataset_names:
-            dataset_names[pr['dataset_id']] = api.dataset.get_info_by_id(pr['dataset_id']).name
-
-        gts.append([gt['image_id'], gt['image_name'], gt['full_storage_url'],
-                    dataset_names[gt['dataset_id']], gt_boxes])
-        pred.append([pr['image_id'], pr['image_name'], pr['full_storage_url'],
-                     dataset_names[pr['dataset_id']], pred_boxes])
+    # for gt_name, gt_val in selected_image_infos['gt_images'].items():
+    #     for gt in gt_val:
+    #         gt_boxes = utils.plt2bb(gt, encoder, bb_type=BBType.GROUND_TRUTH)
+    #         pr = selected_image_infos['pred_images'][gt_name][pred_images_names_list.index(gt['image_name'])]
+    #         pred_boxes = utils.plt2bb(pr, encoder, bb_type=BBType.DETECTED)
+    #
+    #         # gts.append([gt['image_id'], gt['image_name'], gt['full_storage_url'],
+    #         #             dataset_names[gt['dataset_id']], gt_boxes])
+    #         # pred.append([pr['image_id'], pr['image_name'], pr['full_storage_url'],
+    #         #              dataset_names[pr['dataset_id']], pred_boxes])
+    #
+    #         # break
+    gts, pred = selected_image_infos['gt_images'], selected_image_infos['pred_images']
+    # project_pd_data = metrics.calculate_project_mAP(src_list=gts,
+    #                                                 dst_list=pred,
+    #                                                 method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+    #                                                 dst_project_name=g.pred_project_info.name,
+    #                                                 iou=iou_threshold, score=score_threshold)
 
     images_pd_data = metrics.calculate_image_mAP(gts, pred, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                                                  iou=iou_threshold, score=score_threshold)
+    new_list_src, new_list_dst = [], []
+    # for el in images_pd_data:
+    #     src_tmp = [i[0] for i in new_list_src] if new_list_src else []
+    #     dst_tmp = [i[0] for i in new_list_dst] if new_list_dst else []
+    #     if el[0] not in src_tmp and el[1] not in dst_tmp:
 
-    text = '''Images for the selected cell in confusion matrix: "{}" (actual) <-> "{}" (predicted)'''.format(row_class,
-                                                                                                             col_class)
+    text = '''Images for the selected cell in confusion matrix: "{}" (ground truth) <-> "{}" (prediction)'''.format(row_class, col_class)
 
     if col_class != 'None' and row_class != 'None':
         if len(list(cm[col_class][row_class])) == 1:
@@ -76,10 +101,10 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
 
     if len(list(cm[col_class]['None'])) != 0:
         if len(list(cm[col_class]['None'])) == 1:
-            description_3 = '''Model predicted {} "{}" object that is not in GT (None <-> {})"'''.format(
+            description_3 = '''Model predicted {} "{}" object that is not in ground truth (None <-> {})"'''.format(
                 len(list(cm[col_class]['None'])), col_class, col_class)
         else:
-            description_3 = '''Model predicted {} "{}" objects that are not in GT (None <-> {})'''.format(
+            description_3 = '''Model predicted {} "{}" objects that are not in ground truth (None <-> {})'''.format(
                 len(list(cm[col_class]['None'])), col_class, col_class)
     else:
         description_3 = None
@@ -114,7 +139,7 @@ def filter_classes(ann, selected_classes, score=None):
     return ann
 
 
-def show_images_body(api, task_id, state, gallery_template, v_model, selected_image_classes=None):
+def show_images_body(api, task_id, state, gallery_template, v_model, gallery_table, selected_image_classes=None):
     selected_classes = state['selectedClasses'] if selected_image_classes is None else selected_image_classes
     selected_row_data = state["selection"]["selectedRowData"]
 
@@ -133,17 +158,83 @@ def show_images_body(api, task_id, state, gallery_template, v_model, selected_im
     else:
         return
 
-    ann_1 = filter_classes(api.annotation.download(image_id_1), selected_classes)
-    ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes, score)
+    # ann_1 = filter_classes(api.annotation.download(image_id_1), selected_classes)
+    # ann_2 = filter_classes(api.annotation.download(image_id_2), selected_classes, score)
 
-    gallery_template.set_left(title='original', ann=ann_1,
+    ann_1 = sly.Annotation.from_json(api.annotation.download(image_id_1).annotation, g.aggregated_meta)
+    ann_2 = sly.Annotation.from_json(api.annotation.download(image_id_2).annotation, g.aggregated_meta)
+
+    dataset_name = selected_row_data['dataset_name']
+    image_map_ = settings.object_mapper[dataset_name][image_name]
+
+    dict_ = []
+    ddict_ = []
+    data = []
+    for key in image_map_:
+        data.append(image_map_[key])
+    data_np = np.asarray(data).transpose()
+
+    for line in data_np:
+        gt = None
+        l_name = None
+        l_color = None
+        pr = None
+        r_name = None
+        r_color = None
+
+        for l in ann_1.labels:
+            try:
+                if int(line[0]) == l.geometry.sly_id:
+                    gt = int(line[0]) if int(line[0]) is not None else None
+                    l_name = l.obj_class.name
+                    l_color = l.obj_class.to_json()['color']
+                    break
+            except:
+                gt = None
+                l_name = None
+                l_color = None
+
+        for r in ann_2.labels:
+
+            try:
+                if int(line[1]) == r.geometry.sly_id:
+                    pr = int(line[1]) if int(line[1]) is not None else None
+                    r_name = r.obj_class.name
+                    r_color = r.obj_class.to_json()['color']
+                    break
+            except:
+                pr = None
+                r_name = None
+                r_color = None
+        dd = {
+            "gt": {"id": gt, "class": l_name, "color": l_color},
+            "pr": {"id": pr, "class": r_name, "color": r_color},
+            "mark": line[2],
+            "iou": round(float(line[4]), 3) if line[4] is not None else None,
+            "conf": round(float(line[3]), 3) if line[3] is not None else None,
+            "id_pair": [gt, pr]
+        }
+
+        # d = {
+        #     "GroundTruth": int(line[0]),
+        #     "IoU": line[4],
+        #     "Mark": line[2],
+        #     "Confidence": line[3],
+        #     "Prediction": int(line[1])
+        # }
+        # dict_.append(d)
+        ddict_.append(dd)
+
+    gallery_template.set_left(title='ground truth', ann=ann_1,
                               image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
-    gallery_template.set_right(title='detection', ann=ann_2,
+    gallery_template.set_right(title='predictions', ann=ann_2,
                                image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
     gallery_template.update()
 
-    text = 'Gallery for {}'.format(image_name)
+    text = 'Labels preview for {}'.format(image_name)
     fields = [
         {"field": v_model, "payload": text},
+        {"field": 'data.GalleryTable', "payload": dict_},
+        {"field": gallery_table, "payload": ddict_},
     ]
     api.app.set_fields(task_id, fields)

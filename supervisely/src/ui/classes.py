@@ -1,6 +1,10 @@
 import supervisely_lib as sly
 import globals as g
 import confusion_matrix
+import datasets
+
+
+classes_table = []
 
 
 def _process_items(collection1, collection2, diff_msg="Automatic conversion to rectangle format"):
@@ -71,34 +75,84 @@ def _process_items(collection1, collection2, diff_msg="Automatic conversion to r
             missed.append(compare)
 
     table = []
+    if match:
+        match.sort(key=lambda x: x['name1'])
     table.extend(match)
+    if differ:
+        differ.sort(key=lambda x: x['name1'])
     table.extend(differ)
     table.extend(missed)
-    return table #, match, differ, missed
+
+    return table
 
 
 def init(data, state):
-    classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
-    data["classesTable"] = classes_table
+    global classes_table
+    # try:
+    #     if g.aggregated_meta is None:
+    #         g.generate_meta()
+    #     classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
+    #     data["classesTable"] = classes_table
+    # except:
+    #     pass
+    data["classesTable"] = None
     state["selectedClasses"] = []
-    state['GlobalClassesCollapsed'] = False
-    state['GlobalClassesDisabled'] = False
+    state['collapsed3'] = True
+    state['disabled3'] = True
+    state['disabled3Btn'] = False
+    state['done3'] = False
+
+
+def restart(data, state):
+    state['collapsed3'] = False
+    state['disabled3'] = False
+    state['disabled3Btn'] = False
+    state['done3'] = False
+    state["selectedClasses"] = []
+
+
+@g.my_app.callback("get_classes")
+@sly.timeit
+def get_classes(api: sly.Api, task_id, context, state, app_logger):
+    global classes_table
+    classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
+    fields = [
+        # {"field": "state.done3", "payload": True},
+        {"field": "data.classesTable", "payload": classes_table},
+    ]
+    api.app.set_fields(task_id, fields)
 
 
 @g.my_app.callback("set_classes")
 @sly.timeit
 def set_classes(api: sly.Api, task_id, context, state, app_logger):
-    fields = [
-        {"field": "state.activeName", "payload": 'Settings'},
-        {"field": "state.GlobalClassesCollapsed", "payload": True},
-        {"field": "state.GlobalActiveStep", "payload": 2},
-        {"field": "state.GlobalSettingsCollapsed", "payload": False},
-        {"field": "state.GlobalSettingsDisabled", "payload": False},
+    total_img_num = 0
+    for k, v in datasets.image_dict['gt_images'].items():
+        total_img_num += len(v)
+
+    fields = []
+    # for i in range(1, 6):
+    #     collapsed = True if i != 4 else False
+    #     disabled = True if i not in [2, 3, 4] else False
+    #     done = True if i < 4 else False
+    #     fields.append({"field": f"state.collapsed{i}", "payload": collapsed})
+    #     fields.append({"field": f"state.disabled{i}", "payload": disabled})
+    #     fields.append({"field": f"state.done{i}", "payload": done})
+
+    extra_fields = [
+        {"field": "state.done3", "payload": True},
+
+        {"field": "state.collapsed4", "payload": False},
+        {"field": "state.disabled4", "payload": False},
+
+        {"field": "state.activeStep", "payload": 4},
         {"field": "state.GlobalShowSettings", "payload": True},
 
-        {"field": "state.GlobalMetricsCollapsed", "payload": True},
-        {"field": "state.GlobalMetricsDisabled", "payload": True},
         {"field": "state.GlobalShowMetrics", "payload": False},
+        {"field": "data.totalImagesCount", "payload": total_img_num},
     ]
+    fields.extend(extra_fields)
+
     api.app.set_fields(task_id, fields)
     confusion_matrix.reset_cm_state_to_default(api, task_id)
+

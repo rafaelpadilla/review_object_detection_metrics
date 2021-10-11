@@ -8,8 +8,9 @@ import ui_utils
 
 # from supervisely_lib.app.widgets.sly_table import SlyTable
 
-image_sly_table = SlyTable(g.api, g.task_id, "data.perClassTable", g.image_columns)
-gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
+# gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
+image_sly_table = None  # SlyTable(g.api, g.task_id, "data.perClassTable", g.image_columns)
+gallery_per_class = None  # CompareGallery(g.task_id, g.api, 'data.perImage', g.aggregated_meta)
 
 
 def init(data, state):
@@ -37,6 +38,7 @@ def init(data, state):
     state['perClassShow1'] = False
     state['perClassShow2'] = False
     state['perClassShow3'] = False
+    state['activeFigure'] = None
 
 
 def calculate_per_classes_metrics(api, task_id, src_list, dst_list, dst_project_name, method,
@@ -77,14 +79,18 @@ def expand_line(data, class_name):
 
 def selected_class_metrics(api, task_id, src_list, dst_list, class_name, dst_project, iou_threshold, score_threshold):
     if class_name != 'ALL':
-        images_names_with_target_class = list(
-            set(expand_line(src_list, class_name) + expand_line(dst_list, class_name)))
-        row_indexes1 = [id_ for id_, line in enumerate(src_list) if line[1] in images_names_with_target_class]
-        row_indexes2 = [id_ for id_, line in enumerate(dst_list) if line[1] in images_names_with_target_class]
-        row_indexes = list(set(row_indexes1 + row_indexes2))
-        single_class_src_list_np = [src_list[id_] for id_ in row_indexes]
-        single_class_dst_list_np = [dst_list[id_] for id_ in row_indexes]
-
+        single_class_src_list_np = {}
+        single_class_dst_list_np = {}
+        for dataset_name, dataset_items in src_list.items():
+            images_names_with_target_class = list(
+                set(expand_line(src_list[dataset_name], class_name) + expand_line(dst_list[dataset_name], class_name)))
+            row_indexes1 = [id_ for id_, line in enumerate(src_list[dataset_name]) if
+                            line[1] in images_names_with_target_class]
+            row_indexes2 = [id_ for id_, line in enumerate(dst_list[dataset_name]) if
+                            line[1] in images_names_with_target_class]
+            row_indexes = list(set(row_indexes1 + row_indexes2))
+            single_class_src_list_np[dataset_name] = [src_list[dataset_name][id_] for id_ in row_indexes]
+            single_class_dst_list_np[dataset_name] = [dst_list[dataset_name][id_] for id_ in row_indexes]
     else:
         single_class_src_list_np = src_list
         single_class_dst_list_np = dst_list
@@ -138,7 +144,8 @@ def view_class(api: sly.Api, task_id, context, state, app_logger):
         {"field": "state.perClassShow2", "payload": True},
         {"field": "state.perClassShow3", "payload": False},
 
-        {"field": "data.perClassImageStatTableInfo", "payload": "Image Metrics Table and Line Chart for selected class: {}".format(class_name)},
+        {"field": "data.perClassImageStatTableInfo",
+         "payload": "Image Metrics Table and Line Chart for selected class: {}".format(class_name)},
     ]
     api.app.set_fields(task_id, fields)
 
@@ -146,9 +153,12 @@ def view_class(api: sly.Api, task_id, context, state, app_logger):
 @g.my_app.callback("show_images_per_class")
 @sly.timeit
 def show_images_per_class(api: sly.Api, task_id, context, state, app_logger):
+    global gallery_per_class
     selected_image_classes = state['selectedClassName']
+    if gallery_per_class is None:
+        gallery_per_class = CompareGallery(g.task_id, g.api, 'data.perClass', g.aggregated_meta)
     ui_utils.show_images_body(api, task_id, state, gallery_per_class, "data.perClassGalleryTitle",
-                              selected_image_classes)
+                              selected_image_classes=selected_image_classes, gallery_table="data.GalleryTable2")
     fields = [
         {"field": "state.perClassActiveStep", "payload": 3},
         {"field": "state.perClassActiveNames",

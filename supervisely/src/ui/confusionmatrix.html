@@ -1,24 +1,47 @@
+<sly-style>
+    .beautiful-table { border-collapse: collapse; }
+    .beautiful-table tr:nth-child(2n) { background-color: #f6f8fa; }
+    .beautiful-table td, .beautiful-table th {
+    border: 1px solid #dfe2e5;
+    padding: 6px 13px;
+    text-align: center;
+    line-height: 20px;
+    }
+    .beautiful-table.al td, .beautiful-table.al th {
+    text-align: left;
+    }
+</sly-style>
+
+
 <el-collapse v-model="state.CMActiveNames">
-    <el-collapse-item title="Confusion Matrix" name="confusion_matrix">
-        <div v-if="!state.CMShow1">Please, select Classes and manage Settings.</div>
-        <sly-field v-if="state.CMShow1"
-                   title="Confusion Matrix for selected classes and current settings"
-                   description="Select cell to get additional info about image's statistics.">
+    <el-collapse-item title="Select cell in confusion matrix to preview images"
+                      name="confusion_matrix">
+
+        <div v-if="!state.CMShow1">Please, select classes and define settings.</div>
+        <div v-if="state.CMShow1"
+             title="Confusion Matrix for selected classes and current settings"
+             description="Select cell to get additional info about image's statistics.">
             <sly-confusion-matrix v-if="state.CMShow1"
                                   :data="data.slyConfusionMatrix.data"
                                   :options="{ selectable: true }"
                                   :value="state.selected"
                                   @input="state.selected = $event; command('show_image_table')">
             </sly-confusion-matrix>
-        </sly-field>
+        </div>
     </el-collapse-item>
-    <el-collapse-item title="Image Metrics Table" name="image_stat_table">
-        <!--        <div slot="description">-->
-        <div v-if="!state.CMShow2">{{data.CMImageTableDescription1}}</div>
-        <sly-field v-if="state.CMShow2"
-                   :title="data.CMImageTableTitle"
-                   data.CMImageTableTitle
-        >
+    <div v-if="!state.CMShow2">
+        <sly-notification class="mt10"
+                          :options="data.CMNotification.options">
+        </sly-notification>
+        <!--        </br>-->
+        <!--        <el-alert-->
+        <!--                :title="data.CMNotification.options.name"-->
+        <!--                type="info">-->
+        <!--        </el-alert>-->
+    </div>
+    <el-collapse-item v-if="state.CMShow2"
+                      :title="data.CMImageTableTitle" name="image_stat_table">
+        <sly-field v-if="state.CMShow2">
             <div slot="description">
                 <div v-if="data.CMImageTableDescription1">{{data.CMImageTableDescription1}}</div>
                 <div v-if="data.CMImageTableDescription2">{{data.CMImageTableDescription2}}</div>
@@ -51,48 +74,108 @@
                 - number of objects in GroundTruth annotation for given image
             </div>
             <div class="mt5">
-                <span style="color: #F39C12"><i class="zmdi zmdi-folder-outline mr5"
-                                                style="width: 15px; display: inline-block"></i>PRECISION</span>
+                <span style="color: #F39C12">
+                    <i class="zmdi zmdi-chart mr5"
+                       style="width: 15px; display: inline-block">
+                    </i>
+                    PRECISION
+                </span>
                 - fraction of retrieved objects that are relevant to actual data
             </div>
             <div class="mt5">
-                <span style="color: #F39C12"><i class="zmdi zmdi-folder-outline mr5"
-                                                style="width: 15px; display: inline-block"></i>RECALL</span>
-                - fraction of the relevant objects that are successfully detected.
+                <span style="color: #F39C12">
+                    <i class="zmdi zmdi-chart mr5"
+                       style="width: 15px; display: inline-block"></i>
+                    RECALL
+                </span>
+                - fraction of the relevant objects that are successfully detected
             </div>
             <div class="mt5">
-                <span style="color: #F39C12"><i class="zmdi zmdi-folder-outline mr5"
-                                                style="width: 15px; display: inline-block"></i>MAP</span>
+                <span style="color: #F39C12">
+                    <i class="zmdi zmdi-trending-up  mr5"
+                       style="width: 15px; display: inline-block"></i>
+                    MAP
+                </span>
                 - target metric: mean Average Precision
             </div>
         </sly-field>
     </el-collapse-item>
-    <el-collapse-item title="Grid Gallery" name="grid_gallery">
-        <!--        <div v-if="data.CMShow3">{{data.CMGalleryTitle}}</div>-->
+    <el-collapse-item :title="data.CMGalleryTitle" name="grid_gallery">
         <div v-if="state.CMShow1 && !state.CMShow2">Please, select cell from Confusion Matrix</div>
         <div v-if="state.CMShow1 && state.CMShow2 && !state.CMShow3">Please, select row from Image Statistic Table</div>
 
         <sly-field v-if="state.selection.selectedColumnName && state.CMShow3"
-                   :title="data.CMGalleryTitle"
-                   description="Original annotations VS Detections">
-            <sly-grid-gallery :content="data.CMGallery.content"
-                              :options="data.CMGallery.options">
-                <template v-slot:card-footer="{ annotation }">
-                    <div class="mt5" style="text-align: center">
-                        <el-tag type="primary">{{annotation.title}}</el-tag>
-                    </div>
-                </template>
-            </sly-grid-gallery>
+                   title=""
+                   description="">
+            <div class="fflex" style="align-items: flex-start;">
+
+                <!--                <sly-field title="Matched/Unmatched objects table"-->
+                <!--                           description="Compare Ground Truth VS Predictions"-->
+                <!--                           style="width: 60%"></sly-field>-->
+                <sly-grid-gallery
+                        :content="data.CMGallery.content"
+                        :options="data.CMGallery.options"
+                        :active-figure="state.activeFigure"
+                        style="width: 50%"
+                >
+                    <template v-slot:card-footer="{ annotation }">
+                        <div class="mt5" style="text-align: center">
+                            <el-tag type="primary">{{annotation.title}}</el-tag>
+                        </div>
+                    </template>
+                </sly-grid-gallery>
+                <el-table class="mb15"
+                          :data="data.GalleryTable1"
+                          @cell-mouse-enter="(row, column, cell, event) =>{
+                                state.activeFigure = row['id_pair'];
+                              }"
+                          @cell-mouse-leave="state.activeFigure = null"
+                          max-height="300"
+                          style="width: 50%">
+                    <el-table-column sortable prop="gt.class" label="GT" align="center">
+                        <template scope="scope">
+                            <div v-if="scope.row.gt.class">
+                                <i class="zmdi zmdi-circle" :style="{color: scope.row.gt.color}"></i>
+                                <span class="ml5 mr10">{{ scope.row.gt.class }}</span>
+<!--                                <span style="color: #7f858e;">-->
+<!--                                    <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.gt.id }}</span>-->
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column sortable prop="iou" label="IoU" align="center">
+                        <template scope="scope">
+                            <div v-if="scope.row.iou">
+                                <span class="ml5 mr10">{{ scope.row.iou }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column sortable prop="mark" label="Res" align="center">
+                        <template scope="scope">
+                            <div v-if="scope.row.mark">
+                                <span class="ml5 mr10">{{ scope.row.mark }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column sortable prop="conf" label="Conf" align="center">
+                        <template scope="scope">
+                            <div v-if="scope.row.conf">
+                                <span class="ml5 mr10">{{ scope.row.conf }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column sortable prop="pr" label="Pred" align="center">
+                        <template scope="scope">
+                            <div v-if="scope.row.pr.class">
+                                <i class="zmdi zmdi-circle" :style="{color: scope.row.pr.color}"></i>
+                                <span class="ml5 mr10">{{ scope.row.pr.class }}</span>
+<!--                                <span style="color: #7f858e;">-->
+<!--                                    <span style="font-weight: bold; font-size: 12px;">id</span> {{ scope.row.pr.id }}</span>-->
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+            </div>
         </sly-field>
-<!--        <div v-if="state.CMShow3">-->
-<!--            <sly-grid-gallery :content="data.CMGallery.content"-->
-<!--                              :options="data.CMGallery.options">-->
-<!--                <template v-slot:card-footer="{ annotation }">-->
-<!--                    <div class="mt5" style="text-align: center">-->
-<!--                        <el-tag type="primary">{{annotation.title}}</el-tag>-->
-<!--                    </div>-->
-<!--                </template>-->
-<!--            </sly-grid-gallery>-->
-<!--        </div>-->
     </el-collapse-item>
 </el-collapse>
