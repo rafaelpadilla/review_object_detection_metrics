@@ -113,7 +113,7 @@ def get_classes(api: sly.Api, task_id, context, state, app_logger):
     global classes_table
     classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
     fields = [
-        {"field": "state.done3", "payload": True},
+        # {"field": "state.done3", "payload": True},
         {"field": "data.classesTable", "payload": classes_table},
     ]
     api.app.set_fields(task_id, fields)

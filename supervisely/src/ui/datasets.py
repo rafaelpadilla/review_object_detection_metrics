@@ -148,13 +148,17 @@ def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
 @sly.timeit
 def next_step(api: sly.Api, task_id, context, state, app_logger):
     fields = []
-    for i in range(1, 6):
-        collapsed = True if i != 3 else False
-        disabled = True if i not in [2, 3] else False
-        done = True if i < 4 else False
-        fields.append({"field": f"state.collapsed{i}", "payload": collapsed})
-        fields.append({"field": f"state.disabled{i}", "payload": disabled})
-        fields.append({"field": f"state.done{i}", "payload": done})
+    fields.append({"field": f"state.collapsed3", "payload": False})
+    fields.append({"field": f"state.disabled3", "payload": False})
+    fields.append({"field": f"state.done2", "payload": True})
+
+    # for i in range(1, 6):
+    #     collapsed = True if i != 3 else False
+    #     disabled = True if i not in [2, 3] else False
+    #     done = True if i < 4 else False
+    #     fields.append({"field": f"state.collapsed{i}", "payload": collapsed})
+    #     fields.append({"field": f"state.disabled{i}", "payload": disabled})
+    #     fields.append({"field": f"state.done{i}", "payload": done})
 
     fields.append({"field": "state.activeStep", "payload": 3})
     fields.append({"field": "state.disabled2Btn", "payload": True})

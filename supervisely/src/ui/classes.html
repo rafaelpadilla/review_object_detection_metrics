@@ -4,9 +4,14 @@
           :collapsed.sync="state.collapsed3"
           :disabled="{disabled: state.disabled3, message: 'Complete previous steps'}"
           ref="step3">
-    done3 -> {{state.done3}} disabled3Btn -> {{state.disabled3Btn}}
+    <el-button v-if="!state.done3" class="regular" type="primary" @click="command('get_classes')">
+        Compare classes
+    </el-button>
+
+    <pre>{{state.done3}}</pre>
+
     <div v-if="state.done3">
-        <el-table :disablead="data.done3"
+        <el-table :disablead="state.done3"
                   class="ultra-table"
                   :data="data.classesTable"
                   @selection-change="
@@ -15,7 +20,7 @@
                     }
                     "
         >
-            <el-table-column :disablead="data.done3" type="selection" width="55"></el-table-column>
+            <el-table-column :disablead="state.done3" type="selection" width="55"></el-table-column>
             <el-table-column sortable prop="name1" label="Classes in GT project">
                 <template scope="scope">
                     <div v-if="scope.row.name1">
@@ -47,16 +52,17 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-button v-if="state.done3 && !state.disabled3Btn"
-                   class="regular"
+        <el-button v-if="!state.done3"
+                   class="regular mt5"
                    type="primary"
+                   :disabled="state.selectedClasses.length === 0"
                    @click="command('set_classes')">Set classes
         </el-button>
-        <div v-if="state.done3 && state.disabled3Btn">
+        <div v-if="state.done3">
             <div>
                 <i class="zmdi zmdi-check-circle mr5" style="color: #13ce66"></i>
                 <span style="color: #5a6772;">
-                    Classes selected.
+                    Selected  {{state.selectedClasses.length}} classes
                 </span>
             </div>
             <el-button type="warning" class="regular mt10" :plain="true"
