@@ -8,17 +8,20 @@
     <el-button v-if="!data.classesTable" class="regular" type="primary" @click="command('get_classes')">
         Compare classes
     </el-button>
-
-    <el-table :disablead="state.done3" v-if="data.classesTable"
+    <el-table v-if="data.classesTable"
               class="ultra-table"
               :data="data.classesTable"
+              ref="clsTable"
               @selection-change="
                 (val) => {
                     state.selectedClasses = val.map(x => x.name1);
                 }
                 "
     >
-        <el-table-column :disablead="state.done3" type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55"
+                         :selectable="() => !state.done3"
+        >
+        </el-table-column>
         <el-table-column sortable prop="name1" label="Classes in GT project">
             <template scope="scope">
                 <div v-if="scope.row.name1">
@@ -54,7 +57,7 @@
                class="regular mt5"
                type="primary"
                :disabled="state.selectedClasses.length === 0"
-               @click="command('set_classes')">Set classes
+               @click="command('set_classes')">Set {{state.selectedClasses.length}} classes
     </el-button>
     <div v-if="state.done3">
         <div>
@@ -64,7 +67,7 @@
             </span>
         </div>
         <el-button type="warning" class="regular mt10" :plain="true"
-                   @click="state.restartFrom = 3; state.done3 = false; command('restart')">
+                   @click="state.restartFrom = 3; $refs.clsTable.clearSelection()">
             <i class="zmdi zmdi-rotate-left mr5"></i> Reset classes
         </el-button>
     </div>

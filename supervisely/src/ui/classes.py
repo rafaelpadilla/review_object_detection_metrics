@@ -85,13 +85,14 @@ def _process_items(collection1, collection2, diff_msg="Automatic conversion to r
 
 def init(data, state):
     global classes_table
-    try:
-        if g.aggregated_meta is None:
-            g.generate_meta()
-        classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
-        data["classesTable"] = classes_table
-    except:
-        pass
+    # try:
+    #     if g.aggregated_meta is None:
+    #         g.generate_meta()
+    #     classes_table = _process_items(g.gt_meta.obj_classes, g.pred_meta.obj_classes)
+    #     data["classesTable"] = classes_table
+    # except:
+    #     pass
+    data["classesTable"] = None
     state["selectedClasses"] = []
     state['collapsed3'] = True
     state['disabled3'] = True
@@ -103,7 +104,7 @@ def restart(data, state):
     state['collapsed3'] = False
     state['disabled3'] = False
     state['disabled3Btn'] = False
-    state['done3'] = True
+    state['done3'] = False
     state["selectedClasses"] = []
 
 
