@@ -16,8 +16,14 @@ def init(data, state):
     state["GTworkspaceId"] = g.workspace_id
     state["PRteamId"] = g.team_id
     state["PRworkspaceId"] = g.workspace_id
-    state["gtProjectId"] = None
-    state["predProjectId"] = None
+
+    #@TODO: uncomment for prod
+    #state["gtProjectId"] = None
+    #state["predProjectId"] = None
+
+    # @TODO: comment for prod
+    state["gtProjectId"] = 3642
+    state["predProjectId"] = 3641
 
 
 def restart(data, state):

@@ -5,10 +5,10 @@
           :disabled="{disabled: state.GlobalClassesDisabled, message: 'Smthg wrong'}"
           ref="GlobalStep2"
 >
-    <el-button v-if="!state.classesDone"
-               class="regular" type="primary" @click="command('get_classes')">
-        Get dataset statistics
-    </el-button>
+<!--    <el-button v-if="!state.classesDone"-->
+<!--               class="regular" type="primary" @click="command('get_classes')">-->
+<!--        Get dataset statistics-->
+<!--    </el-button>-->
 
     <div v-if="state.classesDone">
         <el-table class="ultra-table"
