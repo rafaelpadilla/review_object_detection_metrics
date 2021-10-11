@@ -34,6 +34,7 @@ def init(data, state):
         <el-progress :percentage="data.progressPercentUploadDir"></el-progress>
     </div>'''
 
+
 def restart(data, state):
     state['GlobalActiveStep'] = 4
 

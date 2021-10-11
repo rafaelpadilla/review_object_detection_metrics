@@ -155,10 +155,9 @@ def get_datasets_statistic(api: sly.Api, task_id, context, state, app_logger):
 def next_step(api: sly.Api, task_id, context, state, app_logger):
     fields = [
         # {"field": "state.GlobalDatasetsCollapsed", "payload": True},
-        {"field": "state.GlobalDatasetsDisabled", "payload": False},
+        {"field": "state.GlobalDatasetsDisabled", "payload": False}, #@TODO: ?
         {"field": "state.GlobalActiveStep", "payload": 3},
         {"field": "state.doneDatasets", "payload": True},
-
         {"field": "state.GlobalClassesCollapsed", "payload": False},
         {"field": "state.GlobalClassesDisabled", "payload": False}
     ]

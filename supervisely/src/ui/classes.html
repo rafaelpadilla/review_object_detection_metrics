@@ -1,13 +1,13 @@
-<sly-card title="Classes"
-          subtitle="Choose classes that will be used for performance analysis. Unmatched classes won't be used in future computations"
+<sly-card title="Compare and select classes"
+          subtitle="Choose classes that will be used for performance analysis"
           :options="{collapsable: true}"
           :collapsed.sync="state.GlobalClassesCollapsed"
-          :disabled="{disabled: state.GlobalClassesDisabled, message: 'Match images in projects'}"
+          :disabled="{disabled: state.GlobalClassesDisabled, message: 'Complete previous steps'}"
           ref="GlobalStep2"
 >
 <!--    <el-button v-if="!state.classesDone"-->
 <!--               class="regular" type="primary" @click="command('get_classes')">-->
-<!--        Get dataset statistics-->
+<!--        Compare classes-->
 <!--    </el-button>-->
 
     <div v-if="state.classesDone">

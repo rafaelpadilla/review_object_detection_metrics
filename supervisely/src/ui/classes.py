@@ -104,8 +104,8 @@ def init(data, state, reconstruct=False):
 
 
 def restart(data, state):
-    state['GlobalClassesCollapsed'] = False
-    state['GlobalClassesDisabled'] = False
+    state['GlobalClassesCollapsed'] = True
+    state['GlobalClassesDisabled'] = True
     state['GlobalClassesDone'] = False
     state['classesDone'] = False
     state['GlobalActiveStep'] = 3
