@@ -4,7 +4,7 @@
   "categories": [
     "performance"
   ],
-  "description": "",
+  "description": "Interactive Confusion matrix, mAP, ROC and more",
   "docker_image": "supervisely/base-py-sdk:6.1.97",
   "main_script": "supervisely/src/main.py",
   "gui_template": "supervisely/src/gui.html",
