@@ -51,8 +51,10 @@ def generate_meta():
                 aggregated_meta['classes'].append(i)
     for i in _gt_meta_['tags']:
         aggregated_meta['tags'].append(i)
+    tag_names = [i['name'] for i in aggregated_meta['tags']]
     for j in _pred_meta_['tags']:
-        aggregated_meta['tags'].append(j)
+        if j['name'] not in tag_names:
+            aggregated_meta['tags'].append(j)
     aggregated_meta = sly.ProjectMeta.from_json(aggregated_meta)
 
 

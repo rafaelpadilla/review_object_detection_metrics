@@ -1,4 +1,4 @@
-supervisely==6.1.97
+supervisely==6.1.100
 # awscli==1.18.180
 # chardet==3.0.4
 # click==7.1.2
