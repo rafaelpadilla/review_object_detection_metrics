@@ -36,6 +36,8 @@ This app a beta version, it is in active development. In case of any issues, ple
 5. Then you can see confusion matrix, click on the cell to see all images. If you click on the row of the images table 
 you will see the widget with matched objects. Use zoom in/out to study small objects on images
 
+⚠️ **Notice**: Objects on images without tag 'confidence' will be considered as correctly founded (with 'confidence' level = 1.0)
+
 # Acknowledgement
 We forked the source code of [Object Detection Metrics repo](https://github.com/rafaelpadilla/Object-Detection-Metrics).
 It is most popular implementation of detection metrics. We adopted it for Supervisely format and created the interactive 
