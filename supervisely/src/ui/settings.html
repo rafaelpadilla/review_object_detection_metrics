@@ -18,8 +18,8 @@
                        @change="state.samplePercent = $event;"
             >
             </el-slider>
-            <div class="mr10">{{state.samplePercent}}% / {{Math.round(data.totalImagesCount / 100 *
-                state.samplePercent)}} images
+            <div class="mr10">
+                {{state.samplePercent}}% / {{Math.max(1, Math.round(data.totalImagesCount / 100 * state.samplePercent))}} images
             </div>
         </div>
     </sly-field>
