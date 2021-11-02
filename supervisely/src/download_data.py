@@ -44,8 +44,12 @@ def check_for_conf_threshold(image, conf_threshold, check_for_obj_existence=Fals
             existence_flag = True if new_box_list else False
             return image, existence_flag
     for bbox in bboxes:
-        if bbox.tags.get('confidence').value > conf_threshold:
-            new_box_list.append(bbox)
+        if hasattr(bbox.tags.get('confidence'), 'value'):
+            if bbox.tags.get('confidence').value > conf_threshold:
+                new_box_list.append(bbox)
+        else:
+            raise AttributeError(f"bbox hasn't attribute with name 'confidence'.")
+
     image['annotation'] = image['annotation'].clone(labels=new_box_list)
     if not check_for_obj_existence:
         return image
@@ -158,7 +162,11 @@ def download(image_dict, percentage, cache, batch_size=200, show_info=False):
 
     def get_random_sample(image_dict, intersected_datasets, percentage):
         def get_sample_size(dataset_length, percentage):
-            sample_size = int(np.ceil(dataset_length / 100 * percentage))
+            # sample_size = int(np.ceil(dataset_length / 100 * percentage))
+            # 0% - 1 image
+            # 100% - all images
+            sample_size = min(dataset_length, int(np.ceil(dataset_length / 100 * percentage)))
+            sample_size = max(1, sample_size)
             return sample_size
 
         global total_image_num
