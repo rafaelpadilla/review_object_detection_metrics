@@ -32,10 +32,11 @@ def plt2bb(batch_element, encoder, type_coordinates=CoordinatesType.ABSOLUTE,
             if bb_type == BBType.GROUND_TRUTH:
                 confidence = None
             else:
-                if ann['tags']:
+                # if-else -> try-except
+                try:  # ann['tags']:
                     confidence = ann['tags'][0]['value']
-                else:
-                    confidence = None
+                except:
+                    confidence = 1.0
 
         bb = encoder(image_name=batch_element['image_name'], class_id=class_title,
                      coordinates=(x1, y1, x2, y2), type_coordinates=type_coordinates,
