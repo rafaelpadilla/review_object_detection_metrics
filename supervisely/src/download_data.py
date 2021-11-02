@@ -48,7 +48,10 @@ def check_for_conf_threshold(image, conf_threshold, check_for_obj_existence=Fals
             if bbox.tags.get('confidence').value > conf_threshold:
                 new_box_list.append(bbox)
         else:
-            raise AttributeError(f"bbox hasn't attribute with name 'confidence'.")
+            msg = f"bbox in image {image['image_name']} hasn't attribute with name 'confidence'."
+            # these boxes will be considered as correctly founded (with 'confidence' level = 1.0)
+            sly.logger.warning(msg)
+            new_box_list.append(bbox)
 
     image['annotation'] = image['annotation'].clone(labels=new_box_list)
     if not check_for_obj_existence:
