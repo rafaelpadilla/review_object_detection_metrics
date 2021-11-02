@@ -32,7 +32,9 @@ Run app and folow the following steps:
 3. Classes from both projects are also matched, user should select some that will be used in metrics calculation. 
 All non bbox classes will be automatically converted to bounding boxes
 4. Configure metric settings: confidence and IoU thresholds
+
 ⚠️ **Notice**: Objects on images without tag 'confidence' will be considered as correctly founded (with 'confidence' level = 1.0)
+
 This app a beta version, it is in active development. In case of any issues, please let us know.
 6. Then you can see confusion matrix, click on the cell to see all images. If you click on the row of the images table 
 you will see the widget with matched objects. Use zoom in/out to study small objects on images
