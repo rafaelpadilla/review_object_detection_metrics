@@ -37,6 +37,7 @@ This app a beta version, it is in active development. In case of any issues, ple
 you will see the widget with matched objects. Use zoom in/out to study small objects on images
 
 ⚠️ **Notice**: Objects on images from predistion project without tag 'confidence' will be considered as correctly founded (with 'confidence' level = 1.0)
+Information about these objects could be founded in app logs(they are marked as 'Warn').
 
 # Acknowledgement
 We forked the source code of [Object Detection Metrics repo](https://github.com/rafaelpadilla/Object-Detection-Metrics).
