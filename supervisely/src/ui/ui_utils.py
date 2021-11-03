@@ -1,9 +1,8 @@
 import numpy as np
 
-from supervisely.src import download_data as dd
-from src.bounding_box import BoundingBox, BBType, BBFormat
-from supervisely.src import utils
+import pandas as pd
 from src.utils.enumerators import MethodAveragePrecision
+from src.evaluators.pascal_voc_evaluator import calculate_ap_every_point
 import metrics
 import supervisely_lib as sly
 import globals as g
@@ -18,20 +17,10 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     iou_threshold = state['IoUThreshold'] / 100
     score_threshold = state['ScoreThreshold'] / 100
 
-    # cm = dd.cm
     cm = settings.cm
     images_to_show = list(set(cm[col_class][row_class]))
     dataset_names = {}
     pred_images_names_list = []
-    # for prj_key, prj_value in settings.filtered_confidences.items():
-    #     for dataset_key, dataset_value in prj_value.items():
-    #         for element in dataset_value:
-    #             if element['dataset_id'] not in dataset_names:
-    #                 dataset_names[element['dataset_id']] = api.dataset.get_info_by_id(element['dataset_id']).name
-    #             if element['image_name'] in images_to_show:
-    #                 selected_image_infos[prj_key].append(element)
-    #                 if prj_key == 'pred_images':
-    #                     pred_images_names_list.append(element['image_name'])
 
     prepared_data = {'gt_images': settings.gts, 'pred_images': settings.pred}
     selected_image_infos = {}
@@ -45,37 +34,90 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
                     if prj_key == 'pred_images':
                         pred_images_names_list.append(element[1])
 
-    encoder = BoundingBox
-    gts = []
-    pred = []
     assert len(selected_image_infos['gt_images']) == len(selected_image_infos['pred_images'])
-
-    # for gt_name, gt_val in selected_image_infos['gt_images'].items():
-    #     for gt in gt_val:
-    #         gt_boxes = utils.plt2bb(gt, encoder, bb_type=BBType.GROUND_TRUTH)
-    #         pr = selected_image_infos['pred_images'][gt_name][pred_images_names_list.index(gt['image_name'])]
-    #         pred_boxes = utils.plt2bb(pr, encoder, bb_type=BBType.DETECTED)
-    #
-    #         # gts.append([gt['image_id'], gt['image_name'], gt['full_storage_url'],
-    #         #             dataset_names[gt['dataset_id']], gt_boxes])
-    #         # pred.append([pr['image_id'], pr['image_name'], pr['full_storage_url'],
-    #         #              dataset_names[pr['dataset_id']], pred_boxes])
-    #
-    #         # break
     gts, pred = selected_image_infos['gt_images'], selected_image_infos['pred_images']
-    # project_pd_data = metrics.calculate_project_mAP(src_list=gts,
-    #                                                 dst_list=pred,
-    #                                                 method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
-    #                                                 dst_project_name=g.pred_project_info.name,
-    #                                                 iou=iou_threshold, score=score_threshold)
+    projects_pd_data, prj_rez = metrics.calculate_project_mAP(src_list=settings.gts,
+                                                    dst_list=settings.pred,
+                                                    method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+                                                    dst_project_name=g.pred_project_info.name,
+                                                    iou=iou_threshold, score=score_threshold)
+
+    list_rez = []
+    for class_ in prj_rez['per_class']:
+        prj_rez['per_class'][class_]['table']['class'] = class_
+        list_rez.append(prj_rez['per_class'][class_]['table'])
+    list_rez = pd.concat(list_rez)
+
+    columns = ['TP', 'FP']
+    agg_df = list_rez.groupby(['image']).sum()[columns].reset_index()
+
+    gt_npos = {}
+    gt_cls_obj_num = {}
+    for dataset_name, dataset_values in settings.gts.items():
+        for image in dataset_values:
+            gt_npos[image[1]] = len(image[-1])
+            gt_cls_obj_num[image[1]] = {}
+            for bbox in image[-1]:
+                cls_id = bbox.get_class_id()
+                if cls_id in gt_cls_obj_num[image[1]]:
+                    gt_cls_obj_num[image[1]][cls_id] += 1
+                else:
+                    gt_cls_obj_num[image[1]][cls_id] = 1
+
+    agg_df['NPOS'] = agg_df.image.apply(lambda x: np.float(gt_npos[x]))
+
+    def set_column_v2(data):
+        tp = data[1]
+        fp = data[2]
+        precision = tp / (tp + fp)
+        npos = data[3]
+        recall = tp / npos  # (TP + FN)
+        return round(precision, 2), round(recall, 2)
+
+    agg_df['precision_recall'] = agg_df.apply(set_column_v2, axis=1)
+
+    ret = {}
+    image_map = {}
+    for image in agg_df['image']:
+        lines = list_rez.loc[list_rez['image'] == image]
+        cls_in_image = set(lines['class'])
+        for cls in cls_in_image:
+            cls_lines = lines.loc[lines['class'] == cls]
+
+            acc_FP = np.cumsum(cls_lines['FP'].to_list())
+            acc_TP = np.cumsum(cls_lines['TP'].to_list())
+            try:
+                rec = acc_TP / gt_cls_obj_num[image][cls]
+            except:
+                rec = np.zeros_like(acc_TP)
+            prec = np.divide(acc_TP, (acc_FP + acc_TP))
+
+            [ap, _, _, _] = calculate_ap_every_point(rec, prec)
+            ret[cls] = {
+                'AP': ap
+            }
+        gt_classes_only = gt_cls_obj_num[image].keys()
+        image_map[image] = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only)
+
+    def set_map(img_name):
+        return round(image_map[img_name], 2)
+
+    agg_df['mAP'] = agg_df['image'].apply(set_map)
 
     images_pd_data = metrics.calculate_image_mAP(gts, pred, method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
                                                  iou=iou_threshold, score=score_threshold)
-    new_list_src, new_list_dst = [], []
-    # for el in images_pd_data:
-    #     src_tmp = [i[0] for i in new_list_src] if new_list_src else []
-    #     dst_tmp = [i[0] for i in new_list_dst] if new_list_dst else []
-    #     if el[0] not in src_tmp and el[1] not in dst_tmp:
+
+    for image in images_pd_data:
+        name = image[3].split('_blank">')[-1].split('</a>')[0]
+        extra_data = agg_df.loc[agg_df['image'] == name]
+        # print(image)
+        image[4] = extra_data['TP'].values[0]
+        image[5] = extra_data['FP'].values[0]
+        image[6] = extra_data['NPOS'].values[0]
+
+        image[7] = extra_data['precision_recall'].to_list()[0][0]
+        image[8] = extra_data['precision_recall'].to_list()[0][1]
+        image[9] = extra_data['mAP'].values[0]
 
     text = '''Images for the selected cell in confusion matrix: "{}" (ground truth) <-> "{}" (prediction)'''.format(row_class, col_class)
 
