@@ -113,8 +113,8 @@ class ConfusionMatrix:
                 conf_matrix[class_row][class_col] = list()
         return conf_matrix, classes_bbs  # self._gt, self._det, conf_matrix, classes_bbs
 
-    def confusion_matrix(self, iou_threshold=0.5, score_threshold=0.01):
-        self.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
+    def confusion_matrix(self):
+        # self.reset_thresholds(iou_threshold=iou_threshold, score_threshold=score_threshold)
         # _gt_boxes, _det_boxes, \
         conf_matrix, classes_bbs = self.collect_data()
         object_mapping = {}
@@ -136,7 +136,7 @@ class ConfusionMatrix:
                         for det_idx in range(iou_matrix.shape[0]):
                             ann_idx = np.argmax(iou_matrix[det_idx])
                             iou_value = iou_matrix[det_idx, ann_idx]
-                            if iou_value >= iou_threshold:
+                            if iou_value >= self._iou_threshold:
                                 # если не сматчен - мэтчится
                                 # CASE 1
                                 if detected_gt_per_image[ann_idx] == 0:
@@ -163,8 +163,8 @@ class ConfusionMatrix:
                                         object_mapping[dataset][image]['gt'].append(None)  # anns[ann_idx].sly_id
                                         object_mapping[dataset][image]['det'].append(dets[det_idx].sly_id)  # None
                                         object_mapping[dataset][image]['mark'].append('FP')
-                                        object_mapping[dataset][image]['conf'].append(None)  # dets[det_idx].get_confidence()
-                                        object_mapping[dataset][image]['iou'].append(None)  # None iou_value
+                                        object_mapping[dataset][image]['conf'].append(dets[det_idx].get_confidence())  # None
+                                        object_mapping[dataset][image]['iou'].append(iou_value)  # None
                                         ann_box = 'None'  # anns[ann_idx]
                                         det_box = dets[det_idx]  # 'None'
                                     # если детекций больше чем аннотаций
@@ -172,8 +172,8 @@ class ConfusionMatrix:
                                         object_mapping[dataset][image]['gt'].append(None)  # None anns[ann_idx].sly_id
                                         object_mapping[dataset][image]['det'].append(dets[det_idx].sly_id)  # None
                                         object_mapping[dataset][image]['mark'].append('FP')
-                                        object_mapping[dataset][image]['conf'].append(None)  # dets[det_idx].get_confidence()
-                                        object_mapping[dataset][image]['iou'].append(None)  # None iou_value
+                                        object_mapping[dataset][image]['conf'].append(dets[det_idx].get_confidence())  # None
+                                        object_mapping[dataset][image]['iou'].append(iou_value)  # None
                                         ann_box = 'None'
                                         det_box = dets[ann_idx]
                             else:
@@ -181,8 +181,8 @@ class ConfusionMatrix:
                                 object_mapping[dataset][image]['gt'].append(None)  # anns[ann_idx].sly_id
                                 object_mapping[dataset][image]['det'].append(dets[det_idx].sly_id)
                                 object_mapping[dataset][image]['mark'].append('FP')
-                                object_mapping[dataset][image]['conf'].append(None)  # dets[det_idx].get_confidence()
-                                object_mapping[dataset][image]['iou'].append(None)  # iou_value
+                                object_mapping[dataset][image]['conf'].append(dets[det_idx].get_confidence())  # None
+                                object_mapping[dataset][image]['iou'].append(iou_value)  # None
 
                                 ann_box = 'None'  # anns[ann_idx]
                                 det_box = dets[det_idx]  # 'None'
@@ -224,7 +224,7 @@ class ConfusionMatrix:
                             object_mapping[dataset][image]['gt'].append(None)
                             object_mapping[dataset][image]['det'].append(det.sly_id)
                             object_mapping[dataset][image]['mark'].append('FP')
-                            object_mapping[dataset][image]['conf'].append(None)  # det.get_confidence()
+                            object_mapping[dataset][image]['conf'].append(det.get_confidence())  # None
                             object_mapping[dataset][image]['iou'].append(None)
                     else:  # annotations - no, detections - no : ????
                         pass
