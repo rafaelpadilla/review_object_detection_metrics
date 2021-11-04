@@ -111,13 +111,13 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
         name = image[3].split('_blank">')[-1].split('</a>')[0]
         extra_data = agg_df.loc[agg_df['image'] == name]
         # print(image)
-        image[4] = extra_data['TP'].values[0]
-        image[5] = extra_data['FP'].values[0]
-        image[6] = extra_data['NPOS'].values[0]
+        image[4] = float(extra_data['TP'].values[0])
+        image[5] = float(extra_data['FP'].values[0])
+        image[6] = float(extra_data['NPOS'].values[0])
 
-        image[7] = extra_data['precision_recall'].to_list()[0][0]
-        image[8] = extra_data['precision_recall'].to_list()[0][1]
-        image[9] = extra_data['mAP'].values[0]
+        image[7] = float(extra_data['precision_recall'].to_list()[0][0])
+        image[8] = float(extra_data['precision_recall'].to_list()[0][1])
+        image[9] = float(extra_data['mAP'].values[0])
 
     text = '''Images for the selected cell in confusion matrix: "{}" (ground truth) <-> "{}" (prediction)'''.format(row_class, col_class)
 
