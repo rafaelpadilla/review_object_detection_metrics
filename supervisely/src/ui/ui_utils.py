@@ -97,7 +97,7 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
                 'AP': ap
             }
         gt_classes_only = gt_cls_obj_num[image].keys()
-        image_map[image] = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only)
+        image_map[image] = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only) if len(gt_classes_only) != 0 else 0
 
     def set_map(img_name):
         return round(image_map[img_name], 2)
