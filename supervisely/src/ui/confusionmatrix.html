@@ -18,8 +18,8 @@
                       name="confusion_matrix">
 
         <div v-if="!state.CMShow1">Please, select classes and define settings.</div>
+<!--        title="Confusion Matrix for selected classes and current settings"-->
         <div v-if="state.CMShow1"
-             title="Confusion Matrix for selected classes and current settings"
              description="Select cell to get additional info about image's statistics.">
             <sly-confusion-matrix v-if="state.CMShow1"
                                   :data="data.slyConfusionMatrix.data"
