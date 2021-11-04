@@ -69,9 +69,9 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     def set_column_v2(data):
         tp = data[1]
         fp = data[2]
-        precision = tp / (tp + fp)
+        precision = tp / (tp + fp) if (tp + fp) != 0 else 0
         npos = data[3]
-        recall = tp / npos  # (TP + FN)
+        recall = tp / npos if npos != 0 else 0  # (TP + FN)
         return round(precision, 2), round(recall, 2)
 
     agg_df['precision_recall'] = agg_df.apply(set_column_v2, axis=1)
