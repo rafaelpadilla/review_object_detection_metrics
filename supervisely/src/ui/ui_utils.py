@@ -69,9 +69,9 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
     def set_column_v2(data):
         tp = data[1]
         fp = data[2]
-        precision = tp / (tp + fp)
+        precision = tp / (tp + fp) if (tp + fp) != 0 else 0
         npos = data[3]
-        recall = tp / npos  # (TP + FN)
+        recall = tp / npos if npos != 0 else 0  # (TP + FN)
         return round(precision, 2), round(recall, 2)
 
     agg_df['precision_recall'] = agg_df.apply(set_column_v2, axis=1)
@@ -97,7 +97,7 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
                 'AP': ap
             }
         gt_classes_only = gt_cls_obj_num[image].keys()
-        image_map[image] = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only)
+        image_map[image] = sum([v['AP'] for k, v in ret.items() if k in gt_classes_only]) / len(gt_classes_only) if len(gt_classes_only) != 0 else 0
 
     def set_map(img_name):
         return round(image_map[img_name], 2)
