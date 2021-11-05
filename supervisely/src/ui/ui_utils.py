@@ -108,16 +108,24 @@ def show_image_table_body(api, task_id, state, v_model, image_table):
                                                  iou=iou_threshold, score=score_threshold)
 
     for image in images_pd_data:
-        name = image[3].split('_blank">')[-1].split('</a>')[0]
-        extra_data = agg_df.loc[agg_df['image'] == name]
         # print(image)
-        image[4] = float(extra_data['TP'].values[0])
-        image[5] = float(extra_data['FP'].values[0])
-        image[6] = float(extra_data['NPOS'].values[0])
-
-        image[7] = float(extra_data['precision_recall'].to_list()[0][0])
-        image[8] = float(extra_data['precision_recall'].to_list()[0][1])
-        image[9] = float(extra_data['mAP'].values[0])
+        name = image[3].split('_blank">')[-1].split('</a>')[0]
+        extra_data = agg_df.loc[agg_df['image'] == name].to_numpy()[0].tolist()
+        if extra_data.__len__() != 6 and extra_data[4].__len__() != 2:
+            continue
+        image[4] = float(extra_data[1])
+        image[5] = float(extra_data[2])
+        image[6] = float(extra_data[3])
+        # if extra_data[4].__len__() == 2:
+        image[7] = float(extra_data[4][0])
+        image[8] = float(extra_data[4][1])
+        image[9] = float(extra_data[5])
+        # image[4] = float(extra_data['TP'].values[0])
+        # image[5] = float(extra_data['FP'].values[0])
+        # image[6] = float(extra_data['NPOS'].values[0])
+        # image[7] = float(extra_data['precision_recall'].to_list()[0][0])
+        # image[8] = float(extra_data['precision_recall'].to_list()[0][1])
+        # image[9] = float(extra_data['mAP'].values[0])
 
     text = '''Images for the selected cell in confusion matrix: "{}" (ground truth) <-> "{}" (prediction)'''.format(row_class, col_class)
 
