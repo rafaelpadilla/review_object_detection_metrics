@@ -1,2 +1,1 @@
-supervisely==6.1.100
-python-dotenv==0.19.0
+supervisely==6.2.9
