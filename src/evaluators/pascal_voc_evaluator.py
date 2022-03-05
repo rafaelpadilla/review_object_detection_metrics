@@ -104,10 +104,14 @@ def get_pascalvoc_metrics(gt_boxes,
     ret = {}
     # Get classes of all bounding boxes separating them by classes
     gt_classes_only = []
+    classes_frames_gt_bbs = {}
     classes_bbs = {}
     for bb in gt_boxes:
         c = bb.get_class_id()
         gt_classes_only.append(c)
+        classes_frames_gt_bbs.setdefault(c, {})
+        classes_frames_gt_bbs[c].setdefault(bb.get_image_name(), [])
+        classes_frames_gt_bbs[c][bb.get_image_name()].append(bb)
         classes_bbs.setdefault(c, {'gt': [], 'det': []})
         classes_bbs[c]['gt'].append(bb)
     gt_classes_only = list(set(gt_classes_only))
@@ -123,7 +127,7 @@ def get_pascalvoc_metrics(gt_boxes,
             continue
         npos = len(v['gt'])
         # sort detections by decreasing confidence
-        dects = [a for a in sorted(v['det'], key=lambda bb: bb.get_confidence(), reverse=True)]
+        dects = sorted(v['det'], key=lambda bb: bb.get_confidence(), reverse=True)
         TP = np.zeros(len(dects))
         FP = np.zeros(len(dects))
         # create dictionary with amount of expected detections for each image
@@ -149,8 +153,8 @@ def get_pascalvoc_metrics(gt_boxes,
                 dict_table['image'].append(img_det)
                 dict_table['confidence'].append(f'{100*det.get_confidence():.2f}%')
 
-            # Find ground truth image
-            gt = [gt for gt in classes_bbs[c]['gt'] if gt.get_image_name() == img_det]
+            # Ground truth image
+            gt = classes_frames_gt_bbs[c][img_det]
             # Get the maximum iou among all detectins in the image
             iouMax = sys.float_info.min
             # Given the detection det, find ground-truth with the highest iou
