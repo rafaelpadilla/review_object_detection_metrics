@@ -261,12 +261,12 @@ def text2bb(annotations_path,
         with open(file_path, "r") as f:
 
             img_filename = os.path.basename(file_path)
-            img_filename = os.path.splitext(img_filename)[0]
+            img_filename, file_suffix = os.path.splitext(img_filename)
 
             img_size = None
             # If coordinates are relative, image size must be obtained in the img_dir
             if type_coordinates == CoordinatesType.RELATIVE:
-                img_path = general_utils.find_image_file(img_dir, img_filename)
+                img_path = general_utils.find_image_file(img_dir, img_filename + file_suffix)
                 if img_path is None or os.path.isfile(img_path) is False:
                     print(
                         f'Warning: Image not found in the directory {img_path}. It is required to get its dimensions'
