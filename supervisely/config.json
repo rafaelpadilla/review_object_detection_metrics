@@ -2,7 +2,11 @@
   "name": "Object detection metrics",
   "type": "app",
   "categories": [
-    "performance"
+    "neural network",
+    "images",
+    "videos",
+    "object detection",
+    "nn tools"
   ],
   "description": "Interactive Confusion matrix, mAP, ROC and more",
   "docker_image": "supervisely/base-py-sdk:6.2.9",
