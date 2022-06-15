@@ -1,4 +1,4 @@
-import supervisely_lib as sly
+import supervisely as sly
 import numpy as np
 from .bounding_box_py import BoundingBox, BBType, BBFormat, CoordinatesType
 

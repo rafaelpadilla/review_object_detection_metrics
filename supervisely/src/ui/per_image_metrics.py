@@ -1,4 +1,4 @@
-import supervisely_lib as sly
+import supervisely as sly
 import globals as g
 from widgets.sly_table import SlyTable
 from widgets.compare_gallery import CompareGallery

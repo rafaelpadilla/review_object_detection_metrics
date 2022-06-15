@@ -1,4 +1,4 @@
-import supervisely_lib as sly
+import supervisely as sly
 import globals as g
 
 global RESULTS, RESULTS_DATA, image_dict, total_img_num

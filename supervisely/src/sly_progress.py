@@ -2,7 +2,7 @@ from functools import partial
 import os
 import time
 import math
-import supervisely_lib as sly
+import supervisely as sly
 import globals as globals
 
 

@@ -2,8 +2,9 @@ import os
 from pathlib import Path
 import sys
 from dotenv import load_dotenv
-import supervisely_lib as sly
+import supervisely as sly
 from collections import namedtuple
+from supervisely.app.v1.app_service import AppService
 
 root_source_dir = str(Path(sys.argv[0]).parents[2])
 sly.logger.info(f"Root source directory: {root_source_dir}")
@@ -23,7 +24,7 @@ secret_debug_env_path = os.path.join(root_source_dir, "supervisely", "secret_deb
 load_dotenv(debug_env_path)
 load_dotenv(secret_debug_env_path, override=True)
 
-my_app = sly.AppService()
+my_app: AppService = AppService()
 team_id = int(os.environ['context.teamId'])
 workspace_id = int(os.environ['context.workspaceId'])
 
@@ -63,4 +64,3 @@ result = namedtuple('Result', ['TP', 'FP', 'NPOS', 'Precision', 'Recall', 'AP'])
 table_classes_columns = ['className', 'TP', 'FP', 'npos', 'Recall', 'Precision', 'AP']
 image_columns = ['SRC_ID', 'DST_ID', "dataset_name", "name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
 dataset_and_project_columns = ["name", "TP", "FP", 'NPOS', "Precision", "Recall", "mAP"]
-

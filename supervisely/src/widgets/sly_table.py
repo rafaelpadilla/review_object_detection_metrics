@@ -1,7 +1,7 @@
 from typing import Union
-from supervisely_lib.project.project_meta import ProjectMeta
-from supervisely_lib.api.api import Api
-from supervisely_lib.annotation.annotation import Annotation
+from supervisely.project.project_meta import ProjectMeta
+from supervisely.api.api import Api
+from supervisely.annotation.annotation import Annotation
 
 
 class SlyTable:

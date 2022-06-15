@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import shelve
-import supervisely_lib as sly
+import supervisely as sly
 import globals as g
 import ui
 from src.bounding_box import BoundingBox as RepoBoundingBox, BBType
@@ -216,7 +216,7 @@ def download(image_dict, percentage, cache, batch_size=200, show_info=False):
                                  labels_count=batch_.labels_count,
                                  dataset_id=batch_.dataset_id,
                                  annotation=annotation,
-                                 full_storage_url=batch_.full_storage_url)
+                                 full_storage_url=batch_.path_original)
                     # cache[str(batch_image_id)] = dict_
                     sample[project_key][dataset_key].append(dict_)
             image_names = [d['image_name'] for d in sample[project_key][dataset_key]]

@@ -9,13 +9,13 @@
     "nn tools"
   ],
   "description": "Interactive Confusion matrix, mAP, ROC and more",
-  "docker_image": "supervisely/base-py-sdk:6.2.9",
+  "docker_image": "supervisely/base-py-sdk:6.23.1",
+  "instance_version": "6.4.57",
   "main_script": "supervisely/src/main.py",
   "gui_template": "supervisely/src/gui.html",
   "task_location": "workspace_tasks",
   "isolate": true,
   "icon": "https://i.imgur.com/N0doZD9.png",
   "icon_background": "#FFFFFF",
-  "instance_version": "6.4.29",
   "poster": "https://i.imgur.com/PlwXDGP.png"
 }

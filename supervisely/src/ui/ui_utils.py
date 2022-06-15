@@ -4,7 +4,7 @@ import pandas as pd
 from src.utils.enumerators import MethodAveragePrecision
 from src.evaluators.pascal_voc_evaluator import calculate_ap_every_point
 import metrics
-import supervisely_lib as sly
+import supervisely as sly
 import globals as g
 import settings
 
@@ -276,9 +276,9 @@ def show_images_body(api, task_id, state, gallery_template, v_model, gallery_tab
         ddict_.append(dd)
 
     gallery_template.set_left(title='ground truth', ann=ann_1,
-                              image_url=api.image.get_info_by_id(image_id_1).full_storage_url)
+                              image_url=api.image.get_info_by_id(image_id_1).path_original)
     gallery_template.set_right(title='predictions', ann=ann_2,
-                               image_url=api.image.get_info_by_id(image_id_2).full_storage_url)
+                               image_url=api.image.get_info_by_id(image_id_2).path_original)
     gallery_template.update()
 
     text = 'Labels preview for {}'.format(image_name)
