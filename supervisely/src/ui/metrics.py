@@ -124,14 +124,10 @@ def calculate_dataset_mAP(src_dict, dst_dict, method, target_class=None, iou=0.5
         rez_d = dict2tuple(rez, target_class)
         current_data = [dataset_key]
         current_data.extend(rez_d)
-        try:
+        if rez is not None:
             dataset_results.append(rez['per_class'])
-        except:
-            print('dataset rez=', rez)
-            print('key_list =', key_list)
-            print('src_set_list =', src_dict)
-            print('dst_set_list =', dst_dict)
-            dataset_results.append(rez['per_class'])
+        else:
+            raise ValueError("Unable to calculate mAP score. You can increase sample size or select other classes.")
         datasets_pd_data.append(current_data)
     return datasets_pd_data
 
