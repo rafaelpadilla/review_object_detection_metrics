@@ -46,6 +46,7 @@ def restart(data, state):
 
 @g.my_app.callback("evaluate_button_click")
 @sly.timeit
+@g.my_app.ignore_errors_and_show_dialog_window()
 def evaluate_button_click(api: sly.Api, task_id, context, state, app_logger):
     global cm, object_mapper, filtered_confidences, gts, pred  # , dataset_names, previous_percentage
     selected_classes = state['selectedClasses']
