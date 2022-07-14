@@ -236,8 +236,8 @@ class BoundingBox:
         """
         return (self._width_img, self._height_img)
 
-    def get_area(self):
-        assert isclose(self._w * self._h, (self._x2 - self._x) * (self._y2 - self._y), abs_tol=0.00001)
+    def get_area(self, rel_tol=1e-09, abs_tol=0.0):
+        assert isclose(self._w * self._h, (self._x2 - self._x) * (self._y2 - self._y), rel_tol=rel_tol, abs_tol=abs_tol)
         assert (self._x2 > self._x)
         assert (self._y2 > self._y)
         return (self._x2 - self._x + 1) * (self._y2 - self._y + 1)
@@ -338,14 +338,14 @@ class BoundingBox:
         return new_bounding_box
 
     @staticmethod
-    def iou(boxA, boxB):
+    def iou(boxA, boxB, rel_tol=1e-09, abs_tol=0.0):
         coords_A = boxA.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
         coords_B = boxB.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
         # if boxes do not intersect
         if BoundingBox.have_intersection(coords_A, coords_B) is False:
             return 0
         interArea = BoundingBox.get_intersection_area(coords_A, coords_B)
-        union = BoundingBox.get_union_areas(boxA, boxB, interArea=interArea)
+        union = BoundingBox.get_union_areas(boxA, boxB, interArea=interArea, rel_tol=rel_tol, abs_tol=abs_tol)
         # intersection over union
         iou = interArea / union
         assert iou >= 0
@@ -383,9 +383,9 @@ class BoundingBox:
         return (xB - xA + 1) * (yB - yA + 1)
 
     @staticmethod
-    def get_union_areas(boxA, boxB, interArea=None):
-        area_A = boxA.get_area()
-        area_B = boxB.get_area()
+    def get_union_areas(boxA, boxB, interArea=None, rel_tol=1e-09, abs_tol=0.0):
+        area_A = boxA.get_area(rel_tol=rel_tol, abs_tol=abs_tol)
+        area_B = boxB.get_area(rel_tol=rel_tol, abs_tol=abs_tol)
         if interArea is None:
             interArea = BoundingBox.get_intersection_area(boxA, boxB)
         return float(area_A + area_B - interArea)
