@@ -1,5 +1,5 @@
 <div align="center" markdown>
-<img src="https://i.imgur.com/PlwXDGP.png"/>
+<img src="https://user-images.githubusercontent.com/48245050/182582390-378b2853-2038-49d4-99bb-1d656eda7fdf.png"/>
 
 # Interactive Object Detection Metrics 
 
