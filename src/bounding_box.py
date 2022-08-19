@@ -1,6 +1,7 @@
 from math import isclose
 
-from src.utils.general_utils import (convert_to_absolute_values, convert_to_relative_values)
+from src.utils.general_utils import (convert_to_absolute_values,
+                                     convert_to_relative_values)
 
 from .utils.enumerators import BBFormat, BBType, CoordinatesType
 
@@ -238,8 +239,8 @@ class BoundingBox:
 
     def get_area(self):
         assert isclose(self._w * self._h, (self._x2 - self._x) * (self._y2 - self._y))
-        assert (self._x2 > self._x)
-        assert (self._y2 > self._y)
+        assert (self._x2 >= self._x)
+        assert (self._y2 >= self._y)
         return (self._x2 - self._x + 1) * (self._y2 - self._y + 1)
 
     def get_coordinates_type(self):
