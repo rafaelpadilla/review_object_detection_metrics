@@ -2,7 +2,7 @@ dist: xenial # required for Python >= 3.7
 language: python
 python:
   - "3.8"
-install: travis_wait mvn install
+install: travis_wait 30 mvn install
 install:
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
     wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
