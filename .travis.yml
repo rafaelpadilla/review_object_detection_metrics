@@ -17,6 +17,7 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   # Replace dep1 dep2 ... with your dependencies
+  - travis_wait mvn install
   - conda env create -q -n test-environ --file environment.yml
   - conda activate test-environ
   - python setup.py install
