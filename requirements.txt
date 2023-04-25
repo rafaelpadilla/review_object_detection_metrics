@@ -11,5 +11,5 @@ matplotlib==3.7.1
 numpy==1.24.3
 opencv-python==4.7.0.72
 pandas==2.0.1
-pyqt==5.15.9
+pyqt5==5.15.9
 pytest==7.3.1
