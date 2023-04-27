@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  container:
+    image: object-detection-eval:latest
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - ./:/review_object_detection_metrics
+    network_mode: host
+    tty: true
