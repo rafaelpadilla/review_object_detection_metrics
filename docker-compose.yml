@@ -8,5 +8,6 @@ services:
       - DISPLAY=${DISPLAY}
     volumes:
       - ./:/review_object_detection_metrics
+      - /tmp/.X11-unix:/tmp/.X11-unix
     network_mode: host
     tty: true
