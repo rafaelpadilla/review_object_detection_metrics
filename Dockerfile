@@ -8,3 +8,5 @@ RUN apt-get update && \
     xvfb patchelf ffmpeg libsm6 libxext6 x11-xserver-utils -y && \
     pip3 install --upgrade pip && \
     pip3 install -r /requirements.txt
+
+ENTRYPOINT QT_DEBUG_PLUGINS=1 python3 review_object_detection_metrics/run.py
