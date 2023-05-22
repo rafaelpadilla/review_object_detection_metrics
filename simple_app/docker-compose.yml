@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  container:
+    image: simple-qt-app:latest
+    build:
+      dockerfile: ./Dockerfile
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    network_mode: host
+    tty: true
