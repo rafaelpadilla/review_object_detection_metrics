@@ -5,8 +5,6 @@ COPY requirements.txt /requirements.txt
 COPY src/app.py /app.py
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
-    apt-get install libgl1-mesa-dev libosmesa6-dev \
-    xvfb patchelf ffmpeg libsm6 libxext6 x11-xserver-utils -y && \
-    pip3 install --upgrade pip && \
-    pip3 install -r /requirements.txt
-ENTRYPOINT python3 /app.py
+    apt-get install -y  python3-pyqt5
+ENTRYPOINT QT_DEBUG_PLUGINS=1 python /app.py
+
