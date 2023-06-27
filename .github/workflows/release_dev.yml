@@ -9,10 +9,10 @@ jobs:
   Supervisely-Release:
     uses: supervisely-ecosystem/workflows/.github/workflows/common.yml@master
     secrets:
-      SUPERVISELY_API_TOKEN: "${{ secrets.SUPERVISELY_PROD_API_TOKEN }}"
+      SUPERVISELY_API_TOKEN: "${{ secrets.SUPERVISELY_DEV_API_TOKEN }}"
       GH_ACCESS_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
     with:
-      SUPERVISELY_SERVER_ADDRESS: "${{ vars.SUPERVISELY_PROD_SERVER_ADDRESS }}"
+      SUPERVISELY_SERVER_ADDRESS: "${{ vars.SUPERVISELY_DEV_SERVER_ADDRESS }}"
       SLUG: "${{ github.repository }}"
       RELEASE_VERSION: "${{ github.ref_name }}"
       RELEASE_TITLE: "${{ github.ref_name }} branch release"
