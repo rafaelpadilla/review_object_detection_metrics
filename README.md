@@ -205,7 +205,23 @@ Based on these definitions, the proposed STT-AP metric follows the AP.
 
 ## How to use this project
 
-### Requirements
+We can use this project in two ways
+
+### Docker Environment (in Linux)
+
+In the terminal, run 
+
+```shell
+xhost +local:
+```
+
+Install [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker compose](https://docs.docker.com/compose/install/linux/#install-the-plugin-manually) and then run the following in a terminal from the repository directory.
+
+```shell
+docker compose up
+```
+
+### Conda Environment
 
 We highly suggest you to create an [anaconda](https://docs.anaconda.com/anaconda/install/) environment using the `environment.yml` file available in this repository. To create the environment and install all necessary packages, run the following command:
 
