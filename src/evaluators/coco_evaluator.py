@@ -73,7 +73,7 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
         for class_id in _evals:
             acc = _evals[class_id]
             acc["scores"] = np.concatenate(acc["scores"])
-            acc["matched"] = np.concatenate(acc["matched"]).astype(np.bool)
+            acc["matched"] = np.concatenate(acc["matched"]).astype(np.bool_)
             acc["NP"] = np.sum(acc["NP"])
 
         res = []
