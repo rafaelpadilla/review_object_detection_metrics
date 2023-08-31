@@ -53,7 +53,7 @@ def dict2tuple(dictionary, target_class, round_level=4):
             if false_positive + true__positive != 0 else 0
 
     return g.result(str(int(true__positive)), str(int(false_positive)), str(int(num__positives)),
-                  str(precision), str(recall), str(average_precision))
+                  str(recall), str(precision), str(average_precision))
 
 
 def calculate_mAP(img_gts_bbs, img_det_bbs, iou, score,
