@@ -207,6 +207,8 @@ Based on these definitions, the proposed STT-AP metric follows the AP.
 
 ### Requirements
 
+#### Anaconda
+
 We highly suggest you to create an [anaconda](https://docs.anaconda.com/anaconda/install/) environment using the `environment.yml` file available in this repository. To create the environment and install all necessary packages, run the following command:
 
 `conda env create -n <env_name> --file environment.yml`  
@@ -216,6 +218,21 @@ Now activate the evironment: `conda activate <env_name>`
 Install the tool: `python setup.py install`  
 
 Run the UI: `python run.py`  
+
+#### venv (virtual environment)
+
+As an alternative to anaconda, [python virtual environments](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) can be used:
+
+Create a virtual environment: `python3 -m venv venv`
+
+Activate the environment: `. ./venv/bin/activate`
+
+Install the required packages: `pip install -r requirements.txt`
+
+Install the tool: `python setup.py install`
+
+Run the UI: `python run.py`
+
 
 ### Running
 
