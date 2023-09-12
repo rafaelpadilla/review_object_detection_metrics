@@ -276,7 +276,7 @@ def plot_bb_per_classes(dict_bbs_per_class,
         # plt.tight_layout()
         # plt.show(aspect='auto')
         fig = plt.gcf()
-        fig.canvas.set_window_title(title)
+        fig.canvas.manager.set_window_title(title)
         fig.tight_layout()
         fig.show()
     return plt
