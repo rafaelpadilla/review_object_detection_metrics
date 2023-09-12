@@ -14,8 +14,8 @@ class Splash_Dialog(QMainWindow, Splash_UI):
     def center_screen(self):
         size = self.size()
         desktopSize = QtWidgets.QDesktopWidget().screenGeometry()
-        top = (desktopSize.height() / 2) - (size.height() / 2)
-        left = (desktopSize.width() / 2) - (size.width() / 2)
+        top = int((desktopSize.height() / 2) - (size.height() / 2))
+        left = int((desktopSize.width() / 2) - (size.width() / 2))
         self.move(left, top)
 
     def btn_close_clicked(self):
