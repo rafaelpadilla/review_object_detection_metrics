@@ -9,7 +9,13 @@ class Splash_Dialog(QMainWindow, Splash_UI):
         self.setupUi(self)
         self.center_screen()
 
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.setWindowFlags(
+                QtCore.Qt.FramelessWindowHint |
+                QtCore.Qt.WindowStaysOnTopHint
+                )
+
+        self.btn_Close.setDefault(True)
+        self.btn_Close.setFocus()
 
     def center_screen(self):
         size = self.size()
