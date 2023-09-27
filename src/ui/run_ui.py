@@ -214,13 +214,14 @@ class Main_Dialog(QMainWindow, Main_UI):
         if os.path.isdir(directory):
             self.txb_gt_dir.setText(directory)
             self.dir_annotations_gt = directory
+            self.current_directory = directory
         else:
             self.dir_annotations_gt = None
 
     def btn_gt_classes_clicked(self):
         filepath = QFileDialog.getOpenFileName(self, 'Choose a file with a list of classes',
                                                self.current_directory,
-                                               "Image files (*.txt *.names)")
+                                               "Text files (*.txt *.names)")
         filepath = filepath[0]
         if os.path.isfile(filepath):
             self.txb_classes_gt.setText(filepath)
@@ -239,11 +240,12 @@ class Main_Dialog(QMainWindow, Main_UI):
         if directory != '':
             self.txb_gt_images_dir.setText(directory)
             self.dir_images_gt = directory
+            self.current_directory = directory
 
     def btn_det_classes_clicked(self):
         filepath = QFileDialog.getOpenFileName(self, 'Choose a file with a list of classes',
                                                self.current_directory,
-                                               "Image files (*.txt *.names)")
+                                               "Text files (*.txt *.names)")
         filepath = filepath[0]
         if os.path.isfile(filepath):
             self.txb_classes_det.setText(filepath)
@@ -263,6 +265,7 @@ class Main_Dialog(QMainWindow, Main_UI):
         if os.path.isdir(directory):
             self.txb_det_dir.setText(directory)
             self.dir_dets = directory
+            self.current_directory = directory
         else:
             self.dir_dets = None
 
@@ -292,6 +295,7 @@ class Main_Dialog(QMainWindow, Main_UI):
         if os.path.isdir(directory):
             self.txb_output_dir.setText(directory)
             self.dir_save_results = directory
+            self.current_directory = directory
         else:
             self.dir_save_results = None
 
