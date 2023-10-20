@@ -7,6 +7,7 @@ import pandas as pd
 import src.utils.general_utils as general_utils
 import src.utils.validations as validations
 from src.bounding_box import BoundingBox
+from src.bounding_box_rotated import BoundingBoxRotated
 from src.utils.enumerators import BBFormat, BBType, CoordinatesType
 
 
@@ -90,6 +91,7 @@ def coco_bev2bb(path, bb_type=BBType.GROUND_TRUTH):
     # Loop through each file
     for file_path in annotation_files:
         if not validations.is_coco_format(file_path):
+            print("Warning: File is not in COCO format")
             continue
 
         with open(file_path, "r") as f:
@@ -114,7 +116,6 @@ def coco_bev2bb(path, bb_type=BBType.GROUND_TRUTH):
         annotations = []
         if "annotations" in json_object:
             annotations = json_object["annotations"]
-
         for annotation in annotations:
             img_id = annotation["image_id"]
             x1, y1, bb_width, bb_height, angle = annotation["bbox"]
@@ -126,7 +127,7 @@ def coco_bev2bb(path, bb_type=BBType.GROUND_TRUTH):
             img_name = images[img_id]["file_name"]
             img_name = general_utils.get_file_name_only(img_name)
             # create BoundingBox object
-            bb = BoundingBox(
+            bb = BoundingBoxRotated(
                 image_name=img_name,
                 class_id=classes[annotation["category_id"]],
                 coordinates=(x1, y1, bb_width, bb_height, angle),
