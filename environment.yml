@@ -14,11 +14,12 @@ dependencies:
   - pyqt=5.12
   - pytest=6.1
   - python=3.9
+  - shapely= 2.0
   - pip:
-    - awscli==1.18.180
-    - chardet==3.0.4
-    - click==7.1.2
-    - flake8==3.8.4
-    - python-dotenv==0.15.0
-    - pyyaml==5.3.1
-    - sphinx==3.3.1
+      - awscli==1.18.180
+      - chardet==3.0.4
+      - click==7.1.2
+      - flake8==3.8.4
+      - python-dotenv==0.15.0
+      - pyyaml==5.3.1
+      - sphinx==3.3.1
