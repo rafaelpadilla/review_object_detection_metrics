@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 """ version ported from https://github.com/cocodataset/cocoapi/blob/master/PythonAPI/pycocotools/cocoeval.py
 
     Notes:
