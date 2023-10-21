@@ -2,7 +2,7 @@ from __future__ import annotations
 import numpy as np
 from .utils.enumerators import BBFormat, BBType, CoordinatesType
 from shapely.geometry import Polygon
-from shapely import intersection, union
+from shapely import intersection, union, distance
 
 
 class BoundingBoxRotated:
@@ -85,6 +85,14 @@ class BoundingBoxRotated:
             self._x2 = self._x + self._w
             self._y2 = self._y + self._h
             self._angle = coordinates[4]
+            self._h3d = None
+        elif self._format == BBFormat.XYWH_ANGLE_HEIGHT3D:
+            self._w = coordinates[2]
+            self._h = coordinates[3]
+            self._x2 = self._x + self._w
+            self._y2 = self._y + self._h
+            self._angle = coordinates[4]
+            self._h3d = coordinates[5]  # this is the height in the third dimension
         else:
             raise NotImplementedError("Only BBFormat.XYWH_ANGLE is supported")
         # Convert all values to float
@@ -102,7 +110,12 @@ class BoundingBoxRotated:
             np.array([-self._w / 2, -self._h / 2]),
             np.array([-self._w / 2, self._h / 2]),
         ]
-        corner_points = [center + vec for vec in center_to_corner_vecs]
+        rotation_matrix = self.get_rotation_matrix()
+        rotated_center_to_corner_vecs = [
+            rotation_matrix @ vec for vec in center_to_corner_vecs
+        ]
+
+        corner_points = [center + rot_vec for rot_vec in rotated_center_to_corner_vecs]
         self._polygon = Polygon(corner_points)
 
     def get_absolute_bounding_box(self, format=BBFormat.XYWH_ANGLE):
@@ -219,6 +232,9 @@ class BoundingBoxRotated:
         """
         return (self._width_img, self._height_img)
 
+    def get_angle(self):
+        return self._angle
+
     def get_rotation_matrix(self):
         """Get the rotation matrix of the bounding box.
 
@@ -233,7 +249,6 @@ class BoundingBoxRotated:
         return np.array([[c, -s], [s, c]])
 
     def get_area(self):
-        # TODO change this and use shapely library
         area = self._polygon.area
         assert area >= 0
         return area
@@ -344,6 +359,45 @@ class BoundingBoxRotated:
         iou = interArea / union_area
         assert iou >= 0
         return iou
+
+    @staticmethod
+    def center_distance(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
+        return distance(boxA._polygon.centroid, boxB._polygon.centroid)
+
+    @staticmethod
+    def translation_error(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
+        """
+        returns the translation error between two bounding boxes like in nuScenes
+        """
+        return distance(boxA._polygon.centroid, boxB._polygon.centroid)
+
+    @staticmethod
+    def orientation_error(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
+        """
+        returns the orientation error between two bounding boxes like in nuScenes
+        This is the smallest angle between the two angles
+        """
+        e_a = np.array([np.cos(boxA._angle), np.sin(boxA._angle)])
+        e_b = np.array([np.cos(boxB._angle), np.sin(boxB._angle)])
+        dot = np.dot(e_a, e_b)
+        return np.arccos(dot)
+
+    @staticmethod
+    def scale_error(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
+        """
+        returns the scale error between two bounding boxes like in nuScenes
+        """
+        min_height_fraction = min(boxA._h / boxB._h, boxB._h / boxA._h)
+        min_width_fraction = min(boxA._w / boxB._w, boxB._w / boxA._w)
+        if boxA._h3d is not None and boxB._h3d is not None:
+            min_height3d_fraction = min(boxA._h3d / boxB._h3d, boxB._h3d / boxA._h3d)
+            # this is the iuo of the aligned 3d bounding box
+            return 1 - (
+                min_height_fraction * min_width_fraction * min_height3d_fraction
+            )
+        else:
+            # this is the iuo of the aligned 2d bounding box
+            return 1 - (min_height_fraction * min_width_fraction)
 
     # boxA = (Ax1,Ay1,Ax2,Ay2)
     # boxB = (Bx1,By1,Bx2,By2)

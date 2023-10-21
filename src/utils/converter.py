@@ -118,7 +118,11 @@ def coco_bev2bb(path, bb_type=BBType.GROUND_TRUTH):
             annotations = json_object["annotations"]
         for annotation in annotations:
             img_id = annotation["image_id"]
-            x1, y1, bb_width, bb_height, angle = annotation["bbox"]
+            # x1, y1, bb_width, bb_height, angle = annotation["bbox"]
+            (x1, y1, bb_width, bb_height, angle) = annotation["bbox"]
+            # bb_width = bb_width
+            # bb_height = bb_height
+            # angle = 0
             if bb_type == BBType.DETECTED and "score" not in annotation.keys():
                 print("Warning: Confidence not found in the JSON file!")
                 return ret

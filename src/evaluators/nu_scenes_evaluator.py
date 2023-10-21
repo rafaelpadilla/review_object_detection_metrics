@@ -25,17 +25,8 @@ import numpy as np
 from src.bounding_box import BBFormat, BoundingBox
 
 
-def get_coco_summary(groundtruth_bbs, detected_bbs):
-    """Calculate the 12 standard metrics used in COCOEval,
-        AP, AP50, AP75,
-        AR1, AR10, AR100,
-        APsmall, APmedium, APlarge,
-        ARsmall, ARmedium, ARlarge.
-
-        When no ground-truth can be associated with a particular class (NPOS == 0),
-        that class is removed from the average calculation.
-        If for a given calculation, no metrics whatsoever are available, returns NaN.
-
+def get_nuscenes_summary(groundtruth_bbs, detected_bbs):
+    """
     Parameters
         ----------
             groundtruth_bbs : list
@@ -49,17 +40,19 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
     # ROTATION INVARIANT
     _bbs = _group_detections(detected_bbs, groundtruth_bbs)
 
-    # pairwise ious
-    # ROTATION ADJUSTED
-    _ious = {k: _compute_ious(**v) for k, v in _bbs.items()}
+    # pairwise dists
+    _dists = {k: _compute_dists(**v) for k, v in _bbs.items()}
 
-    def _evaluate(iou_threshold, max_dets, area_range):
+    def _evaluate(dist_threshold, max_dets, area_range):
         # accumulate evaluations on a per-class basis
         _evals = defaultdict(
             lambda: {
                 "scores": [],
                 "matched": [],
                 "NP": [],
+                "ATE": [],
+                "AOE": [],
+                "ASE": [],
             }
         )
         for img_id, class_id in _bbs:
@@ -67,15 +60,21 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
             ev = _evaluate_image(
                 _bbs[img_id, class_id]["dt"],
                 _bbs[img_id, class_id]["gt"],
-                _ious[img_id, class_id],
-                iou_threshold,
+                _dists[img_id, class_id],
+                dist_threshold,
                 max_dets,
                 area_range,
+                calc_ate=True,
+                calc_aoe=True,
+                calc_ase=True,
             )
             acc = _evals[class_id]
             acc["scores"].append(ev["scores"])
             acc["matched"].append(ev["matched"])
             acc["NP"].append(ev["NP"])
+            acc["ATE"].append(ev["ATE"])
+            acc["AOE"].append(ev["AOE"])
+            acc["ASE"].append(ev["ASE"])
 
         # now reduce accumulations
         for class_id in _evals:
@@ -83,6 +82,9 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
             acc["scores"] = np.concatenate(acc["scores"])
             acc["matched"] = np.concatenate(acc["matched"]).astype(bool)
             acc["NP"] = np.sum(acc["NP"])
+            acc["ATE"] = np.mean(np.concatenate(acc["ATE"]))
+            acc["AOE"] = np.mean(np.concatenate(acc["AOE"]))
+            acc["ASE"] = np.mean(np.concatenate(acc["ASE"]))
         res = []
         # run ap calculation per-class
         for class_id in _evals:
@@ -90,28 +92,33 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
             res.append(
                 {
                     "class": class_id,
+                    "ATE": ev["ATE"],
+                    "AOE": ev["AOE"],
+                    "ASE": ev["ASE"],
                     # ROTATION INVARIANT
                     **_compute_ap_recall(ev["scores"], ev["matched"], ev["NP"]),
                 }
             )
         return res
 
-    iou_thresholds = np.linspace(
-        0.5, 0.95, int(np.round((0.95 - 0.5) / 0.05)) + 1, endpoint=True
-    )
+    dist_thresholds = np.array([0.5, 1.0, 2.0, 4.0])
 
     # compute simple AP with all thresholds, using up to 100 dets, and all areas
     full = {
         # ROTATION ADJUSTED
-        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(0, np.inf))
-        for i in iou_thresholds
+        i: _evaluate(dist_threshold=i, max_dets=100, area_range=(0, np.inf))
+        for i in dist_thresholds
     }
 
-    AP50 = np.mean([x["AP"] for x in full[0.50] if x["AP"] is not None])
-    AP70 = np.mean([x["AP"] for x in full[0.70] if x["AP"] is not None])
-    AP75 = np.mean([x["AP"] for x in full[0.75] if x["AP"] is not None])
+    AP_05m = np.mean([x["AP"] for x in full[0.50] if x["AP"] is not None])
+    AP_1m = np.mean([x["AP"] for x in full[1.0] if x["AP"] is not None])
+    AP_2m = np.mean([x["AP"] for x in full[2.0] if x["AP"] is not None])
+    AP_4m = np.mean([x["AP"] for x in full[4.0] if x["AP"] is not None])
     AP = np.mean([x["AP"] for k in full for x in full[k] if x["AP"] is not None])
-
+    tp_metrics_distance = 2.0
+    ATE = np.mean([x["ATE"] for x in full[tp_metrics_distance] if x["ATE"] is not None])
+    AOE = np.mean([x["AOE"] for x in full[tp_metrics_distance] if x["AOE"] is not None])
+    ASE = np.mean([x["ASE"] for x in full[tp_metrics_distance] if x["ASE"] is not None])
     # max recall for 100 dets can also be calculated here
     AR100 = np.mean(
         [
@@ -124,8 +131,8 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
 
     small = {
         # ROTATION ADJUSTED
-        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(0, 32**2))
-        for i in iou_thresholds
+        i: _evaluate(dist_threshold=i, max_dets=100, area_range=(0, 32**2))
+        for i in dist_thresholds
     }
     APsmall = [x["AP"] for k in small for x in small[k] if x["AP"] is not None]
     APsmall = np.nan if APsmall == [] else np.mean(APsmall)
@@ -139,8 +146,8 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
 
     medium = {
         # ROTATION ADJUSTED
-        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(32**2, 96**2))
-        for i in iou_thresholds
+        i: _evaluate(dist_threshold=i, max_dets=100, area_range=(32**2, 96**2))
+        for i in dist_thresholds
     }
     APmedium = [x["AP"] for k in medium for x in medium[k] if x["AP"] is not None]
     APmedium = np.nan if APmedium == [] else np.mean(APmedium)
@@ -154,8 +161,8 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
 
     large = {
         # ROTATION ADJUSTED
-        i: _evaluate(iou_threshold=i, max_dets=100, area_range=(96**2, np.inf))
-        for i in iou_thresholds
+        i: _evaluate(dist_threshold=i, max_dets=100, area_range=(96**2, np.inf))
+        for i in dist_thresholds
     }
     APlarge = [x["AP"] for k in large for x in large[k] if x["AP"] is not None]
     APlarge = np.nan if APlarge == [] else np.mean(APlarge)
@@ -169,8 +176,8 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
 
     max_det1 = {
         # ROTATION ADJUSTED
-        i: _evaluate(iou_threshold=i, max_dets=1, area_range=(0, np.inf))
-        for i in iou_thresholds
+        i: _evaluate(dist_threshold=i, max_dets=1, area_range=(0, np.inf))
+        for i in dist_thresholds
     }
     AR1 = np.mean(
         [
@@ -183,8 +190,8 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
 
     max_det10 = {
         # ROTATION ADJUSTED
-        i: _evaluate(iou_threshold=i, max_dets=10, area_range=(0, np.inf))
-        for i in iou_thresholds
+        i: _evaluate(dist_threshold=i, max_dets=10, area_range=(0, np.inf))
+        for i in dist_thresholds
     }
     AR10 = np.mean(
         [
@@ -197,9 +204,13 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
 
     return {
         "AP": AP,
-        "AP50": AP50,
-        "AP70": AP70,
-        "AP75": AP75,
+        "AP_05m": AP_05m,
+        "AP_1m": AP_1m,
+        "AP_2m": AP_2m,
+        "AP_4m": AP_4m,
+        "ATE": ATE,
+        "AOE": AOE,
+        "ASE": ASE,
         "APsmall": APsmall,
         "APmedium": APmedium,
         "APlarge": APlarge,
@@ -210,87 +221,6 @@ def get_coco_summary(groundtruth_bbs, detected_bbs):
         "ARmedium": ARmedium,
         "ARlarge": ARlarge,
     }
-
-
-# ROTATION ADJUSTED
-def get_coco_metrics(
-    groundtruth_bbs,
-    detected_bbs,
-    iou_threshold=0.5,
-    area_range=(0, np.inf),
-    max_dets=100,
-):
-    """Calculate the Average Precision and Recall metrics as in COCO's official implementation
-        given an IOU threshold, area range and maximum number of detections.
-    Parameters
-        ----------
-            groundtruth_bbs : list
-                A list containing objects of type BoundingBox representing the ground-truth bounding boxes.
-            detected_bbs : list
-                A list containing objects of type BoundingBox representing the detected bounding boxes.
-            iou_threshold : float
-                Intersection Over Union (IOU) value used to consider a TP detection.
-            area_range : (numerical x numerical)
-                Lower and upper bounds on annotation areas that should be considered.
-            max_dets : int
-                Upper bound on the number of detections to be considered for each class in an image.
-
-    Returns:
-            A list of dictionaries. One dictionary for each class.
-            The keys of each dictionary are:
-            dict['class']: class representing the current dictionary;
-            dict['precision']: array with the precision values;
-            dict['recall']: array with the recall values;
-            dict['AP']: average precision;
-            dict['interpolated precision']: interpolated precision values;
-            dict['interpolated recall']: interpolated recall values;
-            dict['total positives']: total number of ground truth positives;
-            dict['TP']: total number of True Positive detections;
-            dict['FP']: total number of False Positive detections;
-
-            if there was no valid ground truth for a specific class (total positives == 0),
-            all the associated keys default to None
-    """
-
-    # separate bbs per image X class
-    _bbs = _group_detections(detected_bbs, groundtruth_bbs)
-
-    # pairwise ious
-    _ious = {k: _compute_ious(**v) for k, v in _bbs.items()}
-
-    # accumulate evaluations on a per-class basis
-    _evals = defaultdict(lambda: {"scores": [], "matched": [], "NP": []})
-
-    for img_id, class_id in _bbs:
-        ev = _evaluate_image(
-            _bbs[img_id, class_id]["dt"],
-            _bbs[img_id, class_id]["gt"],
-            _ious[img_id, class_id],
-            iou_threshold,
-            max_dets,
-            area_range,
-        )
-        acc = _evals[class_id]
-        acc["scores"].append(ev["scores"])
-        acc["matched"].append(ev["matched"])
-        acc["NP"].append(ev["NP"])
-
-    # now reduce accumulations
-    for class_id in _evals:
-        acc = _evals[class_id]
-        acc["scores"] = np.concatenate(acc["scores"])
-        acc["matched"] = np.concatenate(acc["matched"]).astype(bool)
-        acc["NP"] = np.sum(acc["NP"])
-
-    res = {}
-    # run ap calculation per-class
-    for class_id in _evals:
-        ev = _evals[class_id]
-        res[class_id] = {
-            "class": class_id,
-            **_compute_ap_recall(ev["scores"], ev["matched"], ev["NP"]),
-        }
-    return res
 
 
 def _group_detections(dt, gt):
@@ -316,41 +246,16 @@ def _get_area(a: BoundingBoxRotated | BoundingBox):
         return (x2 - x) * (y2 - y)
 
 
-def _jaccard(a, b):
-    xa, ya, x2a, y2a = a.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
-    xb, yb, x2b, y2b = b.get_absolute_bounding_box(format=BBFormat.XYX2Y2)
-
-    # innermost left x
-    xi = max(xa, xb)
-    # innermost right x
-    x2i = min(x2a, x2b)
-    # same for y
-    yi = max(ya, yb)
-    y2i = min(y2a, y2b)
-
-    # calculate areas
-    Aa = max(x2a - xa, 0) * max(y2a - ya, 0)
-    Ab = max(x2b - xb, 0) * max(y2b - yb, 0)
-    Ai = max(x2i - xi, 0) * max(y2i - yi, 0)
-    return Ai / (Aa + Ab - Ai)
-
-
-def _compute_ious(dt, gt):
+def _compute_dists(dt, gt):
     """compute pairwise ious"""
     if len(dt) == 0 or len(gt) == 0:
         return np.zeros((len(dt), len(gt)))
     if isinstance(dt[0], BoundingBoxRotated) and isinstance(gt[0], BoundingBoxRotated):
-        ious = np.zeros((len(dt), len(gt)))
+        dists = np.zeros((len(dt), len(gt)))
         for g_idx, g in enumerate(gt):
             for d_idx, d in enumerate(dt):
-                ious[d_idx, g_idx] = BoundingBoxRotated.iou(d, g)
-        return ious
-    elif isinstance(dt[0], BoundingBox) and isinstance(gt[0], BoundingBox):
-        ious = np.zeros((len(dt), len(gt)))
-        for g_idx, g in enumerate(gt):
-            for d_idx, d in enumerate(dt):
-                ious[d_idx, g_idx] = _jaccard(d, g)
-        return ious
+                dists[d_idx, g_idx] = BoundingBoxRotated.center_distance(d, g)
+        return dists
     else:
         raise ValueError("dt and gt must be of the same type")
 
@@ -358,19 +263,33 @@ def _compute_ious(dt, gt):
 def _evaluate_image(
     dt: list[BoundingBoxRotated] | list[BoundingBox],
     gt: list[BoundingBoxRotated] | list[BoundingBox],
-    ious,
-    iou_threshold,
+    dists,
+    dist_threshold,
     max_dets=None,
     area_range=None,
+    calc_ate=False,
+    calc_aoe=False,
+    calc_ase=False,
 ):
-    """use COCO's method to associate detections to ground truths"""
+    """use COCO's method to associate detections to ground truths
+    Args:
+        dt: list of detections
+        gt: list of ground truths
+        dists: pairwise distance matrix
+        dist_threshold: distance threshold
+        max_dets: maximum number of detections to consider
+        area_range: area range to consider
+        calc_ate: whether to calculate ATE (average translation error)
+        calc_aoe: whether to calculate AOE (average orientation error)
+        calc_ase: whether to calculate ASE (average scale error)
+    """
     # sort dts by increasing confidence
     dt_sort = np.argsort([-d.get_confidence() for d in dt], kind="stable")
 
     # sort list of dts and chop by max dets
     dt = [dt[idx] for idx in dt_sort[:max_dets]]
 
-    ious = ious[dt_sort[:max_dets]]
+    dists = dists[dt_sort[:max_dets]]
 
     # generate ignored gt list by area_range
     def _is_ignore(bb):
@@ -386,14 +305,14 @@ def _evaluate_image(
     gt_sort = np.argsort(gt_ignore, kind="stable")
     gt = [gt[idx] for idx in gt_sort]
     gt_ignore = [gt_ignore[idx] for idx in gt_sort]
-    ious = ious[:, gt_sort]
+    dists = dists[:, gt_sort]
 
     gtm = {}
     dtm = {}
 
     for d_idx, d in enumerate(dt):
         # information about best match so far (m=-1 -> unmatched)
-        iou = min(iou_threshold, 1 - 1e-10)
+        min_dist_to_prev_gt = min(dist_threshold, 1000)  # in meters
         m = -1
         for g_idx, g in enumerate(gt):
             # if this gt already matched, and not a crowd, continue
@@ -403,10 +322,10 @@ def _evaluate_image(
             if m > -1 and gt_ignore[m] == False and gt_ignore[g_idx] == True:
                 break
             # continue to next gt unless better match made
-            if ious[d_idx, g_idx] < iou:
+            if dists[d_idx, g_idx] > min_dist_to_prev_gt:
                 continue
             # if match successful and best so far, store appropriately
-            iou = ious[d_idx, g_idx]
+            min_dist_to_prev_gt = dists[d_idx, g_idx]
             m = g_idx
         # if match made store id of match for both dt and gt
         if m == -1:
@@ -427,11 +346,29 @@ def _evaluate_image(
     matched = [d_idx in dtm for d_idx in range(len(dt)) if not dt_ignore[d_idx]]
 
     n_gts = len([g_idx for g_idx in range(len(gt)) if not gt_ignore[g_idx]])
-    return {
+    return_val = {
         "scores": scores,
         "matched": matched,
         "NP": n_gts,
     }
+    if calc_aoe:
+        aoe = [
+            BoundingBoxRotated.orientation_error(dt[gtm[g_idx]], gt[g_idx])
+            for g_idx in gtm
+        ]
+        return_val["AOE"] = aoe
+    if calc_ate:
+        ate = [
+            BoundingBoxRotated.translation_error(dt[gtm[g_idx]], gt[g_idx])
+            for g_idx in gtm
+        ]
+        return_val["ATE"] = ate
+    if calc_ase:
+        ase = [
+            BoundingBoxRotated.scale_error(dt[gtm[g_idx]], gt[g_idx]) for g_idx in gtm
+        ]
+        return_val["ASE"] = ase
+    return return_val
 
 
 def _compute_ap_recall(

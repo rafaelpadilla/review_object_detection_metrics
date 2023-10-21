@@ -46,7 +46,7 @@ class BBFormat(Enum):
     PASCAL_XML = 3
     YOLO = 4
     XYWH_ANGLE = 5
-    XYZWHL_ANGLE = 6
+    XYWH_ANGLE_HEIGHT3D = 6
 
 
 class FileFormat(Enum):
