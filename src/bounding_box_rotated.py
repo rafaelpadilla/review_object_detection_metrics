@@ -2,7 +2,6 @@ from __future__ import annotations
 import numpy as np
 from .utils.enumerators import BBFormat, BBType, CoordinatesType
 from shapely.geometry import Polygon
-from shapely import intersection, union, distance
 
 
 class BoundingBoxRotated:
@@ -352,11 +351,11 @@ class BoundingBoxRotated:
 
     @staticmethod
     def iou(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
-        intersect_poly = intersection(boxA._polygon, boxB._polygon)
+        intersect_poly = boxA._polygon.intersection(boxB._polygon)
         if intersect_poly.is_empty:
             return 0
         interArea = intersect_poly.area
-        union_poly = union(boxA._polygon, boxB._polygon)
+        union_poly = boxA._polygon.union(boxB._polygon)
         union_area = union_poly.area
         # intersection over union
         iou = interArea / union_area
@@ -365,14 +364,14 @@ class BoundingBoxRotated:
 
     @staticmethod
     def center_distance(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
-        return distance(boxA._polygon.centroid, boxB._polygon.centroid)
+        return boxA._polygon.centroid.distance(boxB._polygon.centroid)
 
     @staticmethod
     def translation_error(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
         """
         returns the translation error between two bounding boxes like in nuScenes
         """
-        return distance(boxA._polygon.centroid, boxB._polygon.centroid)
+        return boxA._polygon.centroid.distance(boxB._polygon.centroid)
 
     @staticmethod
     def orientation_error(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
@@ -409,14 +408,14 @@ class BoundingBoxRotated:
     # boxB = (Bx1,By1,Bx2,By2)
     @staticmethod
     def have_intersection(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
-        intersect_poly = intersection(boxA._polygon, boxB._polygon)
+        intersect_poly = boxA._polygon.intersection(boxB._polygon)
         if intersect_poly.is_empty:
             return False
         return True
 
     @staticmethod
     def get_intersection_area(boxA, boxB):
-        intersect_poly = intersection(boxA._polygon, boxB._polygon)
+        intersect_poly = boxA._polygon.intersection(boxB._polygon)
         if intersect_poly.is_empty:
             return 0
         interArea = intersect_poly.area
@@ -427,7 +426,7 @@ class BoundingBoxRotated:
     def get_union_areas(
         boxA: BoundingBoxRotated, boxB: BoundingBoxRotated, interArea=None
     ):
-        union_poly = union(boxA._polygon, boxB._polygon)
+        union_poly = boxA._polygon.union(boxB._polygon)
         union_area = union_poly.area
         assert union_area >= 0
         return union_area
