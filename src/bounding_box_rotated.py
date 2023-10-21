@@ -47,6 +47,7 @@ class BoundingBoxRotated:
                 Detection, confidence needs to be informed.
             format : Enum
                 BBFormat.XYWH_ANGLE: <left> <top> <width> <height> <angle>.
+                BBFormat.XYWH_ANGLE_HEIGHT3D: <left> <top> <width> <height> <angle> <height3d>.
         """
 
         self._image_name = image_name
@@ -138,6 +139,8 @@ class BoundingBoxRotated:
 
         if format == BBFormat.XYWH_ANGLE:
             return (self._x, self._y, self._w, self._h, self._angle)
+        elif format == BBFormat.XYWH_ANGLE_HEIGHT3D:
+            return (self._x, self._y, self._w, self._h, self._angle, self._h3d)
         else:
             raise NotImplementedError("Only BBFormat.XYWH_ANGLE is supported")
 
@@ -275,7 +278,7 @@ class BoundingBoxRotated:
         return self._bb_type
 
     def __str__(self):
-        abs_bb_xywh_angle = self.get_absolute_bounding_box(format=BBFormat.XYWH_ANGLE)
+        abs_bb_xywh_angle = self.get_absolute_bounding_box(format=self._format)
         area = self.get_area()
         return f"image name: {self._image_name}\nclass: {self._class_id}\nbb (XYWH_ANGLE): {abs_bb_xywh_angle}\narea: {area}\nbb_type: {self._bb_type}"
 
@@ -334,7 +337,7 @@ class BoundingBoxRotated:
             Cloned BoundingBoxRotated object.
         """
         assert isinstance(bounding_box, BoundingBoxRotated)
-        absBB = bounding_box.get_absolute_bounding_box(format=BBFormat.XYWH_ANGLE)
+        absBB = bounding_box.get_absolute_bounding_box(format=bounding_box._format)
         new_bounding_box = BoundingBoxRotated(
             bounding_box.get_image_name(),
             bounding_box.get_class_id(),
@@ -387,10 +390,13 @@ class BoundingBoxRotated:
         """
         returns the scale error between two bounding boxes like in nuScenes
         """
-        min_height_fraction = min(boxA._h / boxB._h, boxB._h / boxA._h)
-        min_width_fraction = min(boxA._w / boxB._w, boxB._w / boxA._w)
+        eps = 0.000001
+        min_height_fraction = min(boxA._h / (boxB._h + eps), boxB._h / (boxA._h + eps))
+        min_width_fraction = min(boxA._w / (boxB._w + eps), boxB._w / (boxA._w + eps))
         if boxA._h3d is not None and boxB._h3d is not None:
-            min_height3d_fraction = min(boxA._h3d / boxB._h3d, boxB._h3d / boxA._h3d)
+            min_height3d_fraction = min(
+                boxA._h3d / (boxB._h3d + eps), boxB._h3d / (boxA._h3d + eps)
+            )
             # this is the iuo of the aligned 3d bounding box
             return 1 - (
                 min_height_fraction * min_width_fraction * min_height3d_fraction
@@ -403,10 +409,6 @@ class BoundingBoxRotated:
     # boxB = (Bx1,By1,Bx2,By2)
     @staticmethod
     def have_intersection(boxA: BoundingBoxRotated, boxB: BoundingBoxRotated):
-        if isinstance(boxA, BoundingBoxRotated):
-            boxA = boxA.get_absolute_bounding_box(BBFormat.XYWH_ANGLE)
-        if isinstance(boxB, BoundingBoxRotated):
-            boxB = boxB.get_absolute_bounding_box(BBFormat.XYWH_ANGLE)
         intersect_poly = intersection(boxA._polygon, boxB._polygon)
         if intersect_poly.is_empty:
             return False
@@ -414,10 +416,6 @@ class BoundingBoxRotated:
 
     @staticmethod
     def get_intersection_area(boxA, boxB):
-        if isinstance(boxA, BoundingBoxRotated):
-            boxA = boxA.get_absolute_bounding_box(BBFormat.XYWH_ANGLE)
-        if isinstance(boxB, BoundingBoxRotated):
-            boxB = boxB.get_absolute_bounding_box(BBFormat.XYWH_ANGLE)
         intersect_poly = intersection(boxA._polygon, boxB._polygon)
         if intersect_poly.is_empty:
             return 0
@@ -429,10 +427,6 @@ class BoundingBoxRotated:
     def get_union_areas(
         boxA: BoundingBoxRotated, boxB: BoundingBoxRotated, interArea=None
     ):
-        if isinstance(boxA, BoundingBoxRotated):
-            boxA = boxA.get_absolute_bounding_box(BBFormat.XYWH_ANGLE)
-        if isinstance(boxB, BoundingBoxRotated):
-            boxB = boxB.get_absolute_bounding_box(BBFormat.XYWH_ANGLE)
         union_poly = union(boxA._polygon, boxB._polygon)
         union_area = union_poly.area
         assert union_area >= 0

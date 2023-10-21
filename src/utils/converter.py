@@ -80,11 +80,18 @@ def coco2bb(path, bb_type=BBType.GROUND_TRUTH):
     return ret
 
 
-def coco_bev2bb(path, bb_type=BBType.GROUND_TRUTH):
+def coco_bev2bb(
+    path,
+    bb_type=BBType.GROUND_TRUTH,
+    bb_format=BBFormat.XYWH_ANGLE,
+):
     """
     This converts a "fake" coco format to bounding boxes with angles. The format is as follows:
     bounding box: [x,y,w,h,angle]
     """
+    assert (
+        bb_format == BBFormat.XYWH_ANGLE or bb_format == BBFormat.XYWH_ANGLE_HEIGHT3D
+    ), f"This function does not support {bb_format}"
     ret = []
     # Get annotation files in the path
     annotation_files = _get_annotation_files(path)
@@ -118,11 +125,12 @@ def coco_bev2bb(path, bb_type=BBType.GROUND_TRUTH):
             annotations = json_object["annotations"]
         for annotation in annotations:
             img_id = annotation["image_id"]
-            # x1, y1, bb_width, bb_height, angle = annotation["bbox"]
-            (x1, y1, bb_width, bb_height, angle) = annotation["bbox"]
-            # bb_width = bb_width
-            # bb_height = bb_height
-            # angle = 0
+            if bb_format == BBFormat.XYWH_ANGLE:
+                (x1, y1, bb_width, bb_height, angle) = annotation["bbox"]
+            elif bb_format == BBFormat.XYWH_ANGLE_HEIGHT3D:
+                (x1, y1, bb_width, bb_height, angle, bb_height3d) = annotation["bbox"]
+            else:
+                raise ValueError("bb_format must be XYWH_ANGLE or XYWH_ANGLE_HEIGHT3D")
             if bb_type == BBType.DETECTED and "score" not in annotation.keys():
                 print("Warning: Confidence not found in the JSON file!")
                 return ret
@@ -131,15 +139,19 @@ def coco_bev2bb(path, bb_type=BBType.GROUND_TRUTH):
             img_name = images[img_id]["file_name"]
             img_name = general_utils.get_file_name_only(img_name)
             # create BoundingBox object
+            if bb_format == BBFormat.XYWH_ANGLE:
+                coordinates = (x1, y1, bb_width, bb_height, angle)
+            elif bb_format == BBFormat.XYWH_ANGLE_HEIGHT3D:
+                coordinates = (x1, y1, bb_width, bb_height, angle, bb_height3d)
             bb = BoundingBoxRotated(
                 image_name=img_name,
                 class_id=classes[annotation["category_id"]],
-                coordinates=(x1, y1, bb_width, bb_height, angle),
+                coordinates=coordinates,
                 type_coordinates=CoordinatesType.ABSOLUTE,
                 img_size=images[img_id]["img_size"],
                 confidence=confidence,
                 bb_type=bb_type,
-                format=BBFormat.XYWH_ANGLE,
+                format=bb_format,
             )
             ret.append(bb)
     return ret

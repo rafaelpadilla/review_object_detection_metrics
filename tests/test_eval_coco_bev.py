@@ -1,4 +1,3 @@
-# C:\Users\Domi\Anaconda3\envs\bev\Scripts\pip
 import json
 from math import isclose
 
@@ -8,12 +7,22 @@ from src.evaluators.nu_scenes_evaluator import get_nuscenes_summary
 from src.utils.converter import coco_bev2bb
 
 # Load coco samples
-gts = coco_bev2bb("tests/test_case_bev/gts", BBType.GROUND_TRUTH)
-dts = coco_bev2bb("tests/test_case_bev/dets", BBType.DETECTED)
+# gts = coco_bev2bb("tests/test_case_bev/gts", BBType.GROUND_TRUTH)
+# dts = coco_bev2bb("tests/test_case_bev/dets", BBType.DETECTED)
+gts = coco_bev2bb(
+    "tests/test_case_bev_xywh_angle_height/gts",
+    BBType.GROUND_TRUTH,
+    bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
+)
+dts = coco_bev2bb(
+    "tests/test_case_bev_xywh_angle_height/dets",
+    BBType.DETECTED,
+    bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
+)
 # gts = coco_bev2bb("tests/test_coco_eval/gts", BBType.GROUND_TRUTH)
 # dts = coco_bev2bb("tests/test_coco_eval/dets", BBType.DETECTED)
-# res = get_coco_summary(gts, dts)
-res = get_nuscenes_summary(gts, dts)
+res = get_coco_summary(gts, dts)
+# res = get_nuscenes_summary(gts, dts)
 print(res)
 tol = 1e-6
 
