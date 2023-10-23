@@ -5,26 +5,55 @@ from src.bounding_box import BBFormat, BBType, BoundingBox
 from src.evaluators.coco_evaluator import get_coco_summary
 from src.evaluators.nu_scenes_evaluator import get_nuscenes_summary
 from src.utils.converter import coco_bev2bb
+from src.evaluators import pascal_voc_evaluator
+from src.utils.enumerators import MethodAveragePrecision
 
 # Load coco samples
-gts = coco_bev2bb("tests/test_case_bev/gts", BBType.GROUND_TRUTH)
-dts = coco_bev2bb("tests/test_case_bev/dets", BBType.DETECTED)
-# gts = coco_bev2bb(
-#     "tests/test_case_bev_xywh_angle_height/gts",
-#     BBType.GROUND_TRUTH,
-#     bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
-# )
-# dts = coco_bev2bb(
-#     "tests/test_case_bev_xywh_angle_height/dets",
-#     BBType.DETECTED,
-#     bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
-# )
+# gts = coco_bev2bb("tests/test_case_bev/gts", BBType.GROUND_TRUTH)
+# dts = coco_bev2bb("tests/test_case_bev/dets", BBType.DETECTED)
+gts = coco_bev2bb(
+    "tests/test_case_bev_xywh_angle_height/gts",
+    BBType.GROUND_TRUTH,
+    bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
+)
+dts = coco_bev2bb(
+    "tests/test_case_bev_xywh_angle_height/dets",
+    BBType.DETECTED,
+    bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
+)
 # gts = coco_bev2bb("tests/test_coco_eval/gts", BBType.GROUND_TRUTH)
 # dts = coco_bev2bb("tests/test_coco_eval/dets", BBType.DETECTED)
 res = get_coco_summary(gts, dts)
 # res = get_nuscenes_summary(gts, dts)
 print(res)
+
+show_plots = False
 tol = 1e-6
+ious = [0.5]
+voc_res = {}
+for iou in ious:
+    res_dict = pascal_voc_evaluator.get_pascalvoc_metrics(
+        gts,
+        dts,
+        iou,
+        generate_table=True,
+        method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
+    )
+
+    voc_res[iou], mAP = res_dict["per_class"], res_dict["mAP"]
+    if show_plots:
+        pascal_voc_evaluator.plot_precision_recall_curves(
+            voc_res[iou],
+            showInterpolatedPrecision=True,
+            showAP=True,
+            showGraphic=True,
+        )
+    for key, value in res_dict["per_class"].items():
+        print(f"VOC AP{int(iou*100)} of ", key)
+        print(value["AP"])
+    value["interpolated precision"] = "Deleted"
+    value["interpolated recall"] = "Deleted"
+# print("VOC results:", res_dict)
 
 # assert abs(res["AP"] - 0.503647) < tol
 # assert abs(res["AP50"] - 0.696973) < tol
