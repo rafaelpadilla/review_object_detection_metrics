@@ -84,7 +84,7 @@ def coco_bev2bb(
     path,
     bb_type=BBType.GROUND_TRUTH,
     bb_format=BBFormat.XYWH_ANGLE,
-):
+) -> list[BoundingBoxRotated]:
     """
     This converts a "fake" coco format to bounding boxes with angles. The format is as follows:
     bounding box: [x,y,w,h,angle]

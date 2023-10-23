@@ -1,13 +1,98 @@
-THIS WILL BE THE ADDON WITH THE NEW METRICS
+# Object-Detection Metrics with rotated Bounding Boxes
+
+## The project is a fork from Rafael Padilla et al. The original project can be found [here](https://github.com/rafaelpadilla/review_object_detection_metrics)
+
+### Functionality
+
+This repo extends the original repo introducing rotateted Bounding Boxes. The repo was created in the context of self-driving cars especially the birds-eye-view (bev) object detection evaluation. This allows to calculate:
+
+- mAP for rotated bounding boxes with iou
+- mAP for rotated bounding boxes with distance thresholding (like in nuScenes)
+- nuscenes true positive metrics like:
+
+> ATE (Average Translation Error)
+> AOE (Average Orientation Error)
+> ASE (Average Scale Error)
+
+### Usage:
+
+This extension aims to be used without UI. In the following we will go through the typical usage similar to [here](tests/test_eval_coco_bev.py).
+First a new conversion script for annotations provided in a _adjusted coco_ format is presented. The _adjusted coco_ is for example used in the [prediction.json](/tests/test_case_bev_xywh_angle_height/dets/kitti_pred_2023_10_21_17_56.json). Other formats that are supported by the original project don't have a converted to rotated BoundingBoxes yet. The bounding boxes in the coco file are expected to be in the format:
+
+- BBFormat.XYWH_ANGLE <--> [15.23, -3.06, 3.03, 1.02, 2.0343] <--> [x, y, w, h, angle(in rad)]
+- BBFormat.XYWH_ANGLE_HEIGHT3D <--> [15.23, -3.06, 3.03, 1.02, 2.0343,1.52] <--> [x, y, w, h, angle(in rad), height_3d]
+
+Having the predictions and ground truths in the according coco format, the files can be read in as `BoundingBoxRotated`:
+
+```python
+from src.bounding_box import BBFormat, BBType, BoundingBox
+from src.utils.converter import coco_bev2bb
+gts = coco_bev2bb(
+    "tests/test_case_bev_xywh_angle_height/gts",
+    BBType.GROUND_TRUTH,
+    bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
+)
+dts = coco_bev2bb(
+    "tests/test_case_bev_xywh_angle_height/dets",
+    BBType.DETECTED,
+    bb_format=BBFormat.XYWH_ANGLE_HEIGHT3D,
+)
+```
+
+The gts and dts can then be passed to the evaluation function:
+
+```python
+from src.evaluators.coco_evaluator import get_coco_summary
+from src.evaluators.nu_scenes_evaluator import get_nuscenes_summary
+res_coco_rotated = get_coco_summary(gts, dts)
+print(res_coco_rotated)
+#{'AP': 0.4011901748062837, 'AP50': 0.8416326943141195, 'AP70': 0.4826946311407388, 'AP75': 0.317852278487866, 'APsmall': 0.4011901748062837, 'APmedium': nan, 'APlarge': nan, 'AR1': 0.12653203342618385, 'AR10': 0.4904596100278552, 'AR100': 0.5071727019498607, 'ARsmall': 0.5071727019498607, 'ARmedium': nan, 'ARlarge': nan}
+result_nuscenes = get_nuscenes_summary(gts, dts)
+print(result_nuscenes)
+# {'AP': 0.8836505105907824, 'AP_05m': 0.7608765742451706, 'AP_1m': 0.9029755229159718, 'AP_2m': 0.931628325562499, 'AP_4m': 0.9391216196394879, 'ATE': 0.30982860607643065, 'AOE': 0.10223764272624614, 'ASE': 0.9147418056338282, 'APsmall': 0.8836505105907824, 'APmedium': nan, 'APlarge': nan, 'AR1': 0.211525069637883, 'AR10': 0.8882311977715878, 'AR100': 0.9312325905292479, 'ARsmall': 0.9312325905292479, 'ARmedium': nan, 'ARlarge': nan}
+```
+
+When the `get_coco_summary` is called with lists of `BoundingBoxRotated` for gts and dts the iou of the two rotated rectangles is calculated using the [shapely](https://shapely.readthedocs.io/en/stable/manual.html) library.
+<img src="data/images/rotated_iou.png">
+Keep in mind, due to the mAP-calculation the rotated iou for the `get_coco_summary` can not be compared with non rotated bounding boxes.Though if the angle is set to zero for all bounding boxes the results are identical for rotated and non rotated bounding boxes.
+It is also possible to use the pascal voc evaluator to obtain precision recall curves. Here the same method for calculating the ious for rotated bounding boxes as for the coco evaluator is used (this is not the case for non-rotated bboxes). The pascal voc evaluator can be used as follows:
+
+```python
+show_plots = True
+tol = 1e-6
+ious = [0.5]
+voc_res = {}
+for iou in ious:
+    res_dict = pascal_voc_evaluator.get_pascalvoc_metrics(
+        gts,
+        dts,
+        iou,
+        generate_table=True,
+    )
+
+    voc_res[iou], mAP = res_dict["per_class"], res_dict["mAP"]
+    if show_plots:
+        pascal_voc_evaluator.plot_precision_recall_curves(
+            voc_res[iou],
+            showInterpolatedPrecision=True,
+            showAP=True,
+            showGraphic=True,
+        )
+```
+
+# ----------------------------------
+
+## README of the original project below:
 
 <p align="left">
-  
+
 <a>[![Build Status](https://travis-ci.com/rafaelpadilla/review_object_detection_metrics.svg?branch=main)](https://travis-ci.com/rafaelpadilla/review_object_detection_metrics)</a>
 <a href="https://github.com/rafaelpadilla/review_object_detection_metrics/raw/main/published_paper.pdf">
-    <img src="https://img.shields.io/badge/paper-published-blue"/></a>
+<img src="https://img.shields.io/badge/paper-published-blue"/></a>
 <a><img src="https://img.shields.io/badge/version-0.1-orange"/></a>
 <a href="https://doi.org/10.3390/electronics10030279">
-    <img src="https://img.shields.io/badge/DOI-10.3390%2Felectronics10030279-gray"/></a>
+<img src="https://img.shields.io/badge/DOI-10.3390%2Felectronics10030279-gray"/></a>
+
 </p>
 
 ## Citation
@@ -16,7 +101,8 @@ This work was published in the [Journal Electronics - Special Issue Deep Learnin
 
 If you use this code for your research, please consider citing:
 
-```
+````
+
 @Article{electronics10030279,
 AUTHOR = {Padilla, Rafael and Passos, Wesley L. and Dias, Thadeu L. B. and Netto, Sergio L. and da Silva, Eduardo A. B.},
 TITLE = {A Comparative Analysis of Object Detection Metrics with a Companion Open-Source Toolkit},
@@ -29,6 +115,7 @@ URL = {https://www.mdpi.com/2079-9292/10/3/279},
 ISSN = {2079-9292},
 DOI = {10.3390/electronics10030279}
 }
+
 ```
 
 Download the paper [here](https://www.mdpi.com/2079-9292/10/3/279/pdf) or [here](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/published_paper.pdf).
@@ -254,37 +341,39 @@ You can also save the images and plot a bar plot with the distribution of the bo
 For annotation with STT, use a .json file following format:
 
 ```
+
 {
 "videos": [
-  {
-    "id": int,
-    "file_name": str,
-    "width": int,
-    "height": int
-  }
+{
+"id": int,
+"file_name": str,
+"width": int,
+"height": int
+}
 ]
 
 "annotations": [
-  {
-    "id": int,
-    "video_id": int,
-    "category_id": int,
-    "track":[
-      {
-        "frame": int,
-        "bbox": [x ,y , width, height],
-        "confidence": float
-      }
-    ]
-  }]
+{
+"id": int,
+"video_id": int,
+"category_id": int,
+"track":[
+{
+"frame": int,
+"bbox": [x ,y , width, height],
+"confidence": float
+}
+]
+}]
 
 "categories": [
-  {
-    "id": int,
-    "name": str
-  }
+{
+"id": int,
+"name": str
+}
 ]
 }
+
 ```
 
 ##### Predictions Format
@@ -292,21 +381,23 @@ For annotation with STT, use a .json file following format:
 For detection with STT, use a .json file following format:
 
 ```
+
 [
-  {
-    "id": int,
-    "video_id": int,
-    "category_id": int,
-    "track":[
-      {
-        "frame": int,
-        "bbox": [x ,y , width, height],
-        "confidence": float
-      }
-    ]
-  }
+{
+"id": int,
+"video_id": int,
+"category_id": int,
+"track":[
+{
+"frame": int,
+"bbox": [x ,y , width, height],
+"confidence": float
+}
 ]
-```
+}
+]
+
+````
 
 See [example annotation](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/tests/tube/example_anno.json) and [example predictions](https://github.com/rafaelpadilla/review_object_detection_metrics/blob/main/tests/tube/example_preds.json) for examples of annotation and prediction .json files.
 

@@ -23,11 +23,11 @@ dts = coco_bev2bb(
 )
 # gts = coco_bev2bb("tests/test_coco_eval/gts", BBType.GROUND_TRUTH)
 # dts = coco_bev2bb("tests/test_coco_eval/dets", BBType.DETECTED)
-res = get_coco_summary(gts, dts)
-# res = get_nuscenes_summary(gts, dts)
+# res = get_coco_summary(gts, dts)
+res = get_nuscenes_summary(gts, dts)
 print(res)
 
-show_plots = False
+show_plots = True
 tol = 1e-6
 ious = [0.5]
 voc_res = {}
@@ -37,7 +37,6 @@ for iou in ious:
         dts,
         iou,
         generate_table=True,
-        method=MethodAveragePrecision.EVERY_POINT_INTERPOLATION,
     )
 
     voc_res[iou], mAP = res_dict["per_class"], res_dict["mAP"]
