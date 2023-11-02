@@ -143,9 +143,15 @@ def coco_bev2bb(
                 coordinates = (x1, y1, bb_width, bb_height, angle)
             elif bb_format == BBFormat.XYWH_ANGLE_HEIGHT3D:
                 coordinates = (x1, y1, bb_width, bb_height, angle, bb_height3d)
+            annotation_class_id = annotation["category_id"]
+            if annotation_class_id not in classes:
+                print(
+                    f"Warning: Class id {annotation_class_id} not found in the classes of the JSON file"
+                )
+                continue
             bb = BoundingBoxRotated(
                 image_name=img_name,
-                class_id=classes[annotation["category_id"]],
+                class_id=classes[annotation_class_id],
                 coordinates=coordinates,
                 type_coordinates=CoordinatesType.ABSOLUTE,
                 img_size=images[img_id]["img_size"],
