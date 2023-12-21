@@ -239,7 +239,7 @@ def get_pascalvoc_metrics(
 
 
 def plot_precision_recall_curve(
-    results, mAP=None, showInterpolatedPrecision=False, savePath=None, showGraphic=True
+    results, mAP=None, showInterpolatedPrecision=False, savePath=None, showGraphic=True,dpi=300
 ):
     result = None
     plt.close()
@@ -283,7 +283,7 @@ def plot_precision_recall_curve(
     plt.legend(shadow=True)
     plt.grid()
     if savePath is not None:
-        plt.savefig(os.path.join(savePath, "all_classes.png"))
+        plt.savefig(os.path.join(savePath, "all_classes.png"),dpi=dpi)
     if showGraphic is True:
         plt.show()
         # plt.waitforbuttonpress()
@@ -297,6 +297,7 @@ def plot_precision_recall_curves(
     showInterpolatedPrecision=False,
     savePath=None,
     showGraphic=True,
+    dpi=300
 ):
     result = None
     # Each resut represents a class
@@ -394,7 +395,7 @@ def plot_precision_recall_curves(
         plt.xlim([-0.1, 1.1])
         plt.ylim([-0.1, 1.1])
         if savePath is not None:
-            plt.savefig(os.path.join(savePath, classId + ".png"))
+            plt.savefig(os.path.join(savePath, classId + ".png"),dpi=dpi)
         if showGraphic is True:
             plt.show()
             # plt.waitforbuttonpress()
